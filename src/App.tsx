@@ -1,58 +1,41 @@
-import { useEffect, useState } from "react";
 import {
-	ProjectModel,
-	listProject,
-	createProject,
-} from "./database";
+	CssBaseline,
+	ThemeProvider,
+} from "@mui/material";
+import {
+	RouterProvider,
+	createBrowserRouter,
+} from "react-router-dom";
+import { Home } from "./pages/Home";
+import { ProjectInfo } from "./pages/project/Info";
+import { ProjectCreate } from "./pages/project/Create";
+import { themeComposed } from "./theme";
+
+const router = createBrowserRouter(
+	[
+		{
+			path: "/",
+			element: <Home />,
+		},
+		{
+			path: "/project/:projectId",
+			element: <ProjectInfo />,
+		},
+		{
+			path: "/project/create",
+			element: <ProjectCreate />,
+		},
+	],
+	{
+		basename: "/",
+	},
+);
 
 export const App = () => {
-	const [count, setCount] = useState(0);
-	const [name, setName] = useState("");
-
-	useEffect(() => {
-		createProject({
-			id: count,
-			name,
-			description: "",
-		});
-	}, [count]);
-
-	const [projects, setProjects] = useState<
-		ProjectModel[]
-	>([]);
-
-	useEffect(() => {
-		const getProjects = async () => {
-			setProjects(await listProject());
-		};
-		getProjects();
-	}, []);
-
 	return (
-		<>
-			<input
-				type="text"
-				value={name}
-				onChange={(event) => {
-					setName(event.target.value);
-				}}
-			></input>
-			<button onClick={() => setCount(count + 1)}>
-				count is {count}
-			</button>
-			<button
-				onClick={async () => {
-					setProjects(await listProject());
-					console.log(await listProject());
-				}}
-			>
-				reload
-			</button>
-			{projects.map(({ name }, index) => {
-				return (
-					<div key={`p-${index}`}>{name}</div>
-				);
-			})}
-		</>
+		<ThemeProvider theme={themeComposed}>
+			<CssBaseline />
+			<RouterProvider router={router} />
+		</ThemeProvider>
 	);
 };
