@@ -33,6 +33,7 @@ const themeComponent = createTheme({
 				pre: {
 					width: "100%",
 					overflow: "auto",
+					scrollbarWidth: "thin",
 				},
 			},
 		},

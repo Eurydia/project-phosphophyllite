@@ -6,24 +6,40 @@ import {
 	RouterProvider,
 	createBrowserRouter,
 } from "react-router-dom";
-import { Home } from "./pages/Home";
-import { ProjectInfo } from "./pages/project/Info";
-import { ProjectCreate } from "./pages/project/Create";
+import { Home, homeLoader } from "~pages/Home";
+import {
+	ProjectInfo,
+	projectInfoLoader,
+} from "~pages/project/ProjectInfo";
+import {
+	ProjectCreate,
+	projectCreateLoader,
+} from "~pages/project/ProjectCreate";
+import { Error } from "~pages/ErrorBoundary";
 import { themeComposed } from "./theme";
 
 const router = createBrowserRouter(
 	[
 		{
-			path: "/",
+			index: true,
 			element: <Home />,
+			loader: homeLoader,
+			errorElement: <Error />,
 		},
 		{
-			path: "/project/:projectId",
-			element: <ProjectInfo />,
-		},
-		{
-			path: "/project/create",
-			element: <ProjectCreate />,
+			path: "/project",
+			children: [
+				{
+					path: "/project/create",
+					element: <ProjectCreate />,
+					loader: projectCreateLoader,
+				},
+				{
+					path: "/project/:projectId",
+					element: <ProjectInfo />,
+					loader: projectInfoLoader,
+				},
+			],
 		},
 	],
 	{

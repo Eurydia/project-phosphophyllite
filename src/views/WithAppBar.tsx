@@ -1,59 +1,112 @@
-import { Link } from "react-router-dom";
-import { HomeRounded } from "@mui/icons-material";
 import {
-	Divider,
+	FC,
+	Fragment,
+	ReactNode,
+	useRef,
+} from "react";
+import { Link as RouterLink } from "react-router-dom";
+import {
+	Box,
+	Grid,
 	IconButton,
 	Paper,
 	Stack,
-	Tooltip,
 	Typography,
-	Link as MUILink,
 } from "@mui/material";
-import { FC, ReactNode } from "react";
+import { IconHexagonMultiple } from "~assets/HexagonGroup";
 
 type WithAppBarProps = {
 	location: string;
 	children: ReactNode;
+	seconadaryNav?: ReactNode;
 };
 export const WithAppBar: FC<WithAppBarProps> = (
 	props,
 ) => {
-	const { location, children } = props;
+	const { location, children, seconadaryNav } =
+		props;
 
+	const appBarRef = useRef<HTMLDivElement | null>(
+		null,
+	);
+
+	let appBarHeight: number | undefined =
+		undefined;
+	if (appBarRef && appBarRef.current) {
+		appBarHeight =
+			appBarRef.current.getBoundingClientRect()
+				.height;
+	}
 	return (
-		<Stack>
+		<Fragment>
 			<Paper
+				ref={appBarRef}
 				square
 				variant="outlined"
 				sx={{
-					padding: 1,
 					width: "100%",
+					paddingY: 1,
+					paddingX: 2,
 				}}
 			>
-				<Stack
+				<Grid
+					container
+					spacing={1}
 					alignItems="center"
-					spacing={2}
-					direction="row"
-					divider={
-						<Divider
-							flexItem
-							variant="fullWidth"
-							orientation="vertical"
-						/>
-					}
 				>
-					<IconButton
-						component={Link}
-						to="/"
+					<Grid
+						item
+						xs={1}
+						display="flex"
+						justifyContent="center"
 					>
-						<Tooltip title="Home">
-							<HomeRounded />
-						</Tooltip>
-					</IconButton>
-					<Typography>{location}</Typography>
-				</Stack>
+						<IconButton
+							component={RouterLink}
+							to="/"
+							title="Home"
+						>
+							<IconHexagonMultiple />
+						</IconButton>
+					</Grid>
+					<Grid
+						item
+						xs={5}
+					>
+						<Typography
+							variant="subtitle1"
+							component="p"
+							title={location}
+							width="100%"
+							overflow="hidden"
+							whiteSpace="nowrap"
+							textOverflow="ellipsis"
+						>
+							{location}
+						</Typography>
+					</Grid>
+					<Grid
+						item
+						xs={6}
+					>
+						<Stack
+							spacing={2}
+							justifyContent="end"
+							direction="row"
+						>
+							{seconadaryNav}
+						</Stack>
+					</Grid>
+				</Grid>
 			</Paper>
-			{children}
-		</Stack>
+			<Box
+				height={
+					appBarHeight
+						? `calc(100vh - ${appBarHeight}px)`
+						: undefined
+				}
+			>
+				{children}
+			</Box>
+		</Fragment>
 	);
 };

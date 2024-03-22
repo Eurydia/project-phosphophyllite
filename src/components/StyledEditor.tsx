@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import {
 	Editor,
 	EditorProps,
@@ -148,7 +148,6 @@ editorLoader.editor.defineTheme("markdown-dark", {
 	},
 });
 editorLoader.editor.setTheme("markdown-dark");
-
 export const StyledEditor: FC<EditorProps> = (
 	props,
 ) => {

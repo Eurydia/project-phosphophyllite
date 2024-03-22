@@ -1,13 +1,7 @@
-import { DBSchema, openDB } from "idb";
+import { DBSchema, deleteDB, openDB } from "idb";
 import LZString from "lz-string";
 
-export type ProjectSchema = {
-	projectId?: number;
-	name: string;
-	description: string;
-	dateCreated: Date;
-	lastModified: Date;
-};
+import { ProjectSchema } from "~types/schemas";
 
 // export type TicketSchema = {
 // 	ticketId?: number | undefined;
@@ -36,6 +30,7 @@ interface Database extends DBSchema {
 	// 	};
 	// };
 }
+// await deleteDB("primary");
 
 const dbPromise = openDB<Database>("primary", 1, {
 	upgrade(db) {
@@ -51,12 +46,10 @@ const dbPromise = openDB<Database>("primary", 1, {
 			"by-date-created",
 			"dateCreated",
 		);
-
 		projectStore.createIndex(
 			"by-last-modified",
 			"lastModified",
 		);
-
 		// const ticketStore = db.createObjectStore(
 		// 	"tickets",
 		// 	{
@@ -78,14 +71,19 @@ const dbPromise = openDB<Database>("primary", 1, {
 export const createProject = async (
 	name: string,
 	description: string,
+	tags: string[],
 ) => {
 	const db = await dbPromise;
 	return await db.add("projects", {
-		name,
+		name: name.normalize().trim(),
+		tags: tags.map((tag) =>
+			tag.normalize().trim(),
+		),
 		lastModified: new Date(Date.now()),
 		dateCreated: new Date(Date.now()),
-		description:
-			LZString.compressToUTF16(description),
+		description: LZString.compressToUTF16(
+			description.normalize().trim(),
+		),
 	});
 };
 
@@ -93,19 +91,25 @@ export const updateProject = async (
 	projectId: number,
 	name: string,
 	description: string,
+	tags: string[],
 ) => {
 	const prev = await (
 		await dbPromise
 	).get("projects", projectId);
 
 	return (await dbPromise).put("projects", {
-		name,
+		projectId,
+		name: name.normalize().trim(),
+		tags: tags.map((tag) =>
+			tag.normalize().trim(),
+		),
 		dateCreated: !prev
 			? new Date(Date.now())
 			: prev.dateCreated,
 		lastModified: new Date(Date.now()),
-		description:
-			LZString.compressToUTF16(description),
+		description: LZString.compressToUTF16(
+			description.normalize().trim(),
+		),
 	});
 };
 
@@ -214,3 +218,59 @@ export const getProjectAll = async () => {
 // 	}
 // 	return tickets;
 // };
+
+// for (let i = 0; i < 5; i++) {
+// 	createProject(
+// 		`Test ${i}`,
+// 		`# Receptus elidite volubilitas vaga nullam et qui
+
+// ## Ulla vectus Thebis tellus externos serva
+
+// Lorem markdownum, resonabilis talia [argenteus
+// dare](http://sunto.net/amnesqueferes) vellet non pignora Thisbe harundinis comes
+// bicoloribus hanc terribilesque musta alteraque condit serpentis. Sacrum modo,
+// subiecta arcumque in anser, *unam* quod tenax: pro abit. Si lyram contra,
+// **cum** capulo Memnonis adesset, intrarunt laetus crinibus. Ingenii qui fuit,
+// nitorem, frui per et [meque](http://quo-quae.com/sunt) marmore, nulla maris
+// pereo. Addidit caerula sedes: ire illis quidem, vir, nunc!
+
+// 		protector_script.lpiCamelcase += scanDbms(dot, laptop_secondary +
+// 						document_web - whoisCluster);
+// 		cross_metal_drop = saasSearchYoutube(paperTwitterSlashdot, 2, 3) * -2;
+// 		var adOleCard = phreakingIndex * binary_server + -5 + raster;
+// 		if (rw_native_parameter >= alu(subnet)) {
+// 				read_mask.isdn_boot_ad(snmpSnippet, big, active_xp_domain);
+// 				barcraft = architecturePipeline + domain;
+// 		} else {
+// 				denial_thick_sync = nanometer;
+// 		}
+// 		var leafIntegratedVdsl = winsock_print_box(archive(mamp_asp_hsf,
+// 						publishing_skin) + passive + hardSkyscraper, optic);
+
+// Poste falcata illud inutilior erat, latus quam Dies manu, aristas gestasset
+// mirantur super pennis. Victoria votorum. Pugnat ramos ad inrita, Medusa
+// gravitate **aequantia ut** aures licet pars dextra. Sic probes loquatur nullae
+// et tibi; dixerat barba nondum Charaxi fuit. Collo et caput.
+
+// ## Famulosne fortius ipsum monimenta infectaque iussi
+
+// Ramis et prona dicebat, sed aer Rhodopeius latuere nudaeque stare vero qui
+// pulsavere! Tribus coniunx sui est ubi comas satiatae rogabo excutit, de duas. In
+// vertar intrat Ulixes rostro ignipedum futuros, inani, ut hic.
+
+// > Limbo Iris hederae esse. Quod munus invita pennis placidissime Thisbes timeo
+// > careat habet nocuit faces eripitur est.
+
+// Nulla corpore *illic fuit tura* peti teque, cum ferat, carmen. Non est crate
+// exstat **posse**, dextera *nondum currus nefandum* animae et vates celeberrimus
+// nutricibus.
+
+// Sine est! Custos aera urbem regnum est laudatis **haec**, iam cum. Sumere
+// inania. Aere dixit conplexae, dixerat silentia umbrarumque illo, Mavortis;
+// *facta* voce.
+// 	`,
+// 		Array(i + 1)
+// 			.fill(null)
+// 			.map((_, index) => index.toString()),
+// 	);
+// }
