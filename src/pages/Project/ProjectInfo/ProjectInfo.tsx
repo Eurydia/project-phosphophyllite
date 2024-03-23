@@ -3,7 +3,6 @@ import {
 	MenuBookRounded,
 } from "@mui/icons-material";
 import {
-	Autocomplete,
 	Button,
 	Container,
 	Grid,
@@ -22,6 +21,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { useLoaderData } from "react-router";
 import { useSubmit } from "react-router-dom";
 import { StyledEditor } from "~components/StyledEditor";
+import { StyledAutocomplete } from "~components/TagAutocomplete";
 import { parseMarkdown } from "~core/markdown";
 import {
 	getProject,
@@ -123,7 +123,7 @@ export const ProjectInfo: FC = () => {
 					variant="contained"
 					onClick={redirectToTicket}
 				>
-					tickets
+					tickets view
 				</Button>
 			}
 		>
@@ -177,23 +177,11 @@ export const ProjectInfo: FC = () => {
 							item
 							md={12}
 						>
-							<Autocomplete
-								freeSolo
+							<StyledAutocomplete
 								fullWidth
-								multiple
-								limitTags={3}
 								options={tagOptions}
 								value={selectedTags}
-								onChange={(_, values) => {
-									setSelectedTags(values);
-								}}
-								renderInput={(params) => (
-									<TextField
-										{...params}
-										label="Tags"
-										size="small"
-									/>
-								)}
+								onChange={setSelectedTags}
 							/>
 						</Grid>
 						<Grid

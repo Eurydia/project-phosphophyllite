@@ -2,23 +2,22 @@ import {
 	LoaderFunction,
 	json,
 } from "react-router";
-
 import {
 	getProject,
-	getTicketAll,
+	getTagsAll,
 } from "~database";
 
 export type LoaderData = {
 	projectId: number;
-	tags: string[];
+	tagOptions: string[];
 };
 
 export const loaderTicketCreate: LoaderFunction =
 	async ({ request }) => {
 		const url = new URL(request.url);
-		const searchParams = url.searchParams;
 		const paramProjectId =
-			searchParams.get("projectId");
+			url.searchParams.get("projectId");
+
 		if (!paramProjectId) {
 			throw json(
 				{},
@@ -50,18 +49,7 @@ export const loaderTicketCreate: LoaderFunction =
 				},
 			);
 		}
-
 		document.title = "New ticket";
-
-		const tickets = await getTicketAll();
-		const uniqueTags: Set<string> = new Set();
-		for (const ticket of tickets) {
-			for (const tag of ticket.tags) {
-				uniqueTags.add(tag);
-			}
-		}
-		const tags: string[] = [...uniqueTags];
-		tags.sort();
-
-		return { tags, projectId };
+		const tagOptions = await getTagsAll();
+		return { tagOptions, projectId };
 	};

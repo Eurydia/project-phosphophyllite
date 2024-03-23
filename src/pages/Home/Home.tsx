@@ -3,12 +3,7 @@ import {
 	ExpandMoreRounded,
 	FilterListRounded,
 } from "@mui/icons-material";
-import {
-	Autocomplete,
-	Button,
-	Stack,
-	TextField,
-} from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { FC, useState } from "react";
 import {
 	Link as RouterLink,
@@ -17,6 +12,7 @@ import {
 } from "react-router-dom";
 import { PopoverButton } from "~components/PoppoverButton";
 import { SortRuleMenu } from "~components/SortRuleMenu";
+import { StyledAutocomplete } from "~components/TagAutocomplete";
 import { WithAppBar } from "~views/WithAppBar";
 import { ProjectList } from "./helper";
 import { LoaderData, sortRules } from "./loader";
@@ -82,29 +78,15 @@ export const Home: FC = () => {
 					direction="row"
 					width="50%"
 				>
-					<Autocomplete
-						multiple
-						size="small"
-						limitTags={3}
+					<StyledAutocomplete
 						options={tagOptions}
 						value={selectedTags}
-						onChange={(_, values) =>
-							setSelectedTags(values)
-						}
-						sx={{
-							width: "70%",
-						}}
-						renderInput={(param) => (
-							<TextField
-								{...param}
-								label="Tags"
-							/>
-						)}
+						onChange={setSelectedTags}
+						width="70%"
 					/>
 					<Button
 						disableElevation
 						variant="outlined"
-						disabled={selectedTags.length === 0}
 						onClick={handleFilterSubmit}
 						startIcon={<FilterListRounded />}
 					>

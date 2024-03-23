@@ -26,7 +26,7 @@ import {
 } from "~pages/Ticket/TicketInfo";
 import {
 	TicketIdx,
-	loaderTicketIdx,
+	loaderTicketHome,
 } from "~pages/TicketHome";
 
 import { themeComposed } from "./theme";
@@ -61,7 +61,7 @@ const router = createBrowserRouter(
 				{
 					index: true,
 					element: <TicketIdx />,
-					loader: loaderTicketIdx,
+					loader: loaderTicketHome,
 				},
 				{
 					path: "/ticket/create",

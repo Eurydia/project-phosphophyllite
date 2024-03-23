@@ -1,47 +1,56 @@
 import {
+	CodeRounded,
+	MenuBookRounded,
+} from "@mui/icons-material";
+import {
+	Button,
+	Container,
+	Grid,
+	IconButton,
+	TextField,
+	Typography,
+	useTheme,
+} from "@mui/material";
+import {
 	FC,
 	Fragment,
 	useEffect,
 	useState,
 } from "react";
-import { useLoaderData } from "react-router";
-import {
-	Container,
-	IconButton,
-	Typography,
-	useTheme,
-} from "@mui/material";
-import {
-	CodeRounded,
-	MenuBookRounded,
-} from "@mui/icons-material";
-
 import { useHotkeys } from "react-hotkeys-hook";
-
-import { WithAppBar } from "~views/WithAppBar";
+import { useLoaderData } from "react-router";
+import { useSubmit } from "react-router-dom";
+import { StyledEditor } from "~components/StyledEditor";
+import { StyledAutocomplete } from "~components/TagAutocomplete";
+import { parseMarkdown } from "~core/markdown";
 import {
 	getTicket,
-	updateTicket,
-} from "~database";
-import { StyledEditor } from "~components/StyledEditor";
-import { parseMarkdown } from "~core/markdown";
-import { Layout } from "~pages/Project/ProjectInfo/Layout";
-import { LoaderData } from "~pages/Ticket/TicketInfo/loader";
+	updateProject,
+} from "~database/index";
+import { WithAppBar } from "~views/WithAppBar";
+import { Layout } from "./Layout";
+import { LoaderData } from "./loader";
 
 export const TicketInfo: FC = () => {
-	const loadedTicket =
+	const { ticket: loadedTicket, tagOptions } =
 		useLoaderData() as LoaderData;
 	const theme = useTheme();
+	const submit = useSubmit();
 
 	const [isEditMode, setIsEditMode] =
 		useState(false);
 	const [ticket, setTicket] =
 		useState(loadedTicket);
-
-	const [content, setContent] = useState(
-		!ticket ? "" : ticket.content,
+	const [title, setTitle] = useState(
+		ticket.title,
 	);
-	useHotkeys("ctrl + alt + e", () =>
+	const [content, setContent] = useState(
+		ticket.content,
+	);
+	const [selectedTags, setSelectedTags] =
+		useState(ticket.tags);
+
+	useHotkeys("ctrl+alt+e", () =>
 		setIsEditMode(!isEditMode),
 	);
 
@@ -53,15 +62,22 @@ export const TicketInfo: FC = () => {
 			if (!isEditMode) {
 				return;
 			}
-			const ticketId = await updateTicket(
-				ticket.ticketId!,
-				ticket.title,
+			const ticketId = await updateProject(
+				ticket.projectId!,
+				title,
 				content,
-				ticket.tags,
+				selectedTags,
 			);
-			setTicket(await getTicket(ticketId));
+			const updatedTicket = await getTicket(
+				ticketId,
+			);
+			if (!updatedTicket) {
+				return;
+			}
+			setTicket(updatedTicket);
 		})();
-	}, [content]);
+	}, [content, selectedTags, title, isEditMode]);
+
 	useEffect(() => {
 		const preveiwElement =
 			document.getElementById("preview");
@@ -72,11 +88,33 @@ export const TicketInfo: FC = () => {
 			parseMarkdown(content);
 	}, [content]);
 
+	const redirectToProject = () => {
+		submit(
+			{},
+			{
+				action: `/project/${ticket.projectId}`,
+				method: "get",
+			},
+		);
+	};
+
 	if (!ticket) {
 		return;
 	}
+
 	return (
-		<WithAppBar location={ticket.title}>
+		<WithAppBar
+			location={ticket.title}
+			seconadaryNav={
+				<Button
+					disableElevation
+					variant="contained"
+					onClick={redirectToProject}
+				>
+					Project home
+				</Button>
+			}
+		>
 			<IconButton
 				size="large"
 				title={isEditMode ? "Read" : "Edit"}
@@ -99,13 +137,56 @@ export const TicketInfo: FC = () => {
 			<Layout
 				isEditMode={isEditMode}
 				slotEditor={
-					<StyledEditor
+					<Grid
+						container
+						spacing={1}
 						height="100%"
-						value={content}
-						onChange={(value) =>
-							setContent(value || "")
-						}
-					/>
+					>
+						<Grid
+							item
+							md={12}
+						>
+							<TextField
+								fullWidth
+								required
+								size="small"
+								label="Project name"
+								color={
+									title.trim().length === 0
+										? "error"
+										: "primary"
+								}
+								value={title}
+								onChange={(event) =>
+									setTitle(
+										event.target.value.normalize(),
+									)
+								}
+							/>
+						</Grid>
+						<Grid
+							item
+							md={12}
+						>
+							<StyledAutocomplete
+								fullWidth
+								options={tagOptions}
+								value={selectedTags}
+								onChange={setSelectedTags}
+							/>
+						</Grid>
+						<Grid
+							item
+							md={12}
+						>
+							<StyledEditor
+								value={content}
+								onChange={(value) =>
+									setContent(value || "")
+								}
+							/>
+						</Grid>
+					</Grid>
 				}
 				slotPreview={
 					<Container maxWidth="md">

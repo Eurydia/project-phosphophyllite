@@ -166,6 +166,7 @@ export const getTicket = async (
 	const ticket = await (
 		await dbPromise
 	).get("tickets", ticketId);
+
 	if (!ticket) {
 		return undefined;
 	}

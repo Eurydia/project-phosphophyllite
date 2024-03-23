@@ -38,13 +38,16 @@ export const loaderHome: LoaderFunction = async ({
 	request,
 }) => {
 	document.title = "Projects";
-	const projects = await getProjectAll();
 	const url = new URL(request.url);
 
+	const projects = await getProjectAll();
 	const tagOptions = await getTagsAll();
-	const filterTags = extractFilterTags(url);
+
+	const paramTags = url.searchParams.get("tags");
 	const sortRule =
 		url.searchParams.get("sortRule");
+
+	const filterTags = extractFilterTags(paramTags);
 	sortItems(sortRule, sortRules, projects);
 	return {
 		sortRule,

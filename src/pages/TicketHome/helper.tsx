@@ -3,6 +3,7 @@ import {
 	IconButton,
 	List,
 	ListItem,
+	ListItemIcon,
 	ListItemSecondaryAction,
 	ListItemText,
 	Typography,
@@ -35,8 +36,20 @@ export const TicketList: FC<TicketListProps> = (
 			{tickets.map(
 				({ title, tags, projectId }, index) => (
 					<ListItem key={`project-${index}`}>
+						<ListItemIcon>
+							<Typography
+								width="100%"
+								display="flex"
+								alignItems="center"
+								justifyContent="cetner"
+								color="secondary"
+								fontSize="large"
+								fontWeight="bolder"
+							>
+								{projectId}
+							</Typography>
+						</ListItemIcon>
 						<ListItemText
-							inset
 							title={title}
 							primaryTypographyProps={{
 								overflow: "hidden",

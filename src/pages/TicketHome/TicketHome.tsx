@@ -6,6 +6,7 @@ import {
 import {
 	Autocomplete,
 	Button,
+	ButtonGroup,
 	Stack,
 	TextField,
 } from "@mui/material";
@@ -16,30 +17,37 @@ import {
 } from "react-router-dom";
 import { PopoverButton } from "~components/PoppoverButton";
 import { SortRuleMenu } from "~components/SortRuleMenu";
+import { StyledAutocomplete } from "~components/TagAutocomplete";
 import { WithAppBar } from "~views/WithAppBar";
 import { TicketList } from "./helper";
 import { LoaderData, sortRules } from "./loader";
 
 export const TicketIdx: FC = () => {
 	const {
-		projectId,
-		tickets,
+		project: loadedProject,
 		sortRule: loadedSortRule,
 		tagFilters: loadedTagFilters,
+		tickets,
+		projectOptions,
 		tagOptions,
 	} = useLoaderData() as LoaderData;
 	const submit = useSubmit();
 
+	const [selectedProject, setSelectedProject] =
+		useState(loadedProject);
 	const [selectedTags, setSelectedTags] =
 		useState(loadedTagFilters);
 
 	const redirectToTicketCreate = () => {
-		if (!projectId) {
+		if (
+			!loadedProject ||
+			loadedProject.projectId === undefined
+		) {
 			return;
 		}
 		submit(
 			{
-				projectId,
+				projectId: loadedProject.projectId,
 			},
 			{
 				action: "/ticket/create",
@@ -47,13 +55,35 @@ export const TicketIdx: FC = () => {
 			},
 		);
 	};
-
+	const redirectToProject = () => {
+		if (
+			!loadedProject ||
+			loadedProject.projectId === undefined
+		) {
+			return;
+		}
+		submit(
+			{},
+			{
+				action: `/project/${loadedProject.projectId}`,
+				method: "get",
+			},
+		);
+	};
 	const handleSortRuleChange = (
 		value: string,
 	) => {
+		let projectId: string = "";
+		if (
+			selectedProject !== null &&
+			selectedProject.projectId !== undefined
+		) {
+			projectId =
+				selectedProject.projectId.toString();
+		}
 		submit(
 			{
-				projectId: projectId || "",
+				projectId,
 				sortRule: value,
 				tags: selectedTags,
 			},
@@ -61,9 +91,17 @@ export const TicketIdx: FC = () => {
 		);
 	};
 	const handleFilterSubmit = () => {
+		let projectId: string = "";
+		if (
+			selectedProject !== null &&
+			selectedProject.projectId !== undefined
+		) {
+			projectId =
+				selectedProject.projectId.toString();
+		}
 		submit(
 			{
-				projectId: projectId || "",
+				projectId,
 				sortRule: loadedSortRule || "",
 				tags: selectedTags,
 			},
@@ -78,14 +116,21 @@ export const TicketIdx: FC = () => {
 		<WithAppBar
 			location="Tickets"
 			seconadaryNav={
-				<Button
-					disabled={projectId === null}
+				<ButtonGroup
+					disabled={loadedProject === null}
+					disableElevation
 					variant="contained"
-					startIcon={<CreateNewFolderRounded />}
-					onClick={redirectToTicketCreate}
 				>
-					New ticket
-				</Button>
+					<Button onClick={redirectToProject}>
+						Project home
+					</Button>
+					<Button
+						startIcon={<CreateNewFolderRounded />}
+						onClick={redirectToTicketCreate}
+					>
+						New ticket
+					</Button>
+				</ButtonGroup>
 			}
 		>
 			<Stack
@@ -95,31 +140,38 @@ export const TicketIdx: FC = () => {
 				<Stack
 					spacing={1}
 					direction="row"
-					width="50%"
 				>
 					<Autocomplete
-						multiple
 						size="small"
-						limitTags={3}
-						options={tagOptions}
-						value={selectedTags}
-						onChange={(_, values) =>
-							setSelectedTags(values)
+						options={projectOptions}
+						value={selectedProject}
+						onChange={(_, value) =>
+							setSelectedProject(value)
 						}
-						sx={{
-							width: "70%",
-						}}
-						renderInput={(param) => (
+						getOptionLabel={({
+							projectId,
+							name,
+						}) => `${projectId}- ${name}`}
+						renderInput={(params) => (
 							<TextField
-								{...param}
-								label="Tags"
+								{...params}
+								label="Project"
+								size="small"
 							/>
 						)}
+						sx={{
+							width: "40%",
+						}}
+					/>
+					<StyledAutocomplete
+						options={tagOptions}
+						value={selectedTags}
+						onChange={setSelectedTags}
+						width="30%"
 					/>
 					<Button
 						disableElevation
 						variant="outlined"
-						disabled={selectedTags.length === 0}
 						onClick={handleFilterSubmit}
 						startIcon={<FilterListRounded />}
 					>

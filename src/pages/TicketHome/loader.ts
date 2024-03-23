@@ -8,11 +8,15 @@ import {
 } from "~core/query";
 import {
 	getProject,
+	getProjectAll,
 	getTagsAll,
 	getTicketAll,
 } from "~database";
 import { SortRule } from "~types/generics";
-import { TicketSchema } from "~types/schemas";
+import {
+	ProjectSchema,
+	TicketSchema,
+} from "~types/schemas";
 
 export const sortRules: SortRule<TicketSchema>[] =
 	[
@@ -32,13 +36,14 @@ export const sortRules: SortRule<TicketSchema>[] =
 	];
 export type LoaderData = {
 	sortRule: string | null;
+	project: ProjectSchema | null;
 	tickets: TicketSchema[];
-	projectId: number | null;
+	projectOptions: ProjectSchema[];
 	tagOptions: string[];
 	tagFilters: string[];
 };
 
-export const loaderTicketIdx: LoaderFunction =
+export const loaderTicketHome: LoaderFunction =
 	async ({ request }) => {
 		document.title = "Tickets";
 		let tickets = await getTicketAll();
@@ -46,19 +51,24 @@ export const loaderTicketIdx: LoaderFunction =
 
 		const paramProjectId =
 			url.searchParams.get("projectId");
-
-		const tagOptions = await getTagsAll();
-		const tagFilters = extractFilterTags(url);
-		const sortRule =
+		const paramTags =
+			url.searchParams.get("tags");
+		const paramSortRule =
 			url.searchParams.get("sortRule");
-		sortItems(sortRule, sortRules, tickets);
+
+		const projectOptions = await getProjectAll();
+		const tagOptions = await getTagsAll();
+		const tagFilters =
+			extractFilterTags(paramTags);
+		sortItems(paramSortRule, sortRules, tickets);
 
 		if (!paramProjectId) {
 			return {
+				projectOptions,
 				tagFilters,
 				tagOptions,
-				sortRule,
-				projectId: null,
+				sortRule: paramSortRule,
+				project: null,
 				tickets,
 			};
 		}
@@ -93,10 +103,11 @@ export const loaderTicketIdx: LoaderFunction =
 			),
 		);
 		return {
+			projectOptions,
 			tagOptions,
 			tagFilters,
-			sortRule,
-			projectId,
+			sortRule: paramSortRule,
+			project,
 			tickets,
 		};
 	};

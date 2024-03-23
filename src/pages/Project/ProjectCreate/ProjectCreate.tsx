@@ -1,6 +1,5 @@
 import { CreateNewFolderRounded } from "@mui/icons-material";
 import {
-	Autocomplete,
 	Button,
 	Grid,
 	TextField,
@@ -8,11 +7,10 @@ import {
 	useTheme,
 } from "@mui/material";
 import { FC, useEffect, useState } from "react";
-import {
-	redirect,
-	useLoaderData,
-} from "react-router";
+import { useLoaderData } from "react-router";
+import { useSubmit } from "react-router-dom";
 import { StyledEditor } from "~components/StyledEditor";
+import { StyledAutocomplete } from "~components/TagAutocomplete";
 import { parseMarkdown } from "~core/markdown";
 import { createProject } from "~database";
 import { WithAppBar } from "~views/WithAppBar";
@@ -21,6 +19,7 @@ import { Layout } from "./Layout";
 export const ProjectCreate: FC = () => {
 	const tagOptions = useLoaderData() as string[];
 	const theme = useTheme();
+	const submit = useSubmit();
 
 	const [name, setName] = useState("");
 	const [description, setDescription] =
@@ -34,11 +33,17 @@ export const ProjectCreate: FC = () => {
 			return;
 		}
 		const projectId = await createProject(
-			name.normalize().trim(),
-			description.normalize().trim(),
+			name,
+			description,
 			selectedTags,
 		);
-		redirect(`/project/${projectId}`);
+		submit(
+			{},
+			{
+				action: `/project/${projectId}`,
+				method: "get",
+			},
+		);
 	};
 
 	useEffect(() => {
@@ -99,23 +104,11 @@ export const ProjectCreate: FC = () => {
 							item
 							md={12}
 						>
-							<Autocomplete
-								freeSolo
+							<StyledAutocomplete
 								fullWidth
-								multiple
-								limitTags={3}
 								options={tagOptions}
 								value={selectedTags}
-								onChange={(_, values) => {
-									setSelectTags(values);
-								}}
-								renderInput={(params) => (
-									<TextField
-										{...params}
-										label="Tags"
-										size="small"
-									/>
-								)}
+								onChange={setSelectTags}
 							/>
 						</Grid>
 						<Grid

@@ -2,12 +2,13 @@ import {
 	LoaderFunction,
 	json,
 } from "react-router";
-
-import { getTicket } from "~database";
+import { getTagsAll, getTicket } from "~database";
 import { TicketSchema } from "~types/schemas";
 
-export type LoaderData = TicketSchema | undefined;
-
+export type LoaderData = {
+	ticket: TicketSchema;
+	tagOptions: string[];
+};
 export const loaderTicketInfo: LoaderFunction =
 	async ({ params }) => {
 		if (!params.ticketId) {
@@ -19,7 +20,6 @@ export const loaderTicketInfo: LoaderFunction =
 				},
 			);
 		}
-
 		const ticketId = Number.parseInt(
 			params.ticketId,
 		);
@@ -43,7 +43,7 @@ export const loaderTicketInfo: LoaderFunction =
 				},
 			);
 		}
-
 		document.title = ticket.title;
-		return ticket;
+		const tagOptions = await getTagsAll();
+		return { ticket, tagOptions };
 	};

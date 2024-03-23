@@ -13,19 +13,17 @@ export type LoaderData = {
 	project: ProjectSchema;
 	tagOptions: string[];
 };
-
 export const loaderProjectInfo: LoaderFunction =
 	async ({ params }) => {
 		if (!params.projectId) {
 			throw json(
 				{},
 				{
-					status: 404,
-					statusText: "Invalid project ID.",
+					status: 400,
+					statusText: "Bad request.",
 				},
 			);
 		}
-
 		const projectId = Number.parseInt(
 			params.projectId,
 		);
@@ -50,6 +48,5 @@ export const loaderProjectInfo: LoaderFunction =
 		}
 		document.title = project.name;
 		const tagOptions = await getTagsAll();
-
 		return { project, tagOptions };
 	};

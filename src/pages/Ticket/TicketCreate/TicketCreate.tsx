@@ -1,38 +1,31 @@
-import { FC, useEffect, useState } from "react";
 import {
-	useLoaderData,
-	useNavigate,
-} from "react-router";
-
-import {
-	Autocomplete,
-	Box,
 	Button,
-	Stack,
+	Grid,
 	TextField,
 	Typography,
 	useTheme,
 } from "@mui/material";
-
-import { createTicket } from "~database";
+import { FC, useEffect, useState } from "react";
+import { useLoaderData } from "react-router";
+import { useSubmit } from "react-router-dom";
 import { StyledEditor } from "~components/StyledEditor";
-import { WithAppBar } from "~views/WithAppBar";
-
-import { Layout } from "./Layout";
+import { StyledAutocomplete } from "~components/TagAutocomplete";
 import { parseMarkdown } from "~core/markdown";
+import { createTicket } from "~database";
 import { LoaderData } from "~pages/Ticket/TicketCreate/loader";
+import { WithAppBar } from "~views/WithAppBar";
+import { Layout } from "./Layout";
 
 export const TicketCreate: FC = () => {
-	const navigate = useNavigate();
-	const { tags, projectId } =
+	const { tagOptions, projectId } =
 		useLoaderData() as LoaderData;
 	const theme = useTheme();
+	const submit = useSubmit();
 
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
-	const [selectedTags, setSelectTags] = useState<
-		string[]
-	>([]);
+	const [selectedTags, setSelectedTags] =
+		useState<string[]>([]);
 
 	const handleSubmit = async () => {
 		if (title.trim().length === 0) {
@@ -40,11 +33,17 @@ export const TicketCreate: FC = () => {
 		}
 		const ticketId = await createTicket(
 			projectId,
-			title.normalize().trim(),
-			content.normalize().trim(),
+			title,
+			content,
 			selectedTags,
 		);
-		navigate(`/ticket/${ticketId}`);
+		submit(
+			{},
+			{
+				action: `/ticket/${ticketId}`,
+				method: "get",
+			},
+		);
 	};
 
 	useEffect(() => {
@@ -58,76 +57,82 @@ export const TicketCreate: FC = () => {
 	}, [content]);
 
 	return (
-		<WithAppBar location="New ticket">
+		<WithAppBar
+			location="New ticket"
+			seconadaryNav={
+				<Button
+					disabled={title.trim().length === 0}
+					variant="contained"
+					onClick={handleSubmit}
+				>
+					Open ticket
+				</Button>
+			}
+		>
 			<Layout
 				childLeft={
-					<Stack
-						spacing={2}
+					<Grid
+						container
+						spacing={1}
 						height="100%"
 					>
-						<Box>
-							<Button
-								disabled={
-									title.trim().length === 0
-								}
-								variant="contained"
-								onClick={handleSubmit}
-							>
-								Open ticket
-							</Button>
-						</Box>
-						<TextField
-							fullWidth
-							required
-							size="small"
-							label="Ticket title"
-							color={
-								title.trim().length === 0
-									? "error"
-									: "primary"
-							}
-							value={title}
-							onChange={(event) =>
-								setTitle(
-									event.target.value.normalize(),
-								)
-							}
-						/>
-						<Autocomplete
-							freeSolo
-							fullWidth
-							multiple
-							limitTags={3}
-							options={tags}
-							value={selectedTags}
-							onChange={(_, values) => {
-								setSelectTags(
-									values.map((value) =>
-										value.normalize(),
-									),
-								);
-							}}
-							renderInput={(params) => (
-								<TextField
-									{...params}
-									label="Tags"
-									size="small"
-								/>
-							)}
-						/>
-						<Typography
-							color={theme.palette.text.secondary}
+						<Grid
+							item
+							md={12}
 						>
-							Description
-						</Typography>
-						<StyledEditor
-							height="100%"
-							value={content}
-							onChange={(value) =>
-								setContent(value || "")
-							}
-						/>
-					</Stack>
+							<TextField
+								fullWidth
+								required
+								size="small"
+								label="Ticket title"
+								color={
+									title.trim().length === 0
+										? "error"
+										: "primary"
+								}
+								value={title}
+								onChange={(event) =>
+									setTitle(
+										event.target.value.normalize(),
+									)
+								}
+							/>
+						</Grid>
+						<Grid
+							item
+							md={12}
+						>
+							<StyledAutocomplete
+								fullWidth
+								options={tagOptions}
+								value={selectedTags}
+								onChange={setSelectedTags}
+							/>
+						</Grid>
+						<Grid
+							item
+							md={12}
+						>
+							<Typography
+								color={
+									theme.palette.text.secondary
+								}
+							>
+								Content
+							</Typography>
+						</Grid>
+						<Grid
+							item
+							md={12}
+						>
+							<StyledEditor
+								value={content}
+								onChange={(value) =>
+									setContent(value || "")
+								}
+							/>
+						</Grid>
+					</Grid>
 				}
 				childRight={
 					<Typography

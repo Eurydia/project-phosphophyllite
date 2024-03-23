@@ -5,29 +5,29 @@ export const sortItems = <T>(
 	sortRules: SortRule<T>[],
 	items: T[],
 ) => {
-	if (rule === null) {
-		return;
-	}
 	if (sortRules.length <= 0) {
 		return;
 	}
 	let compareFn = sortRules[0].compareFn;
-	for (const sortRule of sortRules) {
-		if (sortRule.value === rule) {
-			compareFn = sortRule.compareFn;
-			break;
+	if (!rule) {
+		for (const sortRule of sortRules) {
+			if (sortRule.value === rule) {
+				compareFn = sortRule.compareFn;
+				break;
+			}
 		}
 	}
 	items.sort(compareFn);
 };
 
 export const extractFilterTags = (
-	url: URL,
+	queryString: string | null,
 ): string[] => {
-	const tagsParam = url.searchParams.get("tags");
 	let filterTags: string[] = [];
-	if (tagsParam) {
-		filterTags = tagsParam.normalize().split(",");
+	if (queryString) {
+		filterTags = queryString
+			.normalize()
+			.split(",");
 	}
 	return filterTags;
 };
