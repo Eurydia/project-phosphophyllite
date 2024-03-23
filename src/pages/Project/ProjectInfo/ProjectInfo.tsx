@@ -1,54 +1,60 @@
 import {
+	CodeRounded,
+	MenuBookRounded,
+} from "@mui/icons-material";
+import {
+	Autocomplete,
+	Button,
+	Container,
+	Grid,
+	IconButton,
+	TextField,
+	Typography,
+	useTheme,
+} from "@mui/material";
+import {
 	FC,
 	Fragment,
 	useEffect,
 	useState,
 } from "react";
-import { useLoaderData } from "react-router";
-import { createSearchParams } from "react-router-dom";
-import {
-	Container,
-	Divider,
-	IconButton,
-	Link,
-	Stack,
-	Typography,
-	useTheme,
-} from "@mui/material";
-import {
-	CodeRounded,
-	MenuBookRounded,
-} from "@mui/icons-material";
-
 import { useHotkeys } from "react-hotkeys-hook";
-
-import { WithAppBar } from "~views/WithAppBar";
+import { useLoaderData } from "react-router";
+import { useSubmit } from "react-router-dom";
+import { StyledEditor } from "~components/StyledEditor";
+import { parseMarkdown } from "~core/markdown";
 import {
 	getProject,
 	updateProject,
 } from "~database";
-import { ProjectSchema } from "~types/schemas";
-import { StyledEditor } from "~components/StyledEditor";
-
-import { parseMarkdown } from "~core/markdown";
-import { Layout } from "~pages/Project/ProjectInfo/Layout";
+import { WithAppBar } from "~views/WithAppBar";
+import { Layout } from "./Layout";
+import { LoaderData } from "./loader";
 
 export const ProjectInfo: FC = () => {
-	const loadedProject = useLoaderData() as
-		| ProjectSchema
-		| undefined;
+	const {
+		project: loadedProject,
+		tagOptions: tagOptions,
+	} = useLoaderData() as LoaderData;
+
 	const theme = useTheme();
+	const submit = useSubmit();
 
 	const [isEditMode, setIsEditMode] =
 		useState(false);
+
 	const [project, setProject] = useState(
 		loadedProject,
 	);
 
+	const [name, setName] = useState(project.name);
 	const [description, setDescription] = useState(
-		!project ? "" : project.description,
+		project.description,
 	);
-	useHotkeys("ctrl + alt + e", () =>
+	const [selectedTags, setSelectedTags] =
+		useState(project.tags);
+
+	useHotkeys("ctrl+alt+e", () =>
 		setIsEditMode(!isEditMode),
 	);
 
@@ -62,13 +68,25 @@ export const ProjectInfo: FC = () => {
 			}
 			const projectId = await updateProject(
 				project.projectId!,
-				project.name,
+				name,
 				description,
-				project.tags,
+				selectedTags,
 			);
-			setProject(await getProject(projectId));
+			const updatedProject = await getProject(
+				projectId,
+			);
+			if (!updatedProject) {
+				return;
+			}
+			setProject(updatedProject);
 		})();
-	}, [description]);
+	}, [
+		description,
+		selectedTags,
+		name,
+		isEditMode,
+	]);
+
 	useEffect(() => {
 		const preveiwElement =
 			document.getElementById("preview");
@@ -79,47 +97,46 @@ export const ProjectInfo: FC = () => {
 			parseMarkdown(description);
 	}, [description]);
 
+	const redirectToTicket = () => {
+		if (!project || !project.projectId) {
+			return;
+		}
+		submit(
+			{ projectId: project.projectId },
+			{
+				action: "/ticket",
+				method: "get",
+			},
+		);
+	};
+
 	if (!project) {
 		return;
 	}
+
 	return (
 		<WithAppBar
 			location={project.name}
 			seconadaryNav={
-				<Stack
-					spacing={1}
-					direction="row"
-					divider={
-						<Divider
-							flexItem
-							orientation="vertical"
-							variant="fullWidth"
-						/>
-					}
+				<Button
+					disableElevation
+					variant="contained"
+					size="small"
+					onClick={redirectToTicket}
 				>
-					<Link
-						href={`/ticket/?${createSearchParams({
-							projectId:
-								project.projectId!.toString(),
-						})}`}
-					>
-						Tickets
-					</Link>
-				</Stack>
+					tickets
+				</Button>
 			}
 		>
 			<IconButton
-				size="large"
+				color="primary"
 				title={isEditMode ? "Read" : "Edit"}
 				sx={{
-					position: "absolute",
-					right: theme.spacing(4),
-					bottom: theme.spacing(4),
+					position: "fixed",
+					right: theme.spacing(2),
+					bottom: theme.spacing(2),
 				}}
-				onClick={() => {
-					setIsEditMode(!isEditMode);
-					return;
-				}}
+				onClick={() => setIsEditMode(!isEditMode)}
 			>
 				{isEditMode ? (
 					<MenuBookRounded />
@@ -130,16 +147,71 @@ export const ProjectInfo: FC = () => {
 			<Layout
 				isEditMode={isEditMode}
 				slotEditor={
-					<StyledEditor
+					<Grid
+						container
+						spacing={1}
 						height="100%"
-						value={description}
-						onChange={(value) =>
-							setDescription(value || "")
-						}
-					/>
+					>
+						<Grid
+							item
+							md={12}
+						>
+							<TextField
+								fullWidth
+								required
+								size="small"
+								label="Project name"
+								color={
+									name.trim().length === 0
+										? "error"
+										: "primary"
+								}
+								value={name}
+								onChange={(event) =>
+									setName(
+										event.target.value.normalize(),
+									)
+								}
+							/>
+						</Grid>
+						<Grid
+							item
+							md={12}
+						>
+							<Autocomplete
+								freeSolo
+								fullWidth
+								multiple
+								limitTags={3}
+								options={tagOptions}
+								value={selectedTags}
+								onChange={(_, values) => {
+									setSelectedTags(values);
+								}}
+								renderInput={(params) => (
+									<TextField
+										{...params}
+										label="Tags"
+										size="small"
+									/>
+								)}
+							/>
+						</Grid>
+						<Grid
+							item
+							md={12}
+						>
+							<StyledEditor
+								value={description}
+								onChange={(value) =>
+									setDescription(value || "")
+								}
+							/>
+						</Grid>
+					</Grid>
 				}
 				slotPreview={
-					<Container maxWidth="md">
+					<Container maxWidth="sm">
 						{!isEditMode && (
 							<Fragment>
 								<Typography variant="subtitle2">

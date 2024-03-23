@@ -1,3 +1,4 @@
+import { Box, Grid } from "@mui/material";
 import {
 	FC,
 	ReactNode,
@@ -5,7 +6,6 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { Box, Grid } from "@mui/material";
 
 type LayoutPros = {
 	slotEditor: ReactNode;
@@ -20,6 +20,7 @@ export const Layout: FC<LayoutPros> = (props) => {
 		useRef<HTMLDivElement | null>(null);
 	const [contentHeight, setEditorHeight] =
 		useState("");
+
 	useEffect(() => {
 		if (!contentRef || !contentRef.current) {
 			return;
@@ -27,25 +28,25 @@ export const Layout: FC<LayoutPros> = (props) => {
 		const topOffset =
 			contentRef.current.offsetTop;
 		setEditorHeight(
-			`calc(100vh - ${topOffset}px)`,
+			`calc(98vh - ${Math.floor(topOffset)}px)`,
 		);
 	}, [contentRef]);
 
 	return (
 		<Box
 			ref={contentRef}
-			overflow="hidden"
+			paddingTop={2}
+			marginLeft={2}
 		>
 			<Grid
 				container
 				spacing={2}
-				paddingTop={2}
 			>
 				{isEditMode && (
 					<Grid
-						height={contentHeight}
 						item
 						md={6}
+						height={contentHeight}
 					>
 						{slotEditor}
 					</Grid>

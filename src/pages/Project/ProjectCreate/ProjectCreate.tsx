@@ -1,28 +1,24 @@
-import { FC, useEffect, useState } from "react";
-import {
-	useLoaderData,
-	useNavigate,
-} from "react-router";
-
+import { CreateNewFolderRounded } from "@mui/icons-material";
 import {
 	Autocomplete,
-	Box,
 	Button,
-	Stack,
+	Grid,
 	TextField,
 	Typography,
 	useTheme,
 } from "@mui/material";
-
-import { CreateNewFolderRounded } from "@mui/icons-material";
+import { FC, useEffect, useState } from "react";
+import {
+	redirect,
+	useLoaderData,
+} from "react-router";
 import { StyledEditor } from "~components/StyledEditor";
 import { parseMarkdown } from "~core/markdown";
 import { createProject } from "~database";
-import { Layout } from "~pages/Project/ProjectCreate/Layout";
 import { WithAppBar } from "~views/WithAppBar";
+import { Layout } from "./Layout";
 
 export const ProjectCreate: FC = () => {
-	const navigate = useNavigate();
 	const tagOptions = useLoaderData() as string[];
 	const theme = useTheme();
 
@@ -42,7 +38,7 @@ export const ProjectCreate: FC = () => {
 			description.normalize().trim(),
 			selectedTags,
 		);
-		navigate(`/project/${projectId}`);
+		redirect(`/project/${projectId}`);
 	};
 
 	useEffect(() => {
@@ -56,75 +52,96 @@ export const ProjectCreate: FC = () => {
 	}, [description]);
 
 	return (
-		<WithAppBar location="New project">
+		<WithAppBar
+			location="New project"
+			seconadaryNav={
+				<Button
+					disableElevation
+					disabled={name.trim().length === 0}
+					variant="contained"
+					onClick={handleSubmit}
+					startIcon={<CreateNewFolderRounded />}
+				>
+					Create project
+				</Button>
+			}
+		>
 			<Layout
 				childLeft={
-					<Stack
-						spacing={2}
+					<Grid
+						container
+						spacing={1}
 						height="100%"
 					>
-						<Box>
-							<Button
-								disabled={
+						<Grid
+							item
+							md={12}
+						>
+							<TextField
+								fullWidth
+								required
+								size="small"
+								label="Project name"
+								color={
 									name.trim().length === 0
+										? "error"
+										: "primary"
 								}
-								variant="contained"
-								onClick={handleSubmit}
-								startIcon={
-									<CreateNewFolderRounded />
+								value={name}
+								onChange={(event) =>
+									setName(
+										event.target.value.normalize(),
+									)
+								}
+							/>
+						</Grid>
+						<Grid
+							item
+							md={12}
+						>
+							<Autocomplete
+								freeSolo
+								fullWidth
+								multiple
+								limitTags={3}
+								options={tagOptions}
+								value={selectedTags}
+								onChange={(_, values) => {
+									setSelectTags(values);
+								}}
+								renderInput={(params) => (
+									<TextField
+										{...params}
+										label="Tags"
+										size="small"
+									/>
+								)}
+							/>
+						</Grid>
+						<Grid
+							item
+							md={12}
+						>
+							<Typography
+								color={
+									theme.palette.text.secondary
 								}
 							>
-								Create project
-							</Button>
-						</Box>
-						<TextField
-							fullWidth
-							required
-							size="small"
-							label="Project name"
-							color={
-								name.trim().length === 0
-									? "error"
-									: "primary"
-							}
-							value={name}
-							onChange={(event) =>
-								setName(
-									event.target.value.normalize(),
-								)
-							}
-						/>
-						<Autocomplete
-							freeSolo
-							fullWidth
-							multiple
-							limitTags={3}
-							options={tagOptions}
-							value={selectedTags}
-							onChange={(_, values) => {
-								setSelectTags(values);
-							}}
-							renderInput={(params) => (
-								<TextField
-									{...params}
-									label="Tags"
-									size="small"
-								/>
-							)}
-						/>
-						<Typography
-							color={theme.palette.text.secondary}
+								Description
+							</Typography>
+						</Grid>
+						<Grid
+							item
+							md={12}
 						>
-							Description
-						</Typography>
-						<StyledEditor
-							height="100%"
-							value={description}
-							onChange={(value) =>
-								setDescription(value || "")
-							}
-						/>
-					</Stack>
+							<StyledEditor
+								value={description}
+								onChange={(value) =>
+									setDescription(value || "")
+								}
+							/>
+						</Grid>
+					</Grid>
 				}
 				childRight={
 					<Typography

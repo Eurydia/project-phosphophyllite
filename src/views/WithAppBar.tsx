@@ -56,11 +56,12 @@ export const WithAppBar: FC<WithAppBarProps> = (
 						xs={5}
 					>
 						<Typography
-							variant="subtitle1"
+							variant="body1"
 							width="100%"
 							overflow="hidden"
 							whiteSpace="nowrap"
 							textOverflow="ellipsis"
+							fontWeight="500"
 						>
 							{location}
 						</Typography>

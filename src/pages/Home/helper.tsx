@@ -93,6 +93,7 @@ export const ProjectList: FC<ProjectListProps> = (
 								title="Open"
 								component={RouterLink}
 								to={`/project/${projectId}`}
+								color="primary"
 							>
 								<OpenInNewRounded />
 							</IconButton>

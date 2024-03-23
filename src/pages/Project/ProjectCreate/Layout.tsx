@@ -1,3 +1,4 @@
+import { Box, Grid } from "@mui/material";
 import {
 	FC,
 	ReactNode,
@@ -5,7 +6,6 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { Box, Grid } from "@mui/material";
 
 type LayoutPros = {
 	childLeft: ReactNode;
@@ -18,6 +18,7 @@ export const Layout: FC<LayoutPros> = (props) => {
 		useRef<HTMLDivElement | null>(null);
 	const [contentHeight, setEditorHeight] =
 		useState("");
+
 	useEffect(() => {
 		if (!contentRef || !contentRef.current) {
 			return;
@@ -25,20 +26,19 @@ export const Layout: FC<LayoutPros> = (props) => {
 		const topOffset =
 			contentRef.current.offsetTop;
 		setEditorHeight(
-			`calc(100vh - ${Math.ceil(topOffset)}px)`,
+			`calc(99vh - ${topOffset}px)`,
 		);
 	}, [contentRef]);
 
 	return (
 		<Box
 			ref={contentRef}
-			overflow="hidden"
+			paddingTop={2}
+			paddingLeft={2}
 		>
 			<Grid
 				container
 				spacing={2}
-				paddingTop={2}
-				paddingLeft={2}
 			>
 				<Grid
 					item
@@ -51,7 +51,6 @@ export const Layout: FC<LayoutPros> = (props) => {
 					item
 					md={6}
 					height={contentHeight}
-					overflow="auto"
 				>
 					{childRight}
 				</Grid>

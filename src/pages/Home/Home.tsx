@@ -61,7 +61,20 @@ export const Home: FC = () => {
 	};
 
 	return (
-		<WithAppBar location="Projects">
+		<WithAppBar
+			location="Projects"
+			seconadaryNav={
+				<Button
+					disableElevation
+					variant="contained"
+					component={RouterLink}
+					startIcon={<CreateNewFolderRounded />}
+					to="/project/create"
+				>
+					new project
+				</Button>
+			}
+		>
 			<Stack
 				spacing={2}
 				padding={2}
@@ -69,64 +82,49 @@ export const Home: FC = () => {
 				<Stack
 					spacing={1}
 					direction="row"
-					justifyContent="space-between"
+					width="50%"
 				>
-					<Stack
-						spacing={1}
-						direction="row"
-						width="50%"
-					>
-						<Autocomplete
-							multiple
-							size="small"
-							limitTags={3}
-							options={tagOptions}
-							value={selectedTags}
-							onChange={(_, values) =>
-								setSelectedTags(values)
-							}
-							sx={{
-								width: "70%",
-							}}
-							renderInput={(param) => (
-								<TextField
-									{...param}
-									label="Tags"
-								/>
-							)}
-						/>
-						<Button
-							disableElevation
-							variant="outlined"
-							disabled={selectedTags.length === 0}
-							onClick={handleFilterSubmit}
-							startIcon={<FilterListRounded />}
-						>
-							filter
-						</Button>
-						<PopoverButton
-							buttonProps={{
-								disableElevation: true,
-								variant: "outlined",
-								startIcon: <ExpandMoreRounded />,
-							}}
-						>
-							<SortRuleMenu
-								sortRules={sortRules}
-								sortRule={sortRule}
-								onChange={handleSortRuleChange}
+					<Autocomplete
+						multiple
+						size="small"
+						limitTags={3}
+						options={tagOptions}
+						value={selectedTags}
+						onChange={(_, values) =>
+							setSelectedTags(values)
+						}
+						sx={{
+							width: "70%",
+						}}
+						renderInput={(param) => (
+							<TextField
+								{...param}
+								label="Tags"
 							/>
-						</PopoverButton>
-					</Stack>
+						)}
+					/>
 					<Button
 						disableElevation
-						variant="contained"
-						component={RouterLink}
-						startIcon={<CreateNewFolderRounded />}
-						to="/project/create"
+						variant="outlined"
+						disabled={selectedTags.length === 0}
+						onClick={handleFilterSubmit}
+						startIcon={<FilterListRounded />}
 					>
-						new project
+						filter
 					</Button>
+					<PopoverButton
+						buttonProps={{
+							disableElevation: true,
+							variant: "outlined",
+							startIcon: <ExpandMoreRounded />,
+						}}
+					>
+						<SortRuleMenu
+							sortRules={sortRules}
+							sortRule={sortRule}
+							onChange={handleSortRuleChange}
+						/>
+					</PopoverButton>
 				</Stack>
 				<ProjectList projects={projects} />
 			</Stack>

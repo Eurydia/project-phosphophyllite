@@ -3,7 +3,16 @@ import {
 	json,
 } from "react-router";
 
-import { getProject } from "~database";
+import {
+	getProject,
+	getTagsAll,
+} from "~database";
+import { ProjectSchema } from "~types/schemas";
+
+export type LoaderData = {
+	project: ProjectSchema;
+	tagOptions: string[];
+};
 
 export const loaderProjectInfo: LoaderFunction =
 	async ({ params }) => {
@@ -39,7 +48,8 @@ export const loaderProjectInfo: LoaderFunction =
 				},
 			);
 		}
-
 		document.title = project.name;
-		return project;
+		const tagOptions = await getTagsAll();
+
+		return { project, tagOptions };
 	};
