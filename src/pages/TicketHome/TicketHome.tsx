@@ -11,48 +11,64 @@ import {
 } from "@mui/material";
 import { FC, useState } from "react";
 import {
-	Link as RouterLink,
 	useLoaderData,
 	useSubmit,
 } from "react-router-dom";
 import { PopoverButton } from "~components/PoppoverButton";
 import { SortRuleMenu } from "~components/SortRuleMenu";
 import { WithAppBar } from "~views/WithAppBar";
-import { ProjectList } from "./helper";
+import { TicketList } from "./helper";
 import { LoaderData, sortRules } from "./loader";
 
-export const Home: FC = () => {
+export const TicketIdx: FC = () => {
 	const {
-		projects,
-		sortRule,
-		filterTags,
+		projectId,
+		tickets,
+		sortRule: loadedSortRule,
+		tagFilters: loadedTagFilters,
 		tagOptions,
 	} = useLoaderData() as LoaderData;
-
 	const submit = useSubmit();
+
 	const [selectedTags, setSelectedTags] =
-		useState(filterTags);
+		useState(loadedTagFilters);
+
+	const redirectToTicketCreate = () => {
+		if (!projectId) {
+			return;
+		}
+		submit(
+			{
+				projectId,
+			},
+			{
+				action: "/ticket/create",
+				method: "get",
+			},
+		);
+	};
 
 	const handleSortRuleChange = (
 		value: string,
 	) => {
 		submit(
 			{
+				projectId: projectId || "",
 				sortRule: value,
 				tags: selectedTags,
 			},
-			{ action: "/", method: "get" },
+			{ action: "/ticket", method: "get" },
 		);
 	};
-
 	const handleFilterSubmit = () => {
 		submit(
 			{
-				sortRule: sortRule || "",
+				projectId: projectId || "",
+				sortRule: loadedSortRule || "",
 				tags: selectedTags,
 			},
 			{
-				action: "/",
+				action: "/ticket",
 				method: "get",
 			},
 		);
@@ -60,16 +76,15 @@ export const Home: FC = () => {
 
 	return (
 		<WithAppBar
-			location="Projects"
+			location="Tickets"
 			seconadaryNav={
 				<Button
-					disableElevation
+					disabled={projectId === null}
 					variant="contained"
-					component={RouterLink}
 					startIcon={<CreateNewFolderRounded />}
-					to="/project/create"
+					onClick={redirectToTicketCreate}
 				>
-					new project
+					New ticket
 				</Button>
 			}
 		>
@@ -119,12 +134,12 @@ export const Home: FC = () => {
 					>
 						<SortRuleMenu
 							sortRules={sortRules}
-							rule={sortRule}
+							rule={loadedSortRule}
 							onChange={handleSortRuleChange}
 						/>
 					</PopoverButton>
 				</Stack>
-				<ProjectList projects={projects} />
+				<TicketList tickets={tickets} />
 			</Stack>
 		</WithAppBar>
 	);

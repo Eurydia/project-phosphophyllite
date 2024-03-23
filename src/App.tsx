@@ -9,17 +9,13 @@ import {
 import { Error } from "~pages/ErrorBoundary";
 import { Home, loaderHome } from "~pages/Home";
 import {
-	ProjectInfo,
-	loaderProjectInfo,
-} from "~pages/Project/ProjectInfo";
-import {
 	ProjectCreate,
 	loaderProjectCreate,
 } from "~pages/Project/ProjectCreate";
 import {
-	TicketIdx,
-	loaderTicketIdx,
-} from "~pages/TicketIdx";
+	ProjectInfo,
+	loaderProjectInfo,
+} from "~pages/Project/ProjectInfo";
 import {
 	TicketCreate,
 	loaderTicketCreate,
@@ -28,6 +24,10 @@ import {
 	TicketInfo,
 	loaderTicketInfo,
 } from "~pages/Ticket/TicketInfo";
+import {
+	TicketIdx,
+	loaderTicketIdx,
+} from "~pages/TicketHome";
 
 import { themeComposed } from "./theme";
 
@@ -56,6 +56,7 @@ const router = createBrowserRouter(
 		},
 		{
 			path: "/ticket",
+			errorElement: <Error />,
 			children: [
 				{
 					index: true,

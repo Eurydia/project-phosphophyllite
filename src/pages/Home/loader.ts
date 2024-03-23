@@ -1,25 +1,31 @@
 import { LoaderFunction } from "react-router-dom";
 import {
+	extractFilterTags,
+	sortItems,
+} from "~core/query";
+import {
 	getProjectAll,
 	getTagsAll,
 } from "~database";
+import { SortRule } from "~types/generics";
 import { ProjectSchema } from "~types/schemas";
 
-export const sortRules = [
-	{
-		value: "lastModified",
-		label: "Last modified (0-9)",
-	},
-	{ value: "name", label: "Name (A-Z)" },
-];
-
-const sortByString = (a: string, b: string) => {
-	return a.localeCompare(b);
-};
-
-const sortByNumber = (a: number, b: number) => {
-	return a - b;
-};
+export const sortRules: SortRule<ProjectSchema>[] =
+	[
+		{
+			value: "lastModified",
+			label: "Last modified (0-9)",
+			compareFn: (a, b) =>
+				b.lastModified.getTime() -
+				a.lastModified.getTime(),
+		},
+		{
+			value: "name",
+			label: "Name (A-Z)",
+			compareFn: (a, b) =>
+				a.name.localeCompare(b.name),
+		},
+	];
 
 export type LoaderData = {
 	tagOptions: string[];
@@ -32,46 +38,14 @@ export const loaderHome: LoaderFunction = async ({
 	request,
 }) => {
 	document.title = "Projects";
-	let projects = await getProjectAll();
-
+	const projects = await getProjectAll();
 	const url = new URL(request.url);
 
-	const tagsParam = url.searchParams.get("tags");
-	let filterTags: string[] = [];
-	if (tagsParam) {
-		filterTags = tagsParam.normalize().split(",");
-	}
-	if (filterTags.length > 0) {
-		projects = projects.filter((project) =>
-			filterTags.every((tag) =>
-				project.tags.includes(tag),
-			),
-		);
-	}
-
+	const tagOptions = await getTagsAll();
+	const filterTags = extractFilterTags(url);
 	const sortRule =
 		url.searchParams.get("sortRule");
-	switch (sortRule) {
-		case "name":
-			projects.sort((a, b) =>
-				sortByString(a.name, b.name),
-			);
-			break;
-		case "":
-		case null:
-		case "lastModified":
-		default:
-			projects.sort((a, b) =>
-				sortByNumber(
-					b.lastModified.getTime(),
-					a.lastModified.getTime(),
-				),
-			);
-			break;
-	}
-
-	const tagOptions = await getTagsAll();
-
+	sortItems(sortRule, sortRules, projects);
 	return {
 		sortRule,
 		projects,

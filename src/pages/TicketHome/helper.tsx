@@ -9,17 +9,17 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { ProjectSchema } from "~types/schemas";
+import { TicketSchema } from "~types/schemas";
 
-type ProjectListProps = {
-	projects: ProjectSchema[];
+type TicketListProps = {
+	tickets: TicketSchema[];
 };
-export const ProjectList: FC<ProjectListProps> = (
+export const TicketList: FC<TicketListProps> = (
 	props,
 ) => {
-	const { projects } = props;
+	const { tickets } = props;
 
-	if (projects.length === 0) {
+	if (tickets.length === 0) {
 		return (
 			<Typography
 				variant="body1"
@@ -32,12 +32,12 @@ export const ProjectList: FC<ProjectListProps> = (
 
 	return (
 		<List>
-			{projects.map(
-				({ name, tags, projectId }, index) => (
+			{tickets.map(
+				({ title, tags, projectId }, index) => (
 					<ListItem key={`project-${index}`}>
 						<ListItemText
 							inset
-							title={name}
+							title={title}
 							primaryTypographyProps={{
 								overflow: "hidden",
 								textOverflow: "ellipsis",
@@ -46,13 +46,13 @@ export const ProjectList: FC<ProjectListProps> = (
 							}}
 							secondary={tags.join(", ")}
 						>
-							{name}
+							{title}
 						</ListItemText>
 						<ListItemSecondaryAction>
 							<IconButton
 								title="Open"
 								component={RouterLink}
-								to={`/project/${projectId}`}
+								to={`/ticket/${projectId}`}
 								color="primary"
 							>
 								<OpenInNewRounded />

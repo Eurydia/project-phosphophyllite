@@ -121,7 +121,6 @@ export const ProjectInfo: FC = () => {
 				<Button
 					disableElevation
 					variant="contained"
-					size="small"
 					onClick={redirectToTicket}
 				>
 					tickets
