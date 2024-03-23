@@ -9,7 +9,8 @@
 			"~database/*": ["./database/*"],
 			"~database": ["./database"],
 			"~types/*": ["./types/*"],
-			"~assets/*": ["./assets/*"]
+			"~assets/*": ["./assets/*"],
+			"~core/*": ["./core/*"]
 		},
 		"target": "ES2020",
 		"useDefineForClassFields": true,

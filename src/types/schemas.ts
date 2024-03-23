@@ -6,3 +6,13 @@ export type ProjectSchema = {
 	lastModified: Date;
 	tags: string[];
 };
+
+export type TicketSchema = {
+	ticketId?: number;
+	projectId: number;
+	title: string;
+	content: string;
+	dateCreated: Date;
+	lastModified: Date;
+	tags: string[];
+};

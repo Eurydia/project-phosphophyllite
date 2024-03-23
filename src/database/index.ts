@@ -1,70 +1,45 @@
-import { DBSchema, deleteDB, openDB } from "idb";
+import { DBSchema, openDB } from "idb";
 import LZString from "lz-string";
 
-import { ProjectSchema } from "~types/schemas";
-
-// export type TicketSchema = {
-// 	ticketId?: number | undefined;
-// 	projectName: string;
-// 	title: string;
-// 	content: string;
-// 	dateCreated: Date;
-// 	dateModified: Date;
-// };
+import {
+	ProjectSchema,
+	TicketSchema,
+} from "~types/schemas";
 
 interface Database extends DBSchema {
 	projects: {
 		key: number;
 		value: ProjectSchema;
+	};
+	tickets: {
+		key: number;
+		value: TicketSchema;
 		indexes: {
-			"by-date-created": Date;
-			"by-last-modified": Date;
+			"by-project-id": number;
 		};
 	};
-	// tickets: {
-	// 	key: number;
-	// 	value: TicketSchema;
-	// 	indexes: {
-	// 		"by-project-id": number;
-	// 		"by-date-modified": Date;
-	// 	};
-	// };
 }
-// await deleteDB("primary");
-
-const dbPromise = openDB<Database>("primary", 1, {
+const dbPromise = openDB<Database>("primary", 2, {
 	upgrade(db) {
-		const projectStore = db.createObjectStore(
-			"projects",
-			{
+		if (db.version >= 2) {
+			const ticketStore = db.createObjectStore(
+				"tickets",
+				{
+					keyPath: "ticketId",
+					autoIncrement: true,
+				},
+			);
+			ticketStore.createIndex(
+				"by-project-id",
+				"projectId",
+			);
+		}
+		if (db.version >= 1) {
+			db.createObjectStore("projects", {
 				keyPath: "projectId",
 				autoIncrement: true,
-			},
-		);
-
-		projectStore.createIndex(
-			"by-date-created",
-			"dateCreated",
-		);
-		projectStore.createIndex(
-			"by-last-modified",
-			"lastModified",
-		);
-		// const ticketStore = db.createObjectStore(
-		// 	"tickets",
-		// 	{
-		// 		autoIncrement: true,
-		// 		keyPath: "ticketId",
-		// 	},
-		// );
-		// ticketStore.createIndex(
-		// 	"by-project-id",
-		// 	"projectId",
-		// );
-		// ticketStore.createIndex(
-		// 	"by-date-modified",
-		// 	"dateModified",
-		// );
+			});
+		}
 	},
 });
 
@@ -75,14 +50,12 @@ export const createProject = async (
 ) => {
 	const db = await dbPromise;
 	return await db.add("projects", {
-		name: name.normalize().trim(),
-		tags: tags.map((tag) =>
-			tag.normalize().trim(),
-		),
+		name: name.normalize(),
+		tags: tags.map((tag) => tag.normalize()),
 		lastModified: new Date(Date.now()),
 		dateCreated: new Date(Date.now()),
 		description: LZString.compressToUTF16(
-			description.normalize().trim(),
+			description.normalize(),
 		),
 	});
 };
@@ -100,9 +73,7 @@ export const updateProject = async (
 	return (await dbPromise).put("projects", {
 		projectId,
 		name: name.normalize().trim(),
-		tags: tags.map((tag) =>
-			tag.normalize().trim(),
-		),
+		tags: tags.map((tag) => tag.normalize()),
 		dateCreated: !prev
 			? new Date(Date.now())
 			: prev.dateCreated,
@@ -142,135 +113,120 @@ export const getProjectAll = async () => {
 	return projects;
 };
 
-// export const createTicket = async (
-// 	projectName: string,
-// 	title: string,
-// 	content: string,
-// ) => {
-// 	const db = await dbPromise;
-// 	db.add("tickets", {
-// 		projectName,
-// 		title,
-// 		content: LZString.compressToUTF16(content),
-// 		dateCreated: new Date(Date.now()),
-// 		dateModified: new Date(Date.now()),
-// 	});
-// };
+export const createTicket = async (
+	projectId: number,
+	title: string,
+	content: string,
+	tags: string[],
+) => {
+	return await (
+		await dbPromise
+	).add("tickets", {
+		projectId,
+		title: title.normalize(),
+		tags: tags.map((tag) => tag.normalize()),
+		lastModified: new Date(Date.now()),
+		dateCreated: new Date(Date.now()),
+		content: LZString.compressToUTF16(
+			content.normalize(),
+		),
+	});
+};
 
-// export const updateTicket = async (
-// 	ticketId: number,
-// 	title: string,
-// 	content: string,
-// ) => {
-// 	const transaction = (
-// 		await dbPromise
-// 	).transaction("tickets", "readwrite");
-// 	const prev = await transaction.store.get(
-// 		ticketId,
-// 	);
-// 	if (!prev) {
-// 		return -1;
-// 	}
-// 	return await transaction.store.put(
-// 		{
-// 			...prev,
-// 			title,
-// 			content: LZString.compressToUTF16(content),
-// 			dateModified: new Date(Date.now()),
-// 		},
-// 		ticketId,
-// 	);
-// };
+export const updateTicket = async (
+	ticketId: number,
+	title: string,
+	content: string,
+	tags: string[],
+) => {
+	const prev = await (
+		await dbPromise
+	).get("tickets", ticketId);
 
-// export const getTicket = async (
-// 	ticketId: number,
-// ) => {
-// 	const transaction = (
-// 		await dbPromise
-// 	).transaction("tickets");
-// 	const ticket = await transaction.store.get(
-// 		ticketId,
-// 	);
-// 	if (!ticket) {
-// 		return undefined;
-// 	}
-// 	ticket.content = LZString.decompressFromUTF16(
-// 		ticket.content,
-// 	);
-// 	return ticket;
-// };
+	if (!prev || !prev.projectId) {
+		return ticketId;
+	}
 
-// export const getTicketAllFromProject = async (
-// 	projectId: number,
-// ) => {
-// 	const transaction = (
-// 		await dbPromise
-// 	).transaction("tickets");
-// 	const tickets = await transaction.store
-// 		.index("by-project-id")
-// 		.getAll(projectId);
+	return (await dbPromise).put("tickets", {
+		ticketId,
+		projectId: prev.projectId,
+		title: title.normalize(),
+		tags: tags.map((tag) => tag.normalize()),
+		dateCreated: prev.dateCreated,
+		lastModified: new Date(Date.now()),
+		content: LZString.compressToUTF16(
+			content.normalize(),
+		),
+	});
+};
 
-// 	for (let i = 0; i < tickets.length; i++) {
-// 		tickets[i].content =
-// 			LZString.decompressFromUTF16(
-// 				tickets[i].content,
-// 			);
-// 	}
-// 	return tickets;
-// };
+export const getTicket = async (
+	ticketId: number,
+) => {
+	const ticket = await (
+		await dbPromise
+	).get("tickets", ticketId);
+	if (!ticket) {
+		return undefined;
+	}
+	ticket.content = LZString.decompressFromUTF16(
+		ticket.content,
+	);
+	return ticket;
+};
 
-// for (let i = 0; i < 5; i++) {
-// 	createProject(
-// 		`Test ${i}`,
-// 		`# Receptus elidite volubilitas vaga nullam et qui
+export const getTicketAll = async () => {
+	const tickets = await (
+		await dbPromise
+	).getAll("tickets");
 
-// ## Ulla vectus Thebis tellus externos serva
+	for (let i = 0; i < tickets.length; i++) {
+		tickets[i].content =
+			LZString.decompressFromUTF16(
+				tickets[i].content,
+			);
+	}
+	return tickets;
+};
 
-// Lorem markdownum, resonabilis talia [argenteus
-// dare](http://sunto.net/amnesqueferes) vellet non pignora Thisbe harundinis comes
-// bicoloribus hanc terribilesque musta alteraque condit serpentis. Sacrum modo,
-// subiecta arcumque in anser, *unam* quod tenax: pro abit. Si lyram contra,
-// **cum** capulo Memnonis adesset, intrarunt laetus crinibus. Ingenii qui fuit,
-// nitorem, frui per et [meque](http://quo-quae.com/sunt) marmore, nulla maris
-// pereo. Addidit caerula sedes: ire illis quidem, vir, nunc!
+export const getTicketAllFromProject = async (
+	projectId: number,
+) => {
+	const tickets = await (
+		await dbPromise
+	).getAllFromIndex(
+		"tickets",
+		"by-project-id",
+		projectId,
+	);
+	for (let i = 0; i < tickets.length; i++) {
+		tickets[i].content =
+			LZString.decompressFromUTF16(
+				tickets[i].content,
+			);
+	}
+	return tickets;
+};
 
-// 		protector_script.lpiCamelcase += scanDbms(dot, laptop_secondary +
-// 						document_web - whoisCluster);
-// 		cross_metal_drop = saasSearchYoutube(paperTwitterSlashdot, 2, 3) * -2;
-// 		var adOleCard = phreakingIndex * binary_server + -5 + raster;
-// 		if (rw_native_parameter >= alu(subnet)) {
-// 				read_mask.isdn_boot_ad(snmpSnippet, big, active_xp_domain);
-// 				barcraft = architecturePipeline + domain;
-// 		} else {
-// 				denial_thick_sync = nanometer;
-// 		}
-// 		var leafIntegratedVdsl = winsock_print_box(archive(mamp_asp_hsf,
-// 						publishing_skin) + passive + hardSkyscraper, optic);
+export const getTagsAll = async () => {
+	const projects = await getProjectAll();
+	const tickets = await getTicketAll();
 
-// Poste falcata illud inutilior erat, latus quam Dies manu, aristas gestasset
-// mirantur super pennis. Victoria votorum. Pugnat ramos ad inrita, Medusa
-// gravitate **aequantia ut** aures licet pars dextra. Sic probes loquatur nullae
-// et tibi; dixerat barba nondum Charaxi fuit. Collo et caput.
-
-// ## Famulosne fortius ipsum monimenta infectaque iussi
-
-// Ramis et prona dicebat, sed aer Rhodopeius latuere nudaeque stare vero qui
-// pulsavere! Tribus coniunx sui est ubi comas satiatae rogabo excutit, de duas. In
-// vertar intrat Ulixes rostro ignipedum futuros, inani, ut hic.
-
-// > Limbo Iris hederae esse. Quod munus invita pennis placidissime Thisbes timeo
-// > careat habet nocuit faces eripitur est.
-
-// Nulla corpore *illic fuit tura* peti teque, cum ferat, carmen. Non est crate
-// exstat **posse**, dextera *nondum currus nefandum* animae et vates celeberrimus
-// nutricibus.
-
-// Sine est! Custos aera urbem regnum est laudatis **haec**, iam cum. Sumere
-// inania. Aere dixit conplexae, dixerat silentia umbrarumque illo, Mavortis;
-// *facta* voce.
-// 	`,
-// 		Array(i + 1)
-// 			.fill(null)
-// 			.map((_, index) => index.toString()),
-// 	);
-// }
+	const uniqueTags: Set<string> = new Set([
+		"open",
+		"close",
+	]);
+	for (const project of projects) {
+		for (const tag of project.tags) {
+			uniqueTags.add(tag);
+		}
+	}
+	for (const ticket of tickets) {
+		for (const tag of ticket.tags) {
+			uniqueTags.add(tag);
+		}
+	}
+	const tags: string[] = [...uniqueTags];
+	tags.sort();
+	return tags;
+};

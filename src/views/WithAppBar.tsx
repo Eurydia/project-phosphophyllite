@@ -1,22 +1,16 @@
 import {
-	FC,
-	Fragment,
-	ReactNode,
-	useRef,
-} from "react";
-import { Link as RouterLink } from "react-router-dom";
-import {
-	Box,
 	Grid,
 	IconButton,
 	Paper,
 	Stack,
 	Typography,
 } from "@mui/material";
+import { FC, Fragment, ReactNode } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { IconHexagonMultiple } from "~assets/HexagonGroup";
 
 type WithAppBarProps = {
-	location: string;
+	location: ReactNode;
 	children: ReactNode;
 	seconadaryNav?: ReactNode;
 };
@@ -26,21 +20,9 @@ export const WithAppBar: FC<WithAppBarProps> = (
 	const { location, children, seconadaryNav } =
 		props;
 
-	const appBarRef = useRef<HTMLDivElement | null>(
-		null,
-	);
-
-	let appBarHeight: number | undefined =
-		undefined;
-	if (appBarRef && appBarRef.current) {
-		appBarHeight =
-			appBarRef.current.getBoundingClientRect()
-				.height;
-	}
 	return (
 		<Fragment>
 			<Paper
-				ref={appBarRef}
 				square
 				variant="outlined"
 				sx={{
@@ -61,9 +43,10 @@ export const WithAppBar: FC<WithAppBarProps> = (
 						justifyContent="center"
 					>
 						<IconButton
+							disableRipple
+							title="Home"
 							component={RouterLink}
 							to="/"
-							title="Home"
 						>
 							<IconHexagonMultiple />
 						</IconButton>
@@ -74,8 +57,6 @@ export const WithAppBar: FC<WithAppBarProps> = (
 					>
 						<Typography
 							variant="subtitle1"
-							component="p"
-							title={location}
 							width="100%"
 							overflow="hidden"
 							whiteSpace="nowrap"
@@ -98,15 +79,7 @@ export const WithAppBar: FC<WithAppBarProps> = (
 					</Grid>
 				</Grid>
 			</Paper>
-			<Box
-				height={
-					appBarHeight
-						? `calc(100vh - ${appBarHeight}px)`
-						: undefined
-				}
-			>
-				{children}
-			</Box>
+			{children}
 		</Fragment>
 	);
 };

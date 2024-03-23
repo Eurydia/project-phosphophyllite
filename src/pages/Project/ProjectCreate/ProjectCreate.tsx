@@ -1,46 +1,30 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
-	Autocomplete,
-	Box,
-	Button,
-	Container,
-	Grid,
-	Stack,
-	TextField,
-	Typography,
-} from "@mui/material";
-import {
-	LoaderFunction,
 	useLoaderData,
 	useNavigate,
 } from "react-router";
 
 import {
-	createProject,
-	getProjectAll,
-} from "~database";
-import { WithAppBar } from "~views/WithAppBar";
+	Autocomplete,
+	Box,
+	Button,
+	Stack,
+	TextField,
+	Typography,
+	useTheme,
+} from "@mui/material";
+
+import { CreateNewFolderRounded } from "@mui/icons-material";
 import { StyledEditor } from "~components/StyledEditor";
-
-export const projectCreateLoader: LoaderFunction =
-	async () => {
-		document.title = "New project";
-
-		const projects = await getProjectAll();
-		const uniqueTags: Set<string> = new Set();
-		for (const project of projects) {
-			for (const tag of project.tags) {
-				uniqueTags.add(tag);
-			}
-		}
-		const tags: string[] = [...uniqueTags];
-		tags.sort();
-		return tags;
-	};
+import { parseMarkdown } from "~core/markdown";
+import { createProject } from "~database";
+import { Layout } from "~pages/Project/ProjectCreate/Layout";
+import { WithAppBar } from "~views/WithAppBar";
 
 export const ProjectCreate: FC = () => {
 	const navigate = useNavigate();
 	const tagOptions = useLoaderData() as string[];
+	const theme = useTheme();
 
 	const [name, setName] = useState("");
 	const [description, setDescription] =
@@ -61,17 +45,24 @@ export const ProjectCreate: FC = () => {
 		navigate(`/project/${projectId}`);
 	};
 
+	useEffect(() => {
+		const preveiwElement =
+			document.getElementById("preview");
+		if (!preveiwElement) {
+			return;
+		}
+		preveiwElement.innerHTML =
+			parseMarkdown(description);
+	}, [description]);
+
 	return (
 		<WithAppBar location="New project">
-			<Grid
-				container
-				padding={4}
-			>
-				<Grid
-					item
-					md={6}
-				>
-					<Stack spacing={2}>
+			<Layout
+				childLeft={
+					<Stack
+						spacing={2}
+						height="100%"
+					>
 						<Box>
 							<Button
 								disabled={
@@ -79,6 +70,9 @@ export const ProjectCreate: FC = () => {
 								}
 								variant="contained"
 								onClick={handleSubmit}
+								startIcon={
+									<CreateNewFolderRounded />
+								}
 							>
 								Create project
 							</Button>
@@ -104,14 +98,11 @@ export const ProjectCreate: FC = () => {
 							freeSolo
 							fullWidth
 							multiple
+							limitTags={3}
 							options={tagOptions}
 							value={selectedTags}
 							onChange={(_, values) => {
-								setSelectTags(
-									values.map((value) =>
-										value.normalize(),
-									),
-								);
+								setSelectTags(values);
 							}}
 							renderInput={(params) => (
 								<TextField
@@ -121,25 +112,32 @@ export const ProjectCreate: FC = () => {
 								/>
 							)}
 						/>
-						<Typography color="text.secondary">
+						<Typography
+							color={theme.palette.text.secondary}
+						>
 							Description
 						</Typography>
 						<StyledEditor
-							height="45vh"
+							height="100%"
 							value={description}
 							onChange={(value) =>
 								setDescription(value || "")
 							}
 						/>
 					</Stack>
-				</Grid>
-				<Grid
-					item
-					md={6}
-				>
-					<main id="preview"></main>
-				</Grid>
-			</Grid>
+				}
+				childRight={
+					<Typography
+						id="preview"
+						maxWidth="100%"
+						height="100%"
+						overflow="auto"
+						variant="body1"
+						component="main"
+						display="block"
+					/>
+				}
+			/>
 		</WithAppBar>
 	);
 };

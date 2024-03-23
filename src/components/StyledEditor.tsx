@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import {
 	Editor,
 	EditorProps,
@@ -12,90 +12,61 @@ editorLoader.editor.defineTheme("markdown-dark", {
 	inherit: true,
 	rules: [
 		{
-			background: "272822",
+			background: "2E3440",
 			token: "",
 		},
 		{
-			foreground: "75715e",
+			foreground: "616e88",
 			token: "comment",
 		},
 		{
-			foreground: "e6db74",
+			foreground: "a3be8c",
 			token: "string",
 		},
 		{
-			foreground: "ae81ff",
+			foreground: "b48ead",
 			token: "constant.numeric",
 		},
 		{
-			foreground: "ae81ff",
+			foreground: "81a1c1",
 			token: "constant.language",
 		},
 		{
-			foreground: "ae81ff",
-			token: "constant.character",
-		},
-		{
-			foreground: "ae81ff",
-			token: "constant.other",
-		},
-		{
-			foreground: "f92672",
+			foreground: "81a1c1",
 			token: "keyword",
 		},
 		{
-			foreground: "f92672",
+			foreground: "81a1c1",
 			token: "storage",
 		},
 		{
-			foreground: "66d9ef",
-			fontStyle: "italic",
+			foreground: "81a1c1",
 			token: "storage.type",
 		},
 		{
-			foreground: "a6e22e",
-			fontStyle: "underline",
+			foreground: "8fbcbb",
 			token: "entity.name.class",
 		},
 		{
-			foreground: "a6e22e",
-			fontStyle: "italic underline",
+			foreground: "8fbcbb",
+			fontStyle: "  bold",
 			token: "entity.other.inherited-class",
 		},
 		{
-			foreground: "a6e22e",
+			foreground: "88c0d0",
 			token: "entity.name.function",
 		},
 		{
-			foreground: "fd971f",
-			fontStyle: "italic",
-			token: "variable.parameter",
-		},
-		{
-			foreground: "f92672",
+			foreground: "81a1c1",
 			token: "entity.name.tag",
 		},
 		{
-			foreground: "a6e22e",
+			foreground: "8fbcbb",
 			token: "entity.other.attribute-name",
 		},
 		{
-			foreground: "66d9ef",
+			foreground: "88c0d0",
 			token: "support.function",
-		},
-		{
-			foreground: "66d9ef",
-			token: "support.constant",
-		},
-		{
-			foreground: "66d9ef",
-			fontStyle: "italic",
-			token: "support.type",
-		},
-		{
-			foreground: "66d9ef",
-			fontStyle: "italic",
-			token: "support.class",
 		},
 		{
 			foreground: "f8f8f0",
@@ -108,43 +79,26 @@ editorLoader.editor.defineTheme("markdown-dark", {
 			token: "invalid.deprecated",
 		},
 		{
-			foreground: "cfcfc2",
-			token:
-				"meta.structure.dictionary.json string.quoted.double.json",
+			foreground: "b48ead",
+			token: "constant.color.other.rgb-value",
 		},
 		{
-			foreground: "75715e",
-			token: "meta.diff",
+			foreground: "ebcb8b",
+			token: "constant.character.escape",
 		},
 		{
-			foreground: "75715e",
-			token: "meta.diff.header",
-		},
-		{
-			foreground: "f92672",
-			token: "markup.deleted",
-		},
-		{
-			foreground: "a6e22e",
-			token: "markup.inserted",
-		},
-		{
-			foreground: "e6db74",
-			token: "markup.changed",
-		},
-		{
-			foreground: "ae81ffa0",
-			token:
-				"constant.numeric.line-number.find-in-files - match",
-		},
-		{
-			foreground: "e6db74",
-			token: "entity.name.filename.find-in-files",
+			foreground: "8fbcbb",
+			token: "variable.other.constant",
 		},
 	],
 	colors: {
+		"editor.foreground": "#D8DEE9",
 		"editor.background":
 			themeComposed.palette.background.default,
+		"editor.selectionBackground": "#434C5ECC",
+		"editor.lineHighlightBackground": "#3B4252",
+		"editorCursor.foreground": "#D8DEE9",
+		"editorWhitespace.foreground": "#434C5ECC",
 	},
 });
 editorLoader.editor.setTheme("markdown-dark");

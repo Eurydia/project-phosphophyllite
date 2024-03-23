@@ -6,16 +6,29 @@ import {
 	RouterProvider,
 	createBrowserRouter,
 } from "react-router-dom";
-import { Home, homeLoader } from "~pages/Home";
+import { Error } from "~pages/ErrorBoundary";
+import { Home, loaderHome } from "~pages/Home";
 import {
 	ProjectInfo,
-	projectInfoLoader,
-} from "~pages/project/ProjectInfo";
+	loaderProjectInfo,
+} from "~pages/Project/ProjectInfo";
 import {
 	ProjectCreate,
-	projectCreateLoader,
-} from "~pages/project/ProjectCreate";
-import { Error } from "~pages/ErrorBoundary";
+	loaderProjectCreate,
+} from "~pages/Project/ProjectCreate";
+import {
+	TicketIdx,
+	loaderTicketIdx,
+} from "~pages/TicketIdx";
+import {
+	TicketCreate,
+	loaderTicketCreate,
+} from "~pages/Ticket/TicketCreate";
+import {
+	TicketInfo,
+	loaderTicketInfo,
+} from "~pages/Ticket/TicketInfo";
+
 import { themeComposed } from "./theme";
 
 const router = createBrowserRouter(
@@ -23,7 +36,7 @@ const router = createBrowserRouter(
 		{
 			index: true,
 			element: <Home />,
-			loader: homeLoader,
+			loader: loaderHome,
 			errorElement: <Error />,
 		},
 		{
@@ -32,12 +45,32 @@ const router = createBrowserRouter(
 				{
 					path: "/project/create",
 					element: <ProjectCreate />,
-					loader: projectCreateLoader,
+					loader: loaderProjectCreate,
 				},
 				{
 					path: "/project/:projectId",
 					element: <ProjectInfo />,
-					loader: projectInfoLoader,
+					loader: loaderProjectInfo,
+				},
+			],
+		},
+		{
+			path: "/ticket",
+			children: [
+				{
+					index: true,
+					element: <TicketIdx />,
+					loader: loaderTicketIdx,
+				},
+				{
+					path: "/ticket/create",
+					element: <TicketCreate />,
+					loader: loaderTicketCreate,
+				},
+				{
+					path: "/ticket/:ticketId",
+					element: <TicketInfo />,
+					loader: loaderTicketInfo,
 				},
 			],
 		},
