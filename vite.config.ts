@@ -1,12 +1,37 @@
-import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import tsconfigpath from "vite-tsconfig-paths";
+import {
+	defineConfig,
+	splitVendorChunkPlugin,
+} from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react(), tsconfigpath()],
-	base: "/",
+	base: "https://eurydia.github.io/project-phosphophyllite",
+	plugins: [
+		react(),
+		tsconfigPaths(),
+		splitVendorChunkPlugin(),
+	],
 	build: {
+		sourcemap: true,
+		commonjsOptions: {
+			strictRequires: true,
+		},
 		target: "esnext",
+		rollupOptions: {
+			output: {
+				minifyInternalExports: true,
+				manualChunks: (id) => {
+					if (id.includes("node_module")) {
+						return id
+							.toString()
+							.split("node_modules/")[1]
+							.split("/")[0]
+							.toString();
+					}
+				},
+			},
+		},
 	},
 });

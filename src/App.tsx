@@ -77,7 +77,7 @@ const router = createBrowserRouter(
 		},
 	],
 	{
-		basename: "/",
+		basename: "/project-phosphophyllite",
 	},
 );
 
