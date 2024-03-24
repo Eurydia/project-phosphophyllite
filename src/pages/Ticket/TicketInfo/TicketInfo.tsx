@@ -25,7 +25,7 @@ import { StyledAutocomplete } from "~components/TagAutocomplete";
 import { parseMarkdown } from "~core/markdown";
 import {
 	getTicket,
-	updateProject,
+	updateTicket,
 } from "~database/index";
 import { WithAppBar } from "~views/WithAppBar";
 import { Layout } from "./Layout";
@@ -62,7 +62,7 @@ export const TicketInfo: FC = () => {
 			if (!isEditMode) {
 				return;
 			}
-			const ticketId = await updateProject(
+			const ticketId = await updateTicket(
 				ticket.projectId!,
 				title,
 				content,
