@@ -4,7 +4,7 @@ import {
 } from "@mui/material";
 import {
 	RouterProvider,
-	createBrowserRouter,
+	createHashRouter,
 } from "react-router-dom";
 import { Error } from "~pages/ErrorBoundary";
 import { Home, loaderHome } from "~pages/Home";
@@ -31,7 +31,7 @@ import {
 
 import { themeComposed } from "./theme";
 
-const router = createBrowserRouter(
+const router = createHashRouter(
 	[
 		{
 			index: true,
@@ -77,7 +77,7 @@ const router = createBrowserRouter(
 		},
 	],
 	{
-		basename: "/project-phosphophyllite",
+		basename: "/",
 	},
 );
 

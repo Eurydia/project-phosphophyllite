@@ -7,7 +7,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	base: "https://eurydia.github.io/project-phosphophyllite",
+	base: "/project-phosphophyllite",
 	plugins: [
 		react(),
 		tsconfigPaths(),
