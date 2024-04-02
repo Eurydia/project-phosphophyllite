@@ -114,12 +114,11 @@ export const Home: FC = () => {
 			>
 				<Stack
 					spacing={1}
-					direction={{ xs: "column", md: "row" }}
-					width="100%"
+					direction="row"
 				>
 					<TextField
 						size="small"
-						label="Name"
+						label="Search"
 						value={name}
 						onChange={(event) =>
 							setName(
@@ -128,14 +127,14 @@ export const Home: FC = () => {
 									.trimEnd(),
 							)
 						}
-						sx={{ width: "35%" }}
+						sx={{ width: "30%" }}
 					/>
 					<StyledAutocomplete
+						width="30%"
 						label="Topics"
 						options={topicOptions}
 						value={topics}
 						onChange={setTopics}
-						width="35%"
 					/>
 					<Button
 						variant="outlined"
