@@ -1,2 +1,2 @@
-export { loaderTicketInfo } from "./loader";
-export { TicketInfo } from "./TicketInfo";
+// export { loaderTicketInfo } from "./loader";
+// export { TicketInfo } from "./TicketInfo";

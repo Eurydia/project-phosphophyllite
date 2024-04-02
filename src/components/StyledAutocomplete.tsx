@@ -5,6 +5,7 @@ import {
 import { FC } from "react";
 
 type StyledAutocompleteProps = {
+	label: string;
 	fullWidth?: boolean;
 	width?: string;
 	options: string[];
@@ -15,6 +16,7 @@ export const StyledAutocomplete: FC<
 	StyledAutocompleteProps
 > = (props) => {
 	const {
+		label,
 		width,
 		fullWidth,
 		options,
@@ -35,7 +37,7 @@ export const StyledAutocomplete: FC<
 			renderInput={(params) => (
 				<TextField
 					{...params}
-					label="Tags"
+					label={label}
 					size="small"
 				/>
 			)}

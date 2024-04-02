@@ -1,58 +1,120 @@
+import { matchSorter } from "match-sorter";
 import { LoaderFunction } from "react-router-dom";
 import {
-	extractFilterTags,
-	sortItems,
-} from "~core/query";
-import {
-	getProjectAll,
-	getTagsAll,
-} from "~database";
+	getCachedRepos,
+	getCachedTopics,
+} from "~database/index";
 import { SortRule } from "~types/generics";
-import { ProjectSchema } from "~types/schemas";
+import { RepositorySchema } from "~types/schemas";
 
-export const sortRules: SortRule<ProjectSchema>[] =
+export const sortRules: SortRule<RepositorySchema>[] =
 	[
 		{
-			value: "lastModified",
-			label: "Last modified (0-9)",
-			compareFn: (a, b) =>
-				b.lastModified.getTime() -
-				a.lastModified.getTime(),
+			value: "by_update_LATEST_FIRST",
+			label: "Last modified (Latest first)",
+			compareFn: (a, b) => {
+				if (
+					a.updated_at === null ||
+					b.updated_at === null
+				) {
+					return 0;
+				}
+				return b.updated_at.localeCompare(
+					a.updated_at,
+				);
+			},
 		},
 		{
-			value: "name",
+			value: "by_update_OLDEST_FIRST",
+			label: "Last modified (Oldest first)",
+			compareFn: (a, b) => {
+				if (
+					a.updated_at === null ||
+					b.updated_at === null
+				) {
+					return 0;
+				}
+				return a.updated_at.localeCompare(
+					b.updated_at,
+				);
+			},
+		},
+		{
+			value: "by_name_ASCENDING",
 			label: "Name (A-Z)",
 			compareFn: (a, b) =>
 				a.name.localeCompare(b.name),
 		},
+		{
+			value: "by_name_DESCENDING",
+			label: "Name (Z-A)",
+			compareFn: (a, b) =>
+				b.name.localeCompare(a.name),
+		},
 	];
 
 export type LoaderData = {
-	tagOptions: string[];
-	filterTags: string[];
-	sortRule: string | null;
-	projects: ProjectSchema[];
+	name: string;
+	repos: RepositorySchema[];
+	sort: string;
+	topics: string[];
+	topicOptions: string[];
 };
-
 export const loaderHome: LoaderFunction = async ({
 	request,
-}) => {
-	document.title = "Projects";
-	const url = new URL(request.url);
+}): Promise<LoaderData> => {
+	const searchParams = new URL(request.url)
+		.searchParams;
 
-	const projects = await getProjectAll();
-	const tagOptions = await getTagsAll();
+	const sortParam = searchParams.get("sort");
+	let sort = sortRules[0];
+	if (sortParam !== null && sortParam !== "") {
+		for (const sortRule of sortRules) {
+			if (sortParam === sortRule.value) {
+				sort = sortRule;
+				break;
+			}
+		}
+	}
 
-	const paramTags = url.searchParams.get("tags");
-	const sortRule =
-		url.searchParams.get("sortRule");
+	const topicParam = searchParams.get("topics");
+	let topics: string[] = [];
+	if (topicParam !== null && topicParam !== "") {
+		topics = topicParam
+			.split(",")
+			.filter((topic) => topic.length > 0);
+	}
 
-	const filterTags = extractFilterTags(paramTags);
-	sortItems(sortRule, sortRules, projects);
+	const nameParam = searchParams.get("name");
+	let name = "";
+	if (nameParam !== null) {
+		name = nameParam;
+	}
+
+	document.title = "Repositories";
+	const topicOptions = await getCachedTopics();
+	let repos = await getCachedRepos();
+	repos = matchSorter(repos, name, {
+		keys: ["name"],
+	});
+	if (topics.length > 0) {
+		repos = repos.filter((repo) => {
+			const { topics: rTopics } = repo;
+			if (rTopics === undefined) {
+				return false;
+			}
+			return topics.every((topic) =>
+				rTopics.includes(topic),
+			);
+		});
+	}
+	repos.sort(sort.compareFn);
+
 	return {
-		sortRule,
-		projects,
-		filterTags,
-		tagOptions,
+		name,
+		topicOptions,
+		repos,
+		sort: sort.value,
+		topics,
 	};
 };

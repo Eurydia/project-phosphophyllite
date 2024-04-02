@@ -1,2 +1,2 @@
-export { TicketIdx } from "./TicketHome";
-export { loaderTicketHome } from "./loader";
+// export { TicketIdx } from "./TicketHome";
+// export { loaderTicketHome } from "./loader";
