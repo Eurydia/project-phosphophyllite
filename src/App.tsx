@@ -2,33 +2,13 @@ import {
 	CssBaseline,
 	ThemeProvider,
 } from "@mui/material";
+import { SnackbarProvider } from "notistack";
 import {
 	RouterProvider,
 	createHashRouter,
 } from "react-router-dom";
-import { Error } from "~pages/ErrorBoundary";
+import { ErrorBoundry } from "~pages/ErrorBoundary";
 import { Home, loaderHome } from "~pages/Home";
-import {
-	ProjectCreate,
-	loaderProjectCreate,
-} from "~pages/Project/ProjectCreate";
-import {
-	ProjectInfo,
-	loaderProjectInfo,
-} from "~pages/Project/ProjectInfo";
-import {
-	TicketCreate,
-	loaderTicketCreate,
-} from "~pages/Ticket/TicketCreate";
-import {
-	TicketInfo,
-	loaderTicketInfo,
-} from "~pages/Ticket/TicketInfo";
-import {
-	TicketIdx,
-	loaderTicketHome,
-} from "~pages/TicketHome";
-
 import { themeComposed } from "./theme";
 
 const router = createHashRouter(
@@ -37,44 +17,40 @@ const router = createHashRouter(
 			index: true,
 			element: <Home />,
 			loader: loaderHome,
-			errorElement: <Error />,
+			errorElement: <ErrorBoundry />,
 		},
-		{
-			path: "/project",
-			children: [
-				{
-					path: "/project/create",
-					element: <ProjectCreate />,
-					loader: loaderProjectCreate,
-				},
-				{
-					path: "/project/:projectId",
-					element: <ProjectInfo />,
-					loader: loaderProjectInfo,
-				},
-			],
-		},
-		{
-			path: "/ticket",
-			errorElement: <Error />,
-			children: [
-				{
-					index: true,
-					element: <TicketIdx />,
-					loader: loaderTicketHome,
-				},
-				{
-					path: "/ticket/create",
-					element: <TicketCreate />,
-					loader: loaderTicketCreate,
-				},
-				{
-					path: "/ticket/:ticketId",
-					element: <TicketInfo />,
-					loader: loaderTicketInfo,
-				},
-			],
-		},
+		// {
+		// 	path: "/project",
+		// 	errorElement: <Error />,
+		// 	children: [
+		// 		{
+		// 			path: "/project/:projectName",
+		// 			element: <ProjectInfo />,
+		// 			loader: loaderProjectInfo,
+		// 		},
+		// 	],
+		// },
+		// {
+		// 	path: "/ticket",
+		// 	errorElement: <Error />,
+		// 	children: [
+		// 		{
+		// 			index: true,
+		// 			element: <TicketIdx />,
+		// 			loader: loaderTicketHome,
+		// 		},
+		// 		{
+		// 			path: "/ticket/create",
+		// 			element: <TicketCreate />,
+		// 			loader: loaderTicketCreate,
+		// 		},
+		// 		{
+		// 			path: "/ticket/:ticketId",
+		// 			element: <TicketInfo />,
+		// 			loader: loaderTicketInfo,
+		// 		},
+		// 	],
+		// },
 	],
 	{
 		basename: "/",
@@ -85,7 +61,16 @@ export const App = () => {
 	return (
 		<ThemeProvider theme={themeComposed}>
 			<CssBaseline />
-			<RouterProvider router={router} />
+			<SnackbarProvider
+				preventDuplicate
+				maxSnack={3}
+				anchorOrigin={{
+					vertical: "bottom",
+					horizontal: "right",
+				}}
+			>
+				<RouterProvider router={router} />
+			</SnackbarProvider>
 		</ThemeProvider>
 	);
 };

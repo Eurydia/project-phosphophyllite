@@ -1,51 +1,61 @@
 import {
-	CreateNewFolderRounded,
 	ExpandMoreRounded,
 	FilterListRounded,
+	SyncRounded,
 } from "@mui/icons-material";
-import { Button, Stack } from "@mui/material";
+import {
+	Button,
+	Stack,
+	TextField,
+} from "@mui/material";
+import { useSnackbar } from "notistack";
+import { RequestError } from "octokit";
 import { FC, useState } from "react";
 import {
-	Link as RouterLink,
 	useLoaderData,
 	useSubmit,
 } from "react-router-dom";
-import { PopoverButton } from "~components/PoppoverButton";
+import { PopperButton } from "~components/PopoverButton";
+import { RepoList } from "~components/RepoList";
 import { SortRuleMenu } from "~components/SortRuleMenu";
-import { StyledAutocomplete } from "~components/TagAutocomplete";
+import { StyledAutocomplete } from "~components/StyledAutocomplete";
+import { getRepos } from "~database/api";
+import { syncCachedRepos } from "~database/cached";
 import { WithAppBar } from "~views/WithAppBar";
-import { ProjectList } from "./helper";
 import { LoaderData, sortRules } from "./loader";
 
 export const Home: FC = () => {
 	const {
-		projects,
-		sortRule,
-		filterTags,
-		tagOptions,
+		name: loadedName,
+		repos,
+		sort,
+		topics: loadedTopics,
+		topicOptions,
 	} = useLoaderData() as LoaderData;
 
+	const { enqueueSnackbar } = useSnackbar();
 	const submit = useSubmit();
-	const [selectedTags, setSelectedTags] =
-		useState(filterTags);
 
-	const handleSortRuleChange = (
-		value: string,
-	) => {
+	const [name, setName] = useState(loadedName);
+	const [topics, setTopics] =
+		useState(loadedTopics);
+
+	const handleSortChange = (value: string) => {
 		submit(
 			{
-				sortRule: value,
-				tags: selectedTags,
+				name,
+				sort: value,
+				topics,
 			},
 			{ action: "/", method: "get" },
 		);
 	};
-
 	const handleFilterSubmit = () => {
 		submit(
 			{
-				sortRule: sortRule || "",
-				tags: selectedTags,
+				name,
+				sort,
+				topics,
 			},
 			{
 				action: "/",
@@ -53,19 +63,48 @@ export const Home: FC = () => {
 			},
 		);
 	};
+	const handleSyncRepos = async () => {
+		getRepos()
+			.then((repos) => {
+				syncCachedRepos(repos);
+				submit(
+					{
+						sort,
+						topics,
+					},
+					{
+						action: "/",
+						method: "get",
+					},
+				);
+				enqueueSnackbar(
+					"Synchronization successful.",
+					{
+						variant: "success",
+					},
+				);
+			})
+			.catch((r) => {
+				const _r = r as RequestError;
+				const msg = `${_r.status} ${_r.message}`;
+				enqueueSnackbar(msg, {
+					variant: "error",
+				});
+			});
+	};
 
 	return (
 		<WithAppBar
-			location="Projects"
+			location="Repositories"
 			seconadaryNav={
 				<Button
 					disableElevation
-					variant="contained"
-					component={RouterLink}
-					startIcon={<CreateNewFolderRounded />}
-					to="/project/create"
+					size="small"
+					variant="outlined"
+					startIcon={<SyncRounded />}
+					onClick={handleSyncRepos}
 				>
-					new project
+					Sync
 				</Button>
 			}
 		>
@@ -75,38 +114,51 @@ export const Home: FC = () => {
 			>
 				<Stack
 					spacing={1}
-					direction="row"
-					width="50%"
+					direction={{ xs: "column", md: "row" }}
+					width="100%"
 				>
+					<TextField
+						size="small"
+						label="Name"
+						value={name}
+						onChange={(event) =>
+							setName(
+								event.target.value
+									.normalize()
+									.trimEnd(),
+							)
+						}
+						sx={{ width: "35%" }}
+					/>
 					<StyledAutocomplete
-						options={tagOptions}
-						value={selectedTags}
-						onChange={setSelectedTags}
-						width="70%"
+						label="Topics"
+						options={topicOptions}
+						value={topics}
+						onChange={setTopics}
+						width="35%"
 					/>
 					<Button
-						disableElevation
 						variant="outlined"
-						onClick={handleFilterSubmit}
 						startIcon={<FilterListRounded />}
+						onClick={handleFilterSubmit}
 					>
 						filter
 					</Button>
-					<PopoverButton
+					<PopperButton
 						buttonProps={{
-							disableElevation: true,
+							children: "sort",
 							variant: "outlined",
 							startIcon: <ExpandMoreRounded />,
 						}}
 					>
 						<SortRuleMenu
-							sortRules={sortRules}
-							rule={sortRule}
-							onChange={handleSortRuleChange}
+							options={sortRules}
+							value={sort}
+							onChange={handleSortChange}
 						/>
-					</PopoverButton>
+					</PopperButton>
 				</Stack>
-				<ProjectList projects={projects} />
+				<RepoList repos={repos} />
 			</Stack>
 		</WithAppBar>
 	);

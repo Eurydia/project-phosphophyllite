@@ -26,35 +26,44 @@
 // import { Layout } from "./Layout";
 // import { LoaderData } from "./loader";
 
-// export const TicketInfo: FC = () => {
-// 	const { ticket: loadedTicket, tagOptions } =
-// 		useLoaderData() as LoaderData;
+// export const ProjectInfo: FC = () => {
+// 	const {
+// 		project: loadedProject,
+// 		tagOptions: tagOptions,
+// 	} = useLoaderData() as LoaderData;
+
 // 	const theme = useTheme();
 // 	const submit = useSubmit();
 
 // 	const [isEditMode, setIsEditMode] =
 // 		useState(false);
-// 	const [ticket, setTicket] =
-// 		useState(loadedTicket);
-// 	const [title, setTitle] = useState(
-// 		ticket.title,
+
+// 	const [project, setProject] = useState(
+// 		loadedProject,
 // 	);
-// 	const [content, setContent] = useState(
-// 		ticket.content,
+
+// 	const [name, setName] = useState(project.name);
+// 	const [description, setDescription] = useState(
+// 		project.description,
 // 	);
 // 	const [selectedTags, setSelectedTags] =
-// 		useState(ticket.tags);
+// 		useState(project.tags);
 
 // 	useEffect(() => {
 // 		(async () => {
-// 			if (!ticket) {
+// 			if (!project) {
 // 				return;
 // 			}
 // 			if (!isEditMode) {
 // 				return;
 // 			}
 // 		})();
-// 	}, [content, selectedTags, title, isEditMode]);
+// 	}, [
+// 		description,
+// 		selectedTags,
+// 		name,
+// 		isEditMode,
+// 	]);
 
 // 	useEffect(() => {
 // 		const preveiwElement =
@@ -63,48 +72,48 @@
 // 			return;
 // 		}
 // 		preveiwElement.innerHTML =
-// 			parseMarkdown(content);
-// 	}, [content]);
+// 			parseMarkdown(description);
+// 	}, [description]);
 
-// 	const redirectToProject = () => {
+// 	const redirectToTicket = () => {
+// 		if (!project || !project.projectId) {
+// 			return;
+// 		}
 // 		submit(
-// 			{},
+// 			{ projectId: project.projectId },
 // 			{
-// 				action: `/project/${ticket.projectId}`,
+// 				action: "/ticket",
 // 				method: "get",
 // 			},
 // 		);
 // 	};
 
-// 	if (!ticket) {
+// 	if (!project) {
 // 		return;
 // 	}
 
 // 	return (
 // 		<WithAppBar
-// 			location={ticket.title}
+// 			location={project.name}
 // 			seconadaryNav={
 // 				<Button
 // 					disableElevation
 // 					variant="contained"
-// 					onClick={redirectToProject}
+// 					onClick={redirectToTicket}
 // 				>
-// 					Project home
+// 					tickets view
 // 				</Button>
 // 			}
 // 		>
 // 			<IconButton
-// 				size="large"
+// 				color="primary"
 // 				title={isEditMode ? "Read" : "Edit"}
 // 				sx={{
-// 					position: "absolute",
-// 					right: theme.spacing(4),
-// 					bottom: theme.spacing(4),
+// 					position: "fixed",
+// 					right: theme.spacing(2),
+// 					bottom: theme.spacing(2),
 // 				}}
-// 				onClick={() => {
-// 					setIsEditMode(!isEditMode);
-// 					return;
-// 				}}
+// 				onClick={() => setIsEditMode(!isEditMode)}
 // 			>
 // 				{isEditMode ? (
 // 					<MenuBookRounded />
@@ -130,13 +139,13 @@
 // 								size="small"
 // 								label="Project name"
 // 								color={
-// 									title.trim().length === 0
+// 									name.trim().length === 0
 // 										? "error"
 // 										: "primary"
 // 								}
-// 								value={title}
+// 								value={name}
 // 								onChange={(event) =>
-// 									setTitle(
+// 									setName(
 // 										event.target.value.normalize(),
 // 									)
 // 								}
@@ -158,30 +167,30 @@
 // 							md={12}
 // 						>
 // 							<StyledEditor
-// 								value={content}
+// 								value={description}
 // 								onChange={(value) =>
-// 									setContent(value || "")
+// 									setDescription(value || "")
 // 								}
 // 							/>
 // 						</Grid>
 // 					</Grid>
 // 				}
 // 				slotPreview={
-// 					<Container maxWidth="md">
+// 					<Container maxWidth="sm">
 // 						{!isEditMode && (
 // 							<Fragment>
 // 								<Typography variant="subtitle2">
 // 									Created:{" "}
-// 									{ticket.dateCreated.toUTCString()}
+// 									{project.dateCreated.toUTCString()}
 // 								</Typography>
 // 								<Typography variant="subtitle2">
 // 									Last modified:{" "}
-// 									{ticket.lastModified.toUTCString()}
+// 									{project.lastModified.toUTCString()}
 // 								</Typography>
 // 								<Typography variant="subtitle2">
 // 									Tags:{" "}
-// 									{ticket.tags.length > 0
-// 										? ticket.tags.join(", ")
+// 									{project.tags.length > 0
+// 										? project.tags.join(", ")
 // 										: "-"}
 // 								</Typography>
 // 							</Fragment>
