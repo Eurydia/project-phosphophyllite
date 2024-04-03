@@ -1,13 +1,8 @@
 import {
 	ExpandMoreRounded,
-	FilterListRounded,
 	SyncRounded,
 } from "@mui/icons-material";
-import {
-	Button,
-	Stack,
-	TextField,
-} from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { RequestError } from "octokit";
 import { FC, useState } from "react";
@@ -19,6 +14,7 @@ import { PopperButton } from "~components/PopoverButton";
 import { RepoList } from "~components/RepoList";
 import { SortRuleMenu } from "~components/SortRuleMenu";
 import { StyledAutocomplete } from "~components/StyledAutocomplete";
+import { StyledTextField } from "~components/StyledTextField";
 import { getRepos } from "~database/api";
 import { syncCachedRepos } from "~database/cached";
 import { WithAppBar } from "~views/WithAppBar";
@@ -29,16 +25,13 @@ export const Home: FC = () => {
 		name: loadedName,
 		repos,
 		sort,
-		topics: loadedTopics,
+		topics,
 		topicOptions,
 	} = useLoaderData() as LoaderData;
 
 	const { enqueueSnackbar } = useSnackbar();
 	const submit = useSubmit();
-
 	const [name, setName] = useState(loadedName);
-	const [topics, setTopics] =
-		useState(loadedTopics);
 
 	const handleSortChange = (value: string) => {
 		submit(
@@ -63,10 +56,22 @@ export const Home: FC = () => {
 			},
 		);
 	};
+	const handleTopicChange = (value: string[]) => {
+		submit(
+			{
+				sort,
+				topics: value,
+			},
+			{
+				action: "/",
+				method: "get",
+			},
+		);
+	};
 	const handleSyncRepos = async () => {
 		getRepos()
-			.then((repos) => {
-				syncCachedRepos(repos);
+			.then((repos) => syncCachedRepos(repos))
+			.then(() =>
 				submit(
 					{
 						sort,
@@ -76,14 +81,16 @@ export const Home: FC = () => {
 						action: "/",
 						method: "get",
 					},
-				);
+				),
+			)
+			.then(() =>
 				enqueueSnackbar(
 					"Synchronization successful.",
 					{
 						variant: "success",
 					},
-				);
-			})
+				),
+			)
 			.catch((r) => {
 				const _r = r as RequestError;
 				const msg = `${_r.status} ${_r.message}`;
@@ -108,43 +115,18 @@ export const Home: FC = () => {
 				</Button>
 			}
 		>
-			<Stack
-				spacing={2}
+			<Grid
 				padding={2}
+				container
+				spacing={2}
 			>
-				<Stack
-					spacing={1}
-					direction="row"
+				<Grid
+					item
+					md={2}
 				>
-					<TextField
-						size="small"
-						label="Search"
-						value={name}
-						onChange={(event) =>
-							setName(
-								event.target.value
-									.normalize()
-									.trimEnd(),
-							)
-						}
-						sx={{ width: "30%" }}
-					/>
-					<StyledAutocomplete
-						width="30%"
-						label="Topics"
-						options={topicOptions}
-						value={topics}
-						onChange={setTopics}
-					/>
-					<Button
-						variant="outlined"
-						startIcon={<FilterListRounded />}
-						onClick={handleFilterSubmit}
-					>
-						filter
-					</Button>
 					<PopperButton
 						buttonProps={{
+							fullWidth: true,
 							children: "sort",
 							variant: "outlined",
 							startIcon: <ExpandMoreRounded />,
@@ -156,9 +138,43 @@ export const Home: FC = () => {
 							onChange={handleSortChange}
 						/>
 					</PopperButton>
-				</Stack>
-				<RepoList repos={repos} />
-			</Stack>
+				</Grid>
+				<Grid
+					item
+					md={10}
+				/>
+				<Grid
+					item
+					md={4}
+				>
+					<StyledTextField
+						label="Name"
+						fullWidth
+						value={name}
+						onEnter={handleFilterSubmit}
+						onChange={setName}
+					/>
+				</Grid>
+				<Grid
+					item
+					md={6}
+				>
+					<StyledAutocomplete
+						options={topicOptions}
+						value={topics}
+						onChange={handleTopicChange}
+						textFieldProps={{
+							label: "Topics",
+						}}
+					/>
+				</Grid>
+				<Grid
+					item
+					md={12}
+				>
+					<RepoList repos={repos} />
+				</Grid>
+			</Grid>
 		</WithAppBar>
 	);
 };

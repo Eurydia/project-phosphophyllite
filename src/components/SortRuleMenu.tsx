@@ -2,6 +2,7 @@ import { CheckRounded } from "@mui/icons-material";
 import {
 	ListItemIcon,
 	ListItemText,
+	ListSubheader,
 	MenuItem,
 	MenuList,
 	Paper,
@@ -24,6 +25,9 @@ export const SortRuleMenu: FC<
 	return (
 		<Paper square>
 			<MenuList>
+				<ListSubheader disableSticky>
+					Select order
+				</ListSubheader>
 				{options.map(({ label, value }) => (
 					<MenuItem
 						key={value}

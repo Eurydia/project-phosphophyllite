@@ -2,13 +2,19 @@ import { SyncRounded } from "@mui/icons-material";
 import {
 	Button,
 	Container,
+	Paper,
+	Stack,
 	Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { RequestError } from "octokit";
 import { FC, useEffect } from "react";
 import { useLoaderData } from "react-router";
-import { useSubmit } from "react-router-dom";
+import {
+	Link as RouterLink,
+	createSearchParams,
+	useSubmit,
+} from "react-router-dom";
 import { parseMarkdown } from "~core/markdown";
 import { getRepoContentReadMe } from "~database/api";
 import { syncCachedReadme } from "~database/cached";
@@ -31,7 +37,7 @@ export const ProjectInfo: FC = () => {
 		preveiwElement.innerHTML = parseMarkdown(
 			readmeContent,
 		);
-	}, []);
+	}, [readmeContent]);
 
 	const handleSyncReadme = async () => {
 		getRepoContentReadMe(repo.full_name)
@@ -39,10 +45,7 @@ export const ProjectInfo: FC = () => {
 			.then(() =>
 				submit(
 					{},
-					{
-						action: ".",
-						method: "get",
-					},
+					{ action: ".", method: "get" },
 				),
 			)
 			.then(() =>
@@ -78,18 +81,52 @@ export const ProjectInfo: FC = () => {
 			}
 		>
 			<Container maxWidth="sm">
-				<Typography
-					id="preview"
-					maxWidth="100%"
-					height="100%"
-					overflow="auto"
-					display="block"
-					sx={{
-						wordBreak: "break-word",
-						wordWrap: "break-word",
-						scrollbarWidth: "thin",
-					}}
-				/>
+				<Stack marginY={2}>
+					{repo.topics !== undefined && (
+						<Stack
+							display="flex"
+							flexWrap="wrap"
+							width="75%"
+							flexDirection="row"
+							gap={1}
+						>
+							{repo.topics.map((topic) => (
+								<Paper
+									key={topic}
+									variant="outlined"
+									sx={{
+										padding: 0.7,
+										borderRadius: 2,
+									}}
+								>
+									<Typography
+										component={RouterLink}
+										to={{
+											pathname: "/",
+											search: createSearchParams({
+												topics: [topic],
+											}).toString(),
+										}}
+									>
+										{topic}
+									</Typography>
+								</Paper>
+							))}
+						</Stack>
+					)}
+					<Typography
+						id="preview"
+						maxWidth="100%"
+						height="100%"
+						overflow="auto"
+						display="block"
+						sx={{
+							wordBreak: "break-word",
+							wordWrap: "break-word",
+							scrollbarWidth: "thin",
+						}}
+					/>
+				</Stack>
 			</Container>
 		</WithAppBar>
 	);

@@ -1,5 +1,8 @@
 import { Octokit, RequestError } from "octokit";
-import { FileContentSchema } from "~types/schemas";
+import {
+	FileContentSchema,
+	RepositorySchema,
+} from "~types/schemas";
 
 const getToken = () => {
 	const token = localStorage.getItem(
@@ -15,10 +18,11 @@ export const getRepos = async () => {
 	const token = getToken();
 	const octokit = new Octokit({ auth: token });
 
-	return octokit
-		.request("GET /user/repos", { type: "all" })
-		.then(({ data }) => {
-			return data.map(
+	const repoData: RepositorySchema[] = [];
+	await octokit
+		.paginate("GET /user/repos")
+		.then((repos) =>
+			repos.forEach(
 				({
 					name,
 					full_name,
@@ -29,8 +33,8 @@ export const getRepos = async () => {
 					description,
 					archived: is_archived,
 					private: is_private,
-				}) => {
-					return {
+				}) =>
+					repoData.push({
 						name,
 						full_name,
 						description,
@@ -40,13 +44,14 @@ export const getRepos = async () => {
 						updated_at,
 						is_archived,
 						is_private,
-					};
-				},
-			);
-		})
+					}),
+			),
+		)
 		.catch((r) => {
 			throw r as RequestError;
 		});
+
+	return repoData;
 };
 
 export const getRepoContentReadMe = async (

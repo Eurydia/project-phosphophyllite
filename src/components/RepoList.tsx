@@ -32,7 +32,7 @@ export const RepoList: FC<RepoListProps> = (
 		submit(
 			{},
 			{
-				action: `/repo/${repoName}`,
+				action: `/${repoName}`,
 				method: "get",
 			},
 		);
@@ -67,14 +67,14 @@ export const RepoList: FC<RepoListProps> = (
 					<ListItem key={`repo-${name}`}>
 						<ListItemIcon>
 							{is_archived ? (
-								<Inventory2Rounded />
+								<Inventory2Rounded titleAccess="Archived" />
 							) : (
-								<EditRounded />
+								<EditRounded titleAccess="Unarchived" />
 							)}
 							{is_private ? (
-								<PersonRounded />
+								<PersonRounded titleAccess="Private" />
 							) : (
-								<PublicRounded />
+								<PublicRounded titleAccess="Public" />
 							)}
 						</ListItemIcon>
 						<ListItemButton

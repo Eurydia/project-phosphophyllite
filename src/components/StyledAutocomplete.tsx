@@ -1,49 +1,45 @@
 import {
 	Autocomplete,
+	SxProps,
 	TextField,
+	TextFieldProps,
 } from "@mui/material";
-import { FC } from "react";
+import { FC, SyntheticEvent } from "react";
 
 type StyledAutocompleteProps = {
-	label: string;
-	fullWidth?: boolean;
-	width?: string;
 	options: string[];
 	value: string[];
-	onChange: (value: string[]) => void;
+	onChange?: (value: string[]) => void;
+	sx?: SxProps;
+	textFieldProps?: TextFieldProps;
 };
 export const StyledAutocomplete: FC<
 	StyledAutocompleteProps
 > = (props) => {
-	const {
-		label,
-		width,
-		fullWidth,
-		options,
-		value,
-		onChange,
-	} = props;
+	const { textFieldProps, onChange, ...rest } =
+		props;
+
+	const handleChange = (
+		_: SyntheticEvent<Element | Event>,
+		value: string[],
+	) => {
+		if (onChange !== undefined) {
+			onChange(value);
+		}
+	};
 
 	return (
 		<Autocomplete
-			freeSolo
-			fullWidth={fullWidth}
+			{...rest}
 			multiple
-			limitTags={3}
-			size="small"
-			options={options}
-			value={value}
-			onChange={(_, values) => onChange(values)}
+			freeSolo
+			onChange={handleChange}
 			renderInput={(params) => (
 				<TextField
 					{...params}
-					label={label}
-					size="small"
+					{...textFieldProps}
 				/>
 			)}
-			sx={{
-				width,
-			}}
 		/>
 	);
 };

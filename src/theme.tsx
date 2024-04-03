@@ -35,6 +35,11 @@ const themeComponent = createTheme({
 					overflow: "auto",
 					scrollbarWidth: "thin",
 				},
+				table: {
+					minWidth: "max-content",
+					overflow: "auto",
+					borderSpacing: "1rem 0.5rem",
+				},
 				a: {
 					"transition": "color 0.3s ease",
 					"color": alpha(
