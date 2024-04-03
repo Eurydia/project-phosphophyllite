@@ -3,19 +3,15 @@ import {
 	Container,
 	Typography,
 } from "@mui/material";
-import { FC, useEffect } from "react";
-import {
-	ErrorResponse,
-	useRouteError,
-} from "react-router";
+import { FC } from "react";
+import { useRouteError } from "react-router";
 import { WithAppBar } from "~views/WithAppBar";
 
 export const ErrorBoundry: FC = () => {
-	const { status, statusText } =
-		useRouteError() as ErrorResponse;
-	useEffect(() => {
-		document.title = status.toString();
-	}, []);
+	const { status, statusText } = useRouteError();
+	// useEffect(() => {
+	// 	document.title = status.toString();
+	// }, []);
 	return (
 		<WithAppBar location={status}>
 			<Container maxWidth="md">

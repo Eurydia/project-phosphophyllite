@@ -1,11 +1,32 @@
 import { dbPromise } from "~database/migration";
-import { RepositorySchema } from "~types/schemas";
+import {
+	FileContentSchema,
+	RepositorySchema,
+} from "~types/schemas";
 
 export const getCachedRepos = async () => {
 	const data = (await dbPromise).getAll(
 		"repositories",
 	);
 	return data;
+};
+
+export const getCachedRepo = async (
+	fullName: string,
+) => {
+	return (await dbPromise).get(
+		"repositories",
+		fullName,
+	);
+};
+
+export const getCachedReadme = async (
+	repoFullName: string,
+) => {
+	return (await dbPromise).get(
+		"readmes",
+		repoFullName,
+	);
 };
 
 export const getCachedTopics = async () => {
@@ -33,4 +54,10 @@ export const syncCachedRepos = async (
 			db.put("repositories", repo),
 		),
 	);
+};
+
+export const syncCachedReadme = async (
+	readme: FileContentSchema,
+) => {
+	return (await dbPromise).put("readmes", readme);
 };

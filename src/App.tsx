@@ -9,6 +9,8 @@ import {
 } from "react-router-dom";
 import { ErrorBoundry } from "~pages/ErrorBoundary";
 import { Home, loaderHome } from "~pages/Home";
+import { ProjectInfo } from "~pages/RepoDetails/RepoDetails";
+import { loaderProjectInfo } from "~pages/RepoDetails/loader";
 import { themeComposed } from "./theme";
 
 const router = createHashRouter(
@@ -19,17 +21,17 @@ const router = createHashRouter(
 			loader: loaderHome,
 			errorElement: <ErrorBoundry />,
 		},
-		// {
-		// 	path: "/project",
-		// 	errorElement: <Error />,
-		// 	children: [
-		// 		{
-		// 			path: "/project/:projectName",
-		// 			element: <ProjectInfo />,
-		// 			loader: loaderProjectInfo,
-		// 		},
-		// 	],
-		// },
+		{
+			path: "/",
+			errorElement: <ErrorBoundry />,
+			children: [
+				{
+					path: "/repo/:owner/:repo",
+					element: <ProjectInfo />,
+					loader: loaderProjectInfo,
+				},
+			],
+		},
 		// {
 		// 	path: "/ticket",
 		// 	errorElement: <Error />,

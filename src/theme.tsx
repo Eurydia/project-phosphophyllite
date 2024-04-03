@@ -35,6 +35,19 @@ const themeComponent = createTheme({
 					overflow: "auto",
 					scrollbarWidth: "thin",
 				},
+				a: {
+					"transition": "color 0.3s ease",
+					"color": alpha(
+						themePalette.palette.primary.main,
+						0.78,
+					),
+					"&:hover": {
+						color: alpha(
+							themePalette.palette.secondary.main,
+							0.78,
+						),
+					},
+				},
 			},
 		},
 	},
