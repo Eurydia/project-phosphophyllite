@@ -1,8 +1,9 @@
 import {
+	AppBar,
 	Grid,
 	IconButton,
-	Paper,
 	Stack,
+	Toolbar,
 	Typography,
 } from "@mui/material";
 import { FC, Fragment, ReactNode } from "react";
@@ -27,64 +28,60 @@ export const WithAppBar: FC<WithAppBarProps> = (
 	};
 	return (
 		<Fragment>
-			<Paper
-				square
+			<AppBar
 				variant="outlined"
-				sx={{
-					position: "absolute",
-					width: "100%",
-					paddingY: 1,
-					paddingX: 2,
-				}}
+				position="sticky"
 			>
-				<Grid
-					container
-					spacing={1}
-					alignItems="center"
-				>
+				<Toolbar variant="regular">
 					<Grid
-						item
-						xs={1}
-						display="flex"
-						justifyContent="center"
+						container
+						spacing={1}
+						alignItems="center"
 					>
-						<IconButton
-							disableRipple
-							title="Home"
-							onClick={handleRedirectHome}
+						<Grid
+							item
+							xs={1}
+							display="flex"
+							justifyContent="center"
 						>
-							<IconHexagonMultiple />
-						</IconButton>
-					</Grid>
-					<Grid
-						item
-						xs={5}
-					>
-						<Typography
-							variant="body1"
-							width="100%"
-							overflow="hidden"
-							whiteSpace="nowrap"
-							textOverflow="ellipsis"
-							fontWeight="500"
+							<IconButton
+								disableRipple
+								title="Home"
+								onClick={handleRedirectHome}
+							>
+								<IconHexagonMultiple />
+							</IconButton>
+						</Grid>
+						<Grid
+							item
+							xs={5}
 						>
-							{location}
-						</Typography>
-					</Grid>
-					<Grid
-						item
-						xs={6}
-					>
-						<Stack
-							spacing={2}
-							justifyContent="end"
-							direction="row"
+							<Typography
+								variant="body1"
+								width="100%"
+								overflow="hidden"
+								whiteSpace="nowrap"
+								textOverflow="ellipsis"
+								fontWeight="500"
+							>
+								{location}
+							</Typography>
+						</Grid>
+						<Grid
+							item
+							xs={6}
 						>
-							{seconadaryNav}
-						</Stack>
+							<Stack
+								spacing={2}
+								justifyContent="end"
+								direction="row"
+							>
+								{seconadaryNav}
+							</Stack>
+						</Grid>
 					</Grid>
-				</Grid>
-			</Paper>
+				</Toolbar>
+			</AppBar>
 			{children}
 		</Fragment>
 	);
