@@ -5,7 +5,6 @@ import {
 	IconButton,
 	Stack,
 	Toolbar,
-	Typography,
 } from "@mui/material";
 import {
 	FC,
@@ -21,12 +20,12 @@ import { IconHexagonMultiple } from "~assets/HexagonGroup";
 type WithAppBarProps = {
 	location: ReactNode;
 	children: ReactNode;
-	seconadaryNav?: ReactNode;
+	seconadaryAction?: ReactNode;
 };
 export const WithAppBar: FC<WithAppBarProps> = (
 	props,
 ) => {
-	const { location, children, seconadaryNav } =
+	const { location, children, seconadaryAction } =
 		props;
 
 	const submit = useSubmit();
@@ -83,9 +82,10 @@ export const WithAppBar: FC<WithAppBarProps> = (
 						</Grid>
 						<Grid
 							item
-							xs={5}
+							xs={7}
 						>
-							<Typography
+							{location}
+							{/* <Typography
 								variant="body1"
 								width="100%"
 								overflow="hidden"
@@ -94,18 +94,18 @@ export const WithAppBar: FC<WithAppBarProps> = (
 								fontWeight="500"
 							>
 								{location}
-							</Typography>
+							</Typography> */}
 						</Grid>
 						<Grid
 							item
-							xs={6}
+							xs={4}
 						>
 							<Stack
 								spacing={2}
 								justifyContent="end"
 								direction="row"
 							>
-								{seconadaryNav}
+								{seconadaryAction}
 							</Stack>
 						</Grid>
 					</Grid>

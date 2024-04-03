@@ -1,65 +1,33 @@
-import { Box, Grid } from "@mui/material";
 import {
-	FC,
-	ReactNode,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+	Container,
+	Stack,
+	Typography,
+} from "@mui/material";
+import { FC, ReactNode } from "react";
 
 type LayoutPros = {
-	slotEditor: ReactNode;
-	slotPreview: ReactNode;
-	isEditMode: boolean;
+	slotMetadata: ReactNode;
 };
 export const Layout: FC<LayoutPros> = (props) => {
-	const { isEditMode, slotEditor, slotPreview } =
-		props;
-
-	const contentRef =
-		useRef<HTMLDivElement | null>(null);
-	const [contentHeight, setEditorHeight] =
-		useState("");
-
-	useEffect(() => {
-		if (!contentRef || !contentRef.current) {
-			return;
-		}
-		const topOffset =
-			contentRef.current.offsetTop;
-		setEditorHeight(
-			`calc(98vh - ${Math.floor(topOffset)}px)`,
-		);
-	}, [contentRef]);
+	const { slotMetadata } = props;
 
 	return (
-		<Box
-			ref={contentRef}
-			paddingTop={2}
-			marginLeft={2}
-		>
-			<Grid
-				container
-				spacing={2}
-			>
-				{isEditMode && (
-					<Grid
-						item
-						md={6}
-						height={contentHeight}
-					>
-						{slotEditor}
-					</Grid>
-				)}
-				<Grid
-					item
-					md
-					height={contentHeight}
+		<Container maxWidth="sm">
+			<Stack marginY={2}>
+				{slotMetadata}
+				<Typography
+					id="preview"
+					maxWidth="100%"
+					height="100%"
 					overflow="auto"
-				>
-					{slotPreview}
-				</Grid>
-			</Grid>
-		</Box>
+					display="block"
+					sx={{
+						wordBreak: "break-word",
+						wordWrap: "break-word",
+						scrollbarWidth: "thin",
+					}}
+				/>
+			</Stack>
+		</Container>
 	);
 };
