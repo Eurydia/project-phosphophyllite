@@ -1,3 +1,7 @@
+import {
+	URLSearchParamsInit,
+	createSearchParams,
+} from "react-router-dom";
 import { SortRule } from "~types/generics";
 
 export const sortItems = <T>(
@@ -30,4 +34,10 @@ export const extractFilterTags = (
 			.split(",");
 	}
 	return filterTags;
+};
+
+export const toSearchParam = (
+	query: URLSearchParamsInit,
+) => {
+	return createSearchParams(query).toString();
 };

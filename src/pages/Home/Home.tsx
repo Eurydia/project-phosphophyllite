@@ -103,7 +103,7 @@ export const Home: FC = () => {
 	return (
 		<WithAppBar
 			location="Repositories"
-			seconadaryNav={
+			seconadaryAction={
 				<Button
 					disableElevation
 					size="small"
