@@ -1,11 +1,18 @@
 import {
+	AppBar,
+	Box,
 	Grid,
 	IconButton,
-	Paper,
 	Stack,
+	Toolbar,
 	Typography,
 } from "@mui/material";
-import { FC, Fragment, ReactNode } from "react";
+import {
+	FC,
+	Fragment,
+	ReactNode,
+	useRef,
+} from "react";
 import { useSubmit } from "react-router-dom";
 import { IconHexagonMultiple } from "~assets/HexagonGroup";
 
@@ -21,71 +28,85 @@ export const WithAppBar: FC<WithAppBarProps> = (
 		props;
 
 	const submit = useSubmit();
-
+	const appBarRef = useRef<HTMLElement | null>(
+		null,
+	);
+	let contentHeight = undefined;
+	if (
+		appBarRef !== null &&
+		appBarRef.current !== null
+	) {
+		const appBarHeight =
+			appBarRef.current.getBoundingClientRect()
+				.height;
+		contentHeight = `calc(100vh - ${appBarHeight}px)`;
+	}
 	const handleRedirectHome = () => {
 		submit({}, { action: "/", method: "get" });
 	};
 	return (
 		<Fragment>
-			<Paper
-				square
+			<AppBar
+				ref={appBarRef}
 				variant="outlined"
-				sx={{
-					position: "absolute",
-					width: "100%",
-					paddingY: 1,
-					paddingX: 2,
-				}}
+				position="relative"
 			>
-				<Grid
-					container
-					spacing={1}
-					alignItems="center"
-				>
+				<Toolbar variant="regular">
 					<Grid
-						item
-						xs={1}
-						display="flex"
-						justifyContent="center"
+						container
+						spacing={1}
+						alignItems="center"
 					>
-						<IconButton
-							disableRipple
-							title="Home"
-							onClick={handleRedirectHome}
+						<Grid
+							item
+							xs={1}
+							display="flex"
+							justifyContent="center"
 						>
-							<IconHexagonMultiple />
-						</IconButton>
-					</Grid>
-					<Grid
-						item
-						xs={5}
-					>
-						<Typography
-							variant="body1"
-							width="100%"
-							overflow="hidden"
-							whiteSpace="nowrap"
-							textOverflow="ellipsis"
-							fontWeight="500"
+							<IconButton
+								disableRipple
+								title="Home"
+								onClick={handleRedirectHome}
+							>
+								<IconHexagonMultiple />
+							</IconButton>
+						</Grid>
+						<Grid
+							item
+							xs={5}
 						>
-							{location}
-						</Typography>
-					</Grid>
-					<Grid
-						item
-						xs={6}
-					>
-						<Stack
-							spacing={2}
-							justifyContent="end"
-							direction="row"
+							<Typography
+								variant="body1"
+								width="100%"
+								overflow="hidden"
+								whiteSpace="nowrap"
+								textOverflow="ellipsis"
+								fontWeight="500"
+							>
+								{location}
+							</Typography>
+						</Grid>
+						<Grid
+							item
+							xs={6}
 						>
-							{seconadaryNav}
-						</Stack>
+							<Stack
+								spacing={2}
+								justifyContent="end"
+								direction="row"
+							>
+								{seconadaryNav}
+							</Stack>
+						</Grid>
 					</Grid>
-				</Grid>
-			</Paper>
-			{children}
+				</Toolbar>
+			</AppBar>
+			<Box
+				height={contentHeight}
+				overflow="auto"
+			>
+				{children}
+			</Box>
 		</Fragment>
 	);
 };
