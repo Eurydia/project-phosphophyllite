@@ -1,12 +1,18 @@
 import {
 	AppBar,
+	Box,
 	Grid,
 	IconButton,
 	Stack,
 	Toolbar,
 	Typography,
 } from "@mui/material";
-import { FC, Fragment, ReactNode } from "react";
+import {
+	FC,
+	Fragment,
+	ReactNode,
+	useRef,
+} from "react";
 import { useSubmit } from "react-router-dom";
 import { IconHexagonMultiple } from "~assets/HexagonGroup";
 
@@ -22,15 +28,28 @@ export const WithAppBar: FC<WithAppBarProps> = (
 		props;
 
 	const submit = useSubmit();
-
+	const appBarRef = useRef<HTMLElement | null>(
+		null,
+	);
+	let contentHeight = undefined;
+	if (
+		appBarRef !== null &&
+		appBarRef.current !== null
+	) {
+		const appBarHeight =
+			appBarRef.current.getBoundingClientRect()
+				.height;
+		contentHeight = `calc(100vh - ${appBarHeight}px)`;
+	}
 	const handleRedirectHome = () => {
 		submit({}, { action: "/", method: "get" });
 	};
 	return (
 		<Fragment>
 			<AppBar
+				ref={appBarRef}
 				variant="outlined"
-				position="sticky"
+				position="relative"
 			>
 				<Toolbar variant="regular">
 					<Grid
@@ -82,7 +101,12 @@ export const WithAppBar: FC<WithAppBarProps> = (
 					</Grid>
 				</Toolbar>
 			</AppBar>
-			{children}
+			<Box
+				height={contentHeight}
+				overflow="auto"
+			>
+				{children}
+			</Box>
 		</Fragment>
 	);
 };
