@@ -1,4 +1,5 @@
 import { Octokit, RequestError } from "octokit";
+import { FileContentSchema } from "~types/schemas";
 
 const getToken = () => {
 	const token = localStorage.getItem(
@@ -15,11 +16,12 @@ export const getRepos = async () => {
 	const octokit = new Octokit({ auth: token });
 
 	return octokit
-		.request("GET /user/repos", { type: "owner" })
+		.request("GET /user/repos", { type: "all" })
 		.then(({ data }) => {
 			return data.map(
 				({
 					name,
+					full_name,
 					topics,
 					visibility,
 					created_at,
@@ -30,6 +32,7 @@ export const getRepos = async () => {
 				}) => {
 					return {
 						name,
+						full_name,
 						description,
 						topics,
 						visibility,
@@ -44,4 +47,26 @@ export const getRepos = async () => {
 		.catch((r) => {
 			throw r as RequestError;
 		});
+};
+
+export const getRepoContentReadMe = async (
+	fullName: string,
+) => {
+	const token = getToken();
+	const ocktokit = new Octokit({ auth: token });
+	const [owner, repo] = fullName.split("/");
+	const { data } = await ocktokit.request(
+		"GET /repos/{owner}/{repo}/readme",
+		{
+			owner,
+			repo,
+		},
+	);
+	const fileData: FileContentSchema = {
+		repo_full_name: fullName,
+		size: data.size,
+		encoding: data.encoding,
+		content: data.content,
+	};
+	return fileData;
 };

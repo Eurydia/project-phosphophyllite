@@ -6,7 +6,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { FC, Fragment, ReactNode } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { useSubmit } from "react-router-dom";
 import { IconHexagonMultiple } from "~assets/HexagonGroup";
 
 type WithAppBarProps = {
@@ -20,12 +20,18 @@ export const WithAppBar: FC<WithAppBarProps> = (
 	const { location, children, seconadaryNav } =
 		props;
 
+	const submit = useSubmit();
+
+	const handleRedirectHome = () => {
+		submit({}, { action: "/", method: "get" });
+	};
 	return (
 		<Fragment>
 			<Paper
 				square
 				variant="outlined"
 				sx={{
+					position: "absolute",
 					width: "100%",
 					paddingY: 1,
 					paddingX: 2,
@@ -45,8 +51,7 @@ export const WithAppBar: FC<WithAppBarProps> = (
 						<IconButton
 							disableRipple
 							title="Home"
-							component={RouterLink}
-							to="/"
+							onClick={handleRedirectHome}
 						>
 							<IconHexagonMultiple />
 						</IconButton>

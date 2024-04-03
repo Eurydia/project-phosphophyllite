@@ -50,11 +50,15 @@ export const RepoList: FC<RepoListProps> = (
 	}
 	return (
 		<List>
-			<ListSubheader>
+			<ListSubheader
+				disableGutters
+				disableSticky
+			>
 				Showing {repos.length} repositories
 			</ListSubheader>
 			{repos.map(
 				({
+					full_name,
 					name,
 					description,
 					is_archived,
@@ -76,7 +80,7 @@ export const RepoList: FC<RepoListProps> = (
 						<ListItemButton
 							disableRipple
 							onClick={() =>
-								handleRepoRedirect(name)
+								handleRepoRedirect(full_name)
 							}
 						>
 							<ListItemText

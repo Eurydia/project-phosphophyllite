@@ -1,7 +1,14 @@
 import { DBSchema, openDB } from "idb";
-import { RepositorySchema } from "~types/schemas";
+import {
+	FileContentSchema,
+	RepositorySchema,
+} from "~types/schemas";
 
 interface Database extends DBSchema {
+	readmes: {
+		key: string;
+		value: FileContentSchema;
+	};
 	repositories: {
 		key: string;
 		value: RepositorySchema;
@@ -14,10 +21,10 @@ interface Database extends DBSchema {
 
 export const dbPromise = openDB<Database>(
 	"primary",
-	1,
+	3,
 	{
 		upgrade(db, oldVersion) {
-			if (oldVersion <= 1) {
+			if (oldVersion <= 0) {
 				const store = db.createObjectStore(
 					"repositories",
 					{
@@ -32,6 +39,21 @@ export const dbPromise = openDB<Database>(
 					"by_update_at",
 					"update_at",
 				);
+			}
+			if (oldVersion <= 1) {
+				db.deleteObjectStore("repositories");
+				db.createObjectStore("repositories", {
+					keyPath: "fullname",
+				});
+			}
+			if (oldVersion <= 2) {
+				db.deleteObjectStore("repositories");
+				db.createObjectStore("repositories", {
+					keyPath: "full_name",
+				});
+				db.createObjectStore("readmes", {
+					keyPath: "repo_full_name",
+				});
 			}
 		},
 	},
