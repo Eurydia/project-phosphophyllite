@@ -6,7 +6,6 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import { useLocation } from "react-router";
-import { Link as RouterLink } from "react-router-dom";
 
 type StyledBreadcrumbs = {
 	breadcrumbsProps?: BreadcrumbsProps;
@@ -26,10 +25,6 @@ export const StyledBreadcrumbs: FC<
 				<Typography
 					{...typographyProps}
 					key={`${index}-${path}`}
-					component={RouterLink}
-					to={pathnames
-						.slice(0, index + 1)
-						.join("/")}
 				>
 					{path}
 				</Typography>
