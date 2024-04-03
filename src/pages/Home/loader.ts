@@ -3,6 +3,7 @@ import { LoaderFunction } from "react-router-dom";
 import {
 	getCachedRepos,
 	getCachedTopics,
+	getRepos,
 } from "~database/index";
 import { SortRule } from "~types/generics";
 import { RepositorySchema } from "~types/schemas";
@@ -93,7 +94,9 @@ export const loaderHome: LoaderFunction = async ({
 
 	document.title = "Repositories";
 	const topicOptions = await getCachedTopics();
-	let repos = await getCachedRepos();
+	let repos =
+		(await getCachedRepos()) ||
+		(await getRepos());
 	repos = matchSorter(repos, name, {
 		keys: ["name"],
 	});

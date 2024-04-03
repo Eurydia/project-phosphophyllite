@@ -26,7 +26,7 @@ const router = createHashRouter(
 			errorElement: <ErrorBoundry />,
 			children: [
 				{
-					path: "/repo/:owner/:repo",
+					path: "/:owner/:repo",
 					element: <ProjectInfo />,
 					loader: loaderProjectInfo,
 				},

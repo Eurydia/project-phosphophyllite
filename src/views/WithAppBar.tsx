@@ -11,7 +11,9 @@ import {
 	FC,
 	Fragment,
 	ReactNode,
+	useEffect,
 	useRef,
+	useState,
 } from "react";
 import { useSubmit } from "react-router-dom";
 import { IconHexagonMultiple } from "~assets/HexagonGroup";
@@ -31,24 +33,32 @@ export const WithAppBar: FC<WithAppBarProps> = (
 	const appBarRef = useRef<HTMLElement | null>(
 		null,
 	);
-	let contentHeight = undefined;
-	if (
-		appBarRef !== null &&
-		appBarRef.current !== null
-	) {
-		const appBarHeight =
+	const [appBarHeight, setAppBarHeight] =
+		useState("100vh");
+
+	useEffect(() => {
+		if (
+			appBarRef === null ||
+			appBarRef.current === null
+		) {
+			return;
+		}
+		const height =
 			appBarRef.current.getBoundingClientRect()
 				.height;
-		contentHeight = `calc(100vh - ${appBarHeight}px)`;
-	}
+		setAppBarHeight(`${height}px`);
+	}, [appBarRef]);
+
 	const handleRedirectHome = () => {
 		submit({}, { action: "/", method: "get" });
 	};
+	const contentHeight = `calc(100vh - ${appBarHeight})`;
 	return (
 		<Fragment>
 			<AppBar
 				ref={appBarRef}
 				variant="outlined"
+				elevation={0}
 				position="relative"
 			>
 				<Toolbar variant="regular">

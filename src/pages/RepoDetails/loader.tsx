@@ -1,4 +1,5 @@
 import { LoaderFunction } from "react-router";
+import { getRepoContentReadMe as getReadMe } from "~database/api";
 import {
 	getCachedReadme,
 	getCachedRepo,
@@ -24,16 +25,16 @@ export const loaderProjectInfo: LoaderFunction =
 			});
 		}
 		const fullName = `${owner}/${repoName}`;
-		const repo = await getCachedRepo(fullName);
+		let repo = await getCachedRepo(fullName);
 		if (repo === undefined) {
 			throw new Response("Not found", {
 				status: 404,
 				statusText: "Repository not found",
 			});
 		}
-		const readme = await getCachedReadme(
-			repo.full_name,
-		);
+		let readme =
+			(await getCachedReadme(repo.full_name)) ||
+			(await getReadMe(fullName));
 		let readmeContent = "";
 		if (
 			readme !== undefined &&
@@ -42,7 +43,7 @@ export const loaderProjectInfo: LoaderFunction =
 		) {
 			readmeContent = atob(readme.content);
 		}
-
+		document.title = repo.name;
 		const loaderData: LoaderData = {
 			repo,
 			readmeContent,
