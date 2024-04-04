@@ -31,6 +31,7 @@ export const StyledAutocomplete: FC<
 	return (
 		<Autocomplete
 			{...rest}
+			size="small"
 			multiple
 			freeSolo
 			onChange={handleChange}

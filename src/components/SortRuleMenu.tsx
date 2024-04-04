@@ -8,10 +8,11 @@ import {
 	Paper,
 } from "@mui/material";
 import { FC } from "react";
+import { SortRule } from "~types/generics";
 
 type SortRuleMenuProps = {
 	value: string | null;
-	options: { label: string; value: string }[];
+	options: SortRule<any>[];
 	onChange: (sortRule: string) => void;
 };
 export const SortRuleMenu: FC<

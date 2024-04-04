@@ -1,8 +1,11 @@
+import { SyncRounded } from "@mui/icons-material";
 import {
-	ExpandMoreRounded,
-	SyncRounded,
-} from "@mui/icons-material";
-import { Button, Grid } from "@mui/material";
+	Button,
+	Grid,
+	ListSubheader,
+	MenuItem,
+	Select,
+} from "@mui/material";
 import { useSnackbar } from "notistack";
 import { RequestError } from "octokit";
 import { FC, useState } from "react";
@@ -10,13 +13,20 @@ import {
 	useLoaderData,
 	useSubmit,
 } from "react-router-dom";
-import { PopperButton } from "~components/PopoverButton";
 import { RepoList } from "~components/RepoList";
-import { SortRuleMenu } from "~components/SortRuleMenu";
-import { StyledAutocomplete } from "~components/StyledAutocomplete";
 import { StyledTextField } from "~components/StyledTextField";
-import { getRepos } from "~database/api";
-import { syncCachedRepos } from "~database/cached";
+import {
+	getRepoIssueComment,
+	getRepoIssues,
+	getRepos,
+} from "~database/api";
+import {
+	getCachedIssues,
+	getCachedRepos,
+	syncCachedRepoIssues,
+	syncCachedRepos,
+	syncRepoIssueComments,
+} from "~database/cached";
 import { WithAppBar } from "~views/WithAppBar";
 import { LoaderData, sortRules } from "./loader";
 
@@ -56,7 +66,9 @@ export const Home: FC = () => {
 			},
 		);
 	};
-	const handleTopicChange = (value: string[]) => {
+	const handleTopicChange = (
+		value: string[] | string,
+	) => {
 		submit(
 			{
 				sort,
@@ -68,36 +80,78 @@ export const Home: FC = () => {
 			},
 		);
 	};
-	const handleSyncRepos = async () => {
-		getRepos()
+	const handleSync = async () => {
+		const repos = await getRepos()
 			.then((repos) => syncCachedRepos(repos))
-			.then(() =>
-				submit(
-					{
-						sort,
-						topics,
-					},
-					{
-						action: "/",
-						method: "get",
-					},
-				),
-			)
-			.then(() =>
-				enqueueSnackbar(
-					"Synchronization successful.",
-					{
-						variant: "success",
-					},
-				),
-			)
 			.catch((r) => {
 				const _r = r as RequestError;
 				const msg = `${_r.status} ${_r.message}`;
 				enqueueSnackbar(msg, {
 					variant: "error",
 				});
+				return null;
 			});
+		if (repos === null) {
+			return;
+		}
+		const cachedRepos = await getCachedRepos();
+		for (const repo of cachedRepos) {
+			const issues = await getRepoIssues(
+				repo.full_name,
+				repo.id,
+			)
+				.then((issues) =>
+					syncCachedRepoIssues(issues),
+				)
+				.catch((r) => {
+					const _r = r as RequestError;
+					const msg = `${_r.status} ${_r.message}`;
+					enqueueSnackbar(msg, {
+						variant: "error",
+					});
+					return null;
+				});
+			if (issues === null) {
+				continue;
+			}
+			const cachedIssues = await getCachedIssues(
+				repo.id,
+			);
+			for (const issue of cachedIssues) {
+				await getRepoIssueComment(
+					repo.full_name,
+					issue.issue_number,
+					issue.id,
+				)
+					.then((comments) =>
+						syncRepoIssueComments(comments),
+					)
+					.catch((r) => {
+						const _r = r as RequestError;
+						const msg = `${_r.status} ${_r.message}`;
+						enqueueSnackbar(msg, {
+							variant: "error",
+						});
+						return null;
+					});
+			}
+		}
+		submit(
+			{
+				sort,
+				topics,
+			},
+			{
+				action: "/",
+				method: "get",
+			},
+		);
+		enqueueSnackbar(
+			"Synchronization successful.",
+			{
+				variant: "success",
+			},
+		);
 	};
 
 	return (
@@ -109,47 +163,26 @@ export const Home: FC = () => {
 					size="small"
 					variant="outlined"
 					startIcon={<SyncRounded />}
-					onClick={handleSyncRepos}
+					onClick={handleSync}
 				>
 					Sync
 				</Button>
 			}
 		>
 			<Grid
-				padding={2}
 				container
+				padding={2}
 				spacing={2}
 			>
 				<Grid
 					item
-					md={2}
-				>
-					<PopperButton
-						buttonProps={{
-							fullWidth: true,
-							children: "sort",
-							variant: "outlined",
-							startIcon: <ExpandMoreRounded />,
-						}}
-					>
-						<SortRuleMenu
-							options={sortRules}
-							value={sort}
-							onChange={handleSortChange}
-						/>
-					</PopperButton>
-				</Grid>
-				<Grid
-					item
-					md={10}
-				/>
-				<Grid
-					item
-					md={4}
+					xs={12}
+					md={6}
 				>
 					<StyledTextField
-						label="Name"
 						fullWidth
+						placeholder="Name"
+						size="small"
 						value={name}
 						onEnter={handleFilterSubmit}
 						onChange={setName}
@@ -157,20 +190,65 @@ export const Home: FC = () => {
 				</Grid>
 				<Grid
 					item
-					md={6}
+					xs={4}
+					md={2}
 				>
-					<StyledAutocomplete
-						options={topicOptions}
-						value={topics}
-						onChange={handleTopicChange}
-						textFieldProps={{
-							label: "Topics",
-						}}
-					/>
+					<Select
+						fullWidth
+						displayEmpty
+						renderValue={() => "Sort"}
+						size="small"
+						value={sort}
+						onChange={(e) =>
+							handleSortChange(e.target.value)
+						}
+					>
+						<ListSubheader disableSticky>
+							Select order
+						</ListSubheader>
+						{sortRules.map(({ value, label }) => (
+							<MenuItem
+								key={value}
+								disableRipple
+								value={value}
+							>
+								{label}
+							</MenuItem>
+						))}
+					</Select>
 				</Grid>
 				<Grid
 					item
-					md={12}
+					xs={4}
+					md={2}
+				>
+					<Select
+						multiple
+						fullWidth
+						displayEmpty
+						renderValue={() => "Topics"}
+						size="small"
+						value={topics}
+						onChange={(e) =>
+							handleTopicChange(e.target.value)
+						}
+					>
+						<ListSubheader disableSticky>
+							Select topics
+						</ListSubheader>
+						{topicOptions.map((option) => (
+							<MenuItem
+								key={option}
+								value={option}
+							>
+								{option}
+							</MenuItem>
+						))}
+					</Select>
+				</Grid>
+				<Grid
+					item
+					xs={12}
 				>
 					<RepoList repos={repos} />
 				</Grid>

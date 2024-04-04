@@ -1,31 +1,21 @@
 import { dbPromise } from "~database/migration";
 import {
-	FileContentSchema,
-	RepositorySchema,
+	RepoIssueCommentSchema,
+	RepoIssueSchema,
+	RepoSchema,
 } from "~types/schemas";
 
 export const getCachedRepos = async () => {
-	const data = (await dbPromise).getAll(
-		"repositories",
-	);
-	return data;
+	return (await dbPromise).getAll("repos");
 };
 
 export const getCachedRepo = async (
 	fullName: string,
 ) => {
-	return (await dbPromise).get(
-		"repositories",
+	return (await dbPromise).getFromIndex(
+		"repos",
+		"by-full_name",
 		fullName,
-	);
-};
-
-export const getCachedReadme = async (
-	repoFullName: string,
-) => {
-	return (await dbPromise).get(
-		"readmes",
-		repoFullName,
 	);
 };
 
@@ -45,19 +35,53 @@ export const getCachedTopics = async () => {
 	return topics;
 };
 
+export const getCachedIssues = async (
+	repoId: number,
+) => {
+	return (await dbPromise).getAllFromIndex(
+		"issues",
+		"by-repo_id",
+		repoId,
+	);
+};
+
+export const getCachedIssueComments = async (
+	issueId: number,
+) => {
+	return (await dbPromise).getAllFromIndex(
+		"issueComments",
+		"by-issue_id",
+		issueId,
+	);
+};
+
 export const syncCachedRepos = async (
-	repos: RepositorySchema[],
+	repos: RepoSchema[],
 ) => {
 	const db = await dbPromise;
 	return await Promise.all(
-		repos.map((repo) =>
-			db.put("repositories", repo),
+		repos.map((repo) => db.put("repos", repo)),
+	);
+};
+
+export const syncCachedRepoIssues = async (
+	issues: RepoIssueSchema[],
+) => {
+	const db = await dbPromise;
+	return await Promise.all(
+		issues.map((issue) =>
+			db.put("issues", issue),
 		),
 	);
 };
 
-export const syncCachedReadme = async (
-	readme: FileContentSchema,
+export const syncRepoIssueComments = async (
+	issueComments: RepoIssueCommentSchema[],
 ) => {
-	return (await dbPromise).put("readmes", readme);
+	const db = await dbPromise;
+	return await Promise.all(
+		issueComments.map((comment) =>
+			db.put("issueComments", comment),
+		),
+	);
 };

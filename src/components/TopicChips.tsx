@@ -10,7 +10,7 @@ import { toSearchParam } from "~core/query";
 
 type TopicChipsProps = {
 	topics?: string[];
-	stackProps: StackProps;
+	stackProps?: StackProps;
 };
 export const TopicChips: FC<TopicChipsProps> = (
 	props,
@@ -43,6 +43,8 @@ export const TopicChips: FC<TopicChipsProps> = (
 				>
 					<Typography
 						component={RouterLink}
+						sx={{ textDecoration: "none" }}
+						color="default"
 						to={{
 							pathname: "/",
 							search: toSearchParam({

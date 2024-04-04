@@ -1,59 +1,77 @@
 import { DBSchema, openDB } from "idb";
 import {
-	FileContentSchema,
-	RepositorySchema,
+	RepoIssueCommentSchema,
+	RepoIssueSchema,
+	RepoSchema,
 } from "~types/schemas";
 
 interface Database extends DBSchema {
-	readmes: {
+	repos: {
 		key: string;
-		value: FileContentSchema;
-	};
-	repositories: {
-		key: string;
-		value: RepositorySchema;
+		value: RepoSchema;
 		indexes: {
-			by_update_at: string;
-			by_create_at: string;
+			"by-full_name": string;
+		};
+	};
+	issues: {
+		key: number;
+		value: RepoIssueSchema;
+		indexes: {
+			"by-repo_id": number;
+		};
+	};
+	issueComments: {
+		key: number;
+		value: RepoIssueCommentSchema;
+		indexes: {
+			"by-issue_id": number;
 		};
 	};
 }
 
 export const dbPromise = openDB<Database>(
 	"primary",
-	3,
+	1,
 	{
 		upgrade(db, oldVersion) {
 			if (oldVersion <= 0) {
-				const store = db.createObjectStore(
-					"repositories",
+				const repoStore = db.createObjectStore(
+					"repos",
 					{
-						keyPath: "name",
+						keyPath: "id",
+						autoIncrement: false,
 					},
 				);
-				store.createIndex(
-					"by_create_at",
-					"create_at",
+				repoStore.createIndex(
+					"by-full_name",
+					"full_name",
+					{
+						unique: true,
+						multiEntry: false,
+					},
 				);
-				store.createIndex(
-					"by_update_at",
-					"update_at",
+				const issueStore = db.createObjectStore(
+					"issues",
+					{
+						keyPath: "id",
+						autoIncrement: false,
+					},
 				);
-			}
-			if (oldVersion <= 1) {
-				db.deleteObjectStore("repositories");
-				db.createObjectStore("repositories", {
-					keyPath: "fullname",
-				});
-			}
-			if (oldVersion <= 2) {
-				db.deleteObjectStore("repositories");
-				db.createObjectStore("repositories", {
-					keyPath: "full_name",
-				});
-				db.createObjectStore("readmes", {
-					keyPath: "repo_full_name",
-				});
+				issueStore.createIndex(
+					"by-repo_id",
+					"repo_id",
+					{ multiEntry: true, unique: false },
+				);
+				const issueCommentStore =
+					db.createObjectStore("issueComments", {
+						keyPath: "id",
+						autoIncrement: false,
+					});
+				issueCommentStore.createIndex(
+					"by-issue_id",
+					"issue_id",
+					{ multiEntry: true, unique: false },
+				);
 			}
 		},
 	},

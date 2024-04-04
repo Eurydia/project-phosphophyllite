@@ -26,21 +26,24 @@ const themeComponent = createTheme({
 	components: {
 		MuiCssBaseline: {
 			styleOverrides: {
-				html: {
+				"html": {
 					backgroundColor:
 						themePalette.palette.background,
 				},
-				pre: {
+				"*": {
+					scrollbarWidth: "thin",
+				},
+				"pre": {
 					width: "100%",
 					overflow: "auto",
 					scrollbarWidth: "thin",
 				},
-				table: {
+				"table": {
 					minWidth: "max-content",
 					overflow: "auto",
 					borderSpacing: "1rem 0.5rem",
 				},
-				a: {
+				"a": {
 					"transition": "color 0.3s ease",
 					"color": alpha(
 						themePalette.palette.primary.main,

@@ -15,10 +15,10 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import { useSubmit } from "react-router-dom";
-import { RepositorySchema } from "~types/schemas";
+import { RepoSchema } from "~types/schemas";
 
 type RepoListProps = {
-	repos: RepositorySchema[];
+	repos: RepoSchema[];
 };
 export const RepoList: FC<RepoListProps> = (
 	props,
