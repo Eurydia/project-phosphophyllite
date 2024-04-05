@@ -34,9 +34,12 @@ export const TopicChips: FC<TopicChipsProps> = (
 			{topics.map((topic) => (
 				<Paper
 					key={topic}
-					square
 					variant="outlined"
 					sx={{
+						borderColor: "theme.primary",
+						backgroundColor: "inherit",
+						borderWidth: 2,
+						borderStyle: "solid",
 						padding: 1,
 						borderRadius: 2,
 					}}

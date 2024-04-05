@@ -1,19 +1,23 @@
-import { SyncRounded } from "@mui/icons-material";
+import {
+	FilterListOffRounded,
+	SyncRounded,
+} from "@mui/icons-material";
 import {
 	Button,
 	Grid,
-	ListSubheader,
-	MenuItem,
-	Select,
+	IconButton,
+	Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { RequestError } from "octokit";
 import { FC, useState } from "react";
 import {
 	useLoaderData,
 	useSubmit,
 } from "react-router-dom";
-import { RepoList } from "~components/RepoList";
+import { RepoCard } from "~components/RepoCard";
+import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
+import { StyledSelect } from "~components/StyledSelect";
+import { StyledSelectMultiple } from "~components/StyledSelectMultiple";
 import { StyledTextField } from "~components/StyledTextField";
 import {
 	getRepoIssueComment,
@@ -21,7 +25,7 @@ import {
 	getRepos,
 } from "~database/api";
 import {
-	getCachedIssues,
+	getCachedIssuesAll,
 	getCachedRepos,
 	syncCachedRepoIssues,
 	syncCachedRepos,
@@ -81,61 +85,47 @@ export const Home: FC = () => {
 		);
 	};
 	const handleSync = async () => {
-		const repos = await getRepos()
-			.then((repos) => syncCachedRepos(repos))
-			.catch((r) => {
-				const _r = r as RequestError;
-				const msg = `${_r.status} ${_r.message}`;
-				enqueueSnackbar(msg, {
+		await getRepos().then(
+			(res) => syncCachedRepos(res),
+			(err) => {
+				enqueueSnackbar(err.status, {
 					variant: "error",
 				});
-				return null;
-			});
-		if (repos === null) {
-			return;
-		}
+			},
+		);
 		const cachedRepos = await getCachedRepos();
-		for (const repo of cachedRepos) {
-			const issues = await getRepoIssues(
-				repo.full_name,
-				repo.id,
-			)
-				.then((issues) =>
-					syncCachedRepoIssues(issues),
-				)
-				.catch((r) => {
-					const _r = r as RequestError;
-					const msg = `${_r.status} ${_r.message}`;
-					enqueueSnackbar(msg, {
-						variant: "error",
-					});
-					return null;
-				});
-			if (issues === null) {
-				continue;
-			}
-			const cachedIssues = await getCachedIssues(
-				repo.id,
-			);
-			for (const issue of cachedIssues) {
-				await getRepoIssueComment(
+		await Promise.all(
+			cachedRepos.map(async (repo) => {
+				getRepoIssues(
 					repo.full_name,
+					repo.id,
+				).then(
+					(res) => syncCachedRepoIssues(res),
+					(err) =>
+						enqueueSnackbar(err.status, {
+							variant: "error",
+						}),
+				);
+			}),
+		);
+
+		const cachedIssues =
+			await getCachedIssuesAll();
+		await Promise.all(
+			cachedIssues.map(async (issue) => {
+				getRepoIssueComment(
+					issue.repo_full_name,
 					issue.issue_number,
 					issue.id,
-				)
-					.then((comments) =>
-						syncRepoIssueComments(comments),
-					)
-					.catch((r) => {
-						const _r = r as RequestError;
-						const msg = `${_r.status} ${_r.message}`;
-						enqueueSnackbar(msg, {
+				).then(
+					(res) => syncRepoIssueComments(res),
+					(err) =>
+						enqueueSnackbar(err.status, {
 							variant: "error",
-						});
-						return null;
-					});
-			}
-		}
+						}),
+				);
+			}),
+		);
 		submit(
 			{
 				sort,
@@ -154,9 +144,13 @@ export const Home: FC = () => {
 		);
 	};
 
+	const handleFilterClear = () => {
+		submit({}, { action: "./", method: "get" });
+	};
+
 	return (
 		<WithAppBar
-			location="Repositories"
+			location={<StyledBreadcrumbs />}
 			seconadaryAction={
 				<Button
 					disableElevation
@@ -177,9 +171,10 @@ export const Home: FC = () => {
 				<Grid
 					item
 					xs={12}
-					md={6}
+					md={7}
 				>
 					<StyledTextField
+						autoComplete="off"
 						fullWidth
 						placeholder="Name"
 						size="small"
@@ -193,65 +188,73 @@ export const Home: FC = () => {
 					xs={4}
 					md={2}
 				>
-					<Select
+					<StyledSelect
 						fullWidth
 						displayEmpty
 						renderValue={() => "Sort"}
 						size="small"
 						value={sort}
+						options={sortRules}
 						onChange={(e) =>
 							handleSortChange(e.target.value)
 						}
-					>
-						<ListSubheader disableSticky>
-							Select order
-						</ListSubheader>
-						{sortRules.map(({ value, label }) => (
-							<MenuItem
-								key={value}
-								disableRipple
-								value={value}
-							>
-								{label}
-							</MenuItem>
-						))}
-					</Select>
+					/>
 				</Grid>
 				<Grid
 					item
 					xs={4}
 					md={2}
 				>
-					<Select
-						multiple
+					<StyledSelectMultiple
 						fullWidth
 						displayEmpty
 						renderValue={() => "Topics"}
 						size="small"
 						value={topics}
-						onChange={(e) =>
-							handleTopicChange(e.target.value)
+						options={topicOptions.map((opt) => ({
+							label: opt,
+							value: opt,
+						}))}
+						onChange={(event) =>
+							handleTopicChange(
+								event.target.value,
+							)
 						}
+					/>
+				</Grid>
+				<Grid
+					item
+					xs={1}
+				>
+					<IconButton
+						title="Clear filter"
+						onClick={handleFilterClear}
 					>
-						<ListSubheader disableSticky>
-							Select topics
-						</ListSubheader>
-						{topicOptions.map((option) => (
-							<MenuItem
-								key={option}
-								value={option}
-							>
-								{option}
-							</MenuItem>
-						))}
-					</Select>
+						<FilterListOffRounded />
+					</IconButton>
 				</Grid>
 				<Grid
 					item
 					xs={12}
 				>
-					<RepoList repos={repos} />
+					<Typography
+						variant="subtitle2"
+						fontSize="small"
+						fontWeight="bold"
+					>
+						Showing {repos.length} repositories
+					</Typography>
 				</Grid>
+				{repos.map((repo) => (
+					<Grid
+						key={repo.full_name}
+						item
+						xs={12}
+						md={6}
+					>
+						<RepoCard repo={repo} />
+					</Grid>
+				))}
 			</Grid>
 		</WithAppBar>
 	);

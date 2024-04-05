@@ -1,13 +1,23 @@
 import { LoaderFunction } from "react-router";
-import { getRepo } from "~database/api";
-import { getCachedRepo } from "~database/cached";
-import { RepoSchema } from "~types/schemas";
+import {
+	getCachedIssues,
+	getCachedRepo,
+} from "~database/cached";
+import {
+	RepoIssueSchema,
+	RepoSchema,
+} from "~types/schemas";
 
-export type LoaderData = {
-	repo: RepoSchema;
-};
+export type LoaderData =
+	| {
+			tab: "readme";
+			readme: string | undefined;
+			topics: string[] | undefined;
+	  }
+	| { tab: "metadata"; repo: RepoSchema }
+	| { tab: "issues"; issues: RepoIssueSchema[] };
 export const loaderProjectInfo: LoaderFunction =
-	async ({ params }) => {
+	async ({ params, request }) => {
 		const owner = params.owner;
 		const repoName = params.repo;
 		if (
@@ -19,19 +29,34 @@ export const loaderProjectInfo: LoaderFunction =
 				statusText: "Bad requeset",
 			});
 		}
+
 		const fullName = `${owner}/${repoName}`;
-		let repo =
-			(await getCachedRepo(fullName)) ||
-			(await getRepo(fullName));
+		let repo = await getCachedRepo(fullName);
 		if (repo === undefined) {
 			throw new Response("Not found", {
 				status: 404,
-				statusText: "Repository not found",
+				statusText:
+					"Repository not found in cache",
 			});
 		}
 		document.title = repo.name;
-		const loaderData: LoaderData = {
-			repo,
+
+		const searchParam = new URL(request.url)
+			.searchParams;
+		const tabParam = searchParam.get("tab");
+		let loaderData: LoaderData = {
+			tab: "readme",
+			readme: repo.readme,
+			topics: repo.topics,
 		};
+		if (
+			tabParam === "issues" &&
+			repo !== undefined
+		) {
+			loaderData = {
+				tab: "issues",
+				issues: await getCachedIssues(repo.id),
+			};
+		}
 		return loaderData;
 	};

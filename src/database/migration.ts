@@ -11,6 +11,7 @@ interface Database extends DBSchema {
 		value: RepoSchema;
 		indexes: {
 			"by-full_name": string;
+			"by-id": number;
 		};
 	};
 	issues: {
@@ -50,6 +51,10 @@ export const dbPromise = openDB<Database>(
 						multiEntry: false,
 					},
 				);
+				repoStore.createIndex("by-id", "id", {
+					unique: true,
+					multiEntry: false,
+				});
 				const issueStore = db.createObjectStore(
 					"issues",
 					{

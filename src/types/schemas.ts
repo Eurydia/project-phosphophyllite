@@ -18,6 +18,7 @@ export type RepoSchema = {
 
 export type RepoIssueSchema = {
 	repo_id: number; // owner repo id
+	repo_full_name: string;
 	// ---
 
 	id: number; // self id
@@ -34,6 +35,7 @@ export type RepoIssueSchema = {
 
 export type RepoIssueCommentSchema = {
 	issue_id: number; // owner issue id
+
 	// ---
 	id: number; // self id
 	html_url: string;

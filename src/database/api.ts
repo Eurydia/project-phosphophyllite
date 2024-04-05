@@ -1,4 +1,4 @@
-import { Octokit, RequestError } from "octokit";
+import { Octokit } from "octokit";
 import {
 	RepoIssueCommentSchema,
 	RepoIssueSchema,
@@ -61,7 +61,14 @@ export const getRepos = async () => {
 				updated_at,
 				is_archived,
 				is_private,
-				readme: await getRepoReadMe(full_name),
+				readme: await getRepoReadMe(
+					full_name,
+				).catch((err) => {
+					if (err.status === 404) {
+						return undefined;
+					}
+					throw err;
+				}),
 			}),
 		),
 	);
@@ -75,25 +82,14 @@ const getRepoReadMe = async (
 	const token = getToken();
 	const ocktokit = new Octokit({ auth: token });
 	const [owner, repo] = fullName.split("/");
-	const response = await ocktokit
-		.request("GET /repos/{owner}/{repo}/readme", {
+	const res = await ocktokit.request(
+		"GET /repos/{owner}/{repo}/readme",
+		{
 			owner,
 			repo,
-		})
-		.then(
-			(res) => res,
-			(r) => {
-				const _r = r as RequestError;
-				if (_r.status === 404) {
-					return undefined;
-				}
-				throw r;
-			},
-		);
-	if (response === undefined) {
-		return undefined;
-	}
-	return response.data.content;
+		},
+	);
+	return res.data.content;
 };
 
 export const getRepoIssues = async (
@@ -108,6 +104,7 @@ export const getRepoIssues = async (
 		{
 			owner,
 			repo,
+			state: "all",
 		},
 	);
 	const issues: RepoIssueSchema[] = response.map(
@@ -124,6 +121,7 @@ export const getRepoIssues = async (
 			body,
 		}) => ({
 			repo_id: repoId,
+			repo_full_name: fullName,
 			id,
 			html_url,
 			issue_number,

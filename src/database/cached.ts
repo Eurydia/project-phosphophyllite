@@ -35,6 +35,12 @@ export const getCachedTopics = async () => {
 	return topics;
 };
 
+export const getCachedIssuesAll = async () => {
+	return dbPromise.then((db) =>
+		db.getAll("issues"),
+	);
+};
+
 export const getCachedIssues = async (
 	repoId: number,
 ) => {

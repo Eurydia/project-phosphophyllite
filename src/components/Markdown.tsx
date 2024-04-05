@@ -9,14 +9,18 @@ type MarkdownProps = Omit<
 	TypographyProps,
 	"ref"
 > & {
-	content: string | undefined;
+	markdownContent: string | undefined | null;
 	emptyText: string | undefined;
 };
 export const Markdown: FC<MarkdownProps> = (
 	props,
 ) => {
-	const { content, emptyText, sx, ...rest } =
-		props;
+	const {
+		markdownContent: content,
+		emptyText,
+		sx,
+		...rest
+	} = props;
 
 	const contentRef = useRef<HTMLElement | null>(
 		null,
@@ -25,6 +29,7 @@ export const Markdown: FC<MarkdownProps> = (
 	useEffect(() => {
 		if (
 			content === undefined ||
+			content === null ||
 			contentRef === null ||
 			contentRef.current === null
 		) {
