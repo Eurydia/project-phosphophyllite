@@ -51,7 +51,6 @@ export const Markdown: FC<MarkdownProps> = (
 				...sx,
 				wordBreak: "break-word",
 				wordWrap: "break-word",
-				scrollbarWidth: "thin",
 			}}
 		>
 			{emptyText}

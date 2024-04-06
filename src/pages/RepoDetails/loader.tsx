@@ -3,10 +3,7 @@ import {
 	getCachedIssues,
 	getCachedRepo,
 } from "~database/cached";
-import {
-	RepoIssueSchema,
-	RepoSchema,
-} from "~types/schemas";
+import { RepoIssueSchema } from "~types/schemas";
 
 export type LoaderData =
 	| {
@@ -14,7 +11,17 @@ export type LoaderData =
 			readme: string | undefined;
 			topics: string[] | undefined;
 	  }
-	| { tab: "metadata"; repo: RepoSchema }
+	| {
+			tab: "metadata";
+			created_at: string | null;
+			updated_at: string | null;
+			pushed_at: string | null;
+			description: string | null | undefined;
+			html_url: string;
+			homepage: string | null;
+			is_private: boolean;
+			is_archived: boolean;
+	  }
 	| { tab: "issues"; issues: RepoIssueSchema[] };
 export const loaderProjectInfo: LoaderFunction =
 	async ({ params, request }) => {
@@ -40,7 +47,6 @@ export const loaderProjectInfo: LoaderFunction =
 			});
 		}
 		document.title = repo.name;
-
 		const searchParam = new URL(request.url)
 			.searchParams;
 		const tabParam = searchParam.get("tab");
@@ -56,6 +62,15 @@ export const loaderProjectInfo: LoaderFunction =
 			loaderData = {
 				tab: "issues",
 				issues: await getCachedIssues(repo.id),
+			};
+		}
+		if (
+			tabParam === "metadata" &&
+			repo !== undefined
+		) {
+			loaderData = {
+				...repo,
+				tab: "metadata",
 			};
 		}
 		return loaderData;

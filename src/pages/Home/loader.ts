@@ -127,7 +127,7 @@ export const loaderHome: LoaderFunction = async ({
 		(await getCachedRepos()) ||
 		(await getRepos());
 	repos = matchSorter(repos, name, {
-		keys: ["name"],
+		keys: ["full_name"],
 	});
 	if (topics.length > 0) {
 		repos = repos.filter((repo) => {

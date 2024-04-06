@@ -8,7 +8,11 @@ import { useRouteError } from "react-router";
 import { WithAppBar } from "~views/WithAppBar";
 
 export const ErrorBoundry: FC = () => {
-	const { status, statusText } = useRouteError();
+	const { status, statusText } =
+		useRouteError() as {
+			status: string;
+			statusText: string;
+		};
 	// useEffect(() => {
 	// 	document.title = status.toString();
 	// }, []);
