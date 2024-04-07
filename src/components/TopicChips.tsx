@@ -36,10 +36,6 @@ export const TopicChips: FC<TopicChipsProps> = (
 					key={topic}
 					variant="outlined"
 					sx={{
-						borderColor: "theme.primary",
-						backgroundColor: "inherit",
-						borderWidth: 2,
-						borderStyle: "solid",
 						padding: 1,
 						borderRadius: 2,
 					}}
