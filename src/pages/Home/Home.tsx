@@ -88,7 +88,7 @@ export const Home: FC = () => {
 		await getRepos().then(
 			(res) => syncCachedRepos(res),
 			(err) => {
-				enqueueSnackbar(err.status, {
+				enqueueSnackbar(err ?? "uhoh", {
 					variant: "error",
 				});
 			},
@@ -102,7 +102,7 @@ export const Home: FC = () => {
 				).then(
 					(res) => syncCachedRepoIssues(res),
 					(err) =>
-						enqueueSnackbar(err.status, {
+						enqueueSnackbar(err ?? "uhoh", {
 							variant: "error",
 						}),
 				);
@@ -120,7 +120,7 @@ export const Home: FC = () => {
 				).then(
 					(res) => syncRepoIssueComments(res),
 					(err) =>
-						enqueueSnackbar(err.status, {
+						enqueueSnackbar(err ?? "uhoh", {
 							variant: "error",
 						}),
 				);

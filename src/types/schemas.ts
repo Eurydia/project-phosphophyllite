@@ -4,16 +4,16 @@ export type RepoSchema = {
 
 	id: number;
 	html_url: string; // link to repo
-	homepage: string | null; // repo homepage, usually [username].github.io
+	homepage: string | null | undefined; // repo homepage, usually [username].github.io
 	name: string; // repo name
 	full_name: string; // "[owner]/[repo_name]"
 	description: string | null; // small description
 	topics: string[] | undefined; // list of topics
-	pushed_at: string | null;
-	created_at: string | null;
-	updated_at: string | null;
+	pushed_at: string | null | undefined;
+	created_at: string | null | undefined;
+	updated_at: string | null | undefined;
 	is_private: boolean;
-	is_archived: boolean;
+	is_archived: boolean | undefined;
 };
 
 export type RepoIssueSchema = {
