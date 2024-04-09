@@ -75,6 +75,7 @@ export const Home: FC = () => {
 	) => {
 		submit(
 			{
+				name,
 				sort,
 				topics: value,
 			},

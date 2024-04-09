@@ -15,6 +15,11 @@ const getToken = () => {
 	return token;
 };
 
+const getOctokit = () => {
+	const token = getToken();
+	return new Octokit({ auth: token });
+};
+
 export const getRepo = async (
 	fullName: string,
 ) => {
@@ -28,8 +33,7 @@ export const getRepo = async (
 };
 
 export const getRepos = async () => {
-	const token = getToken();
-	const octokit = new Octokit({ auth: token });
+	const octokit = getOctokit();
 	const pages = await octokit.paginate(
 		"GET /user/repos",
 	);
@@ -79,8 +83,7 @@ export const getRepos = async () => {
 const getRepoReadMe = async (
 	fullName: string,
 ) => {
-	const token = getToken();
-	const ocktokit = new Octokit({ auth: token });
+	const ocktokit = getOctokit();
 	const [owner, repo] = fullName.split("/");
 	const res = await ocktokit.request(
 		"GET /repos/{owner}/{repo}/readme",
@@ -96,8 +99,7 @@ export const getRepoIssues = async (
 	fullName: string,
 	repoId: number,
 ) => {
-	const token = getToken();
-	const ocktokit = new Octokit({ auth: token });
+	const ocktokit = getOctokit();
 	const [owner, repo] = fullName.split("/");
 	const response = await ocktokit.paginate(
 		"GET /repos/{owner}/{repo}/issues",
@@ -142,8 +144,7 @@ export const getRepoIssueComment = async (
 	issueNumber: number,
 	issueId: number,
 ) => {
-	const token = getToken();
-	const ocktokit = new Octokit({ auth: token });
+	const ocktokit = getOctokit();
 	const [owner, repo] = fullName.split("/");
 	const response = await ocktokit.paginate(
 		"GET /repos/{owner}/{repo}/issues/{issue_number}/comments",
