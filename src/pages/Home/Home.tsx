@@ -14,9 +14,8 @@ import {
 	useLoaderData,
 	useSubmit,
 } from "react-router-dom";
-import { RepoCard } from "~components/RepoCard";
+import { RepoDataTable } from "~components/RepoDataTable";
 import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
-import { StyledSelect } from "~components/StyledSelect";
 import { StyledSelectMultiple } from "~components/StyledSelectMultiple";
 import { StyledTextField } from "~components/StyledTextField";
 import {
@@ -32,13 +31,12 @@ import {
 	syncRepoIssueComments,
 } from "~database/cached";
 import { WithAppBar } from "~views/WithAppBar";
-import { LoaderData, sortRules } from "./loader";
+import { LoaderData } from "./loader";
 
 export const Home: FC = () => {
 	const {
 		name: loadedName,
 		repos,
-		sort,
 		topics,
 		topicOptions,
 	} = useLoaderData() as LoaderData;
@@ -61,7 +59,6 @@ export const Home: FC = () => {
 		submit(
 			{
 				name,
-				sort,
 				topics,
 			},
 			{
@@ -76,7 +73,6 @@ export const Home: FC = () => {
 		submit(
 			{
 				name,
-				sort,
 				topics: value,
 			},
 			{
@@ -129,7 +125,6 @@ export const Home: FC = () => {
 		);
 		submit(
 			{
-				sort,
 				topics,
 			},
 			{
@@ -184,23 +179,7 @@ export const Home: FC = () => {
 						onChange={setName}
 					/>
 				</Grid>
-				<Grid
-					item
-					xs={4}
-					md={2}
-				>
-					<StyledSelect
-						fullWidth
-						displayEmpty
-						renderValue={() => "Sort"}
-						size="small"
-						value={sort}
-						options={sortRules}
-						onChange={(e) =>
-							handleSortChange(e.target.value)
-						}
-					/>
-				</Grid>
+
 				<Grid
 					item
 					xs={4}
@@ -246,16 +225,12 @@ export const Home: FC = () => {
 						Showing {repos.length} repositories
 					</Typography>
 				</Grid>
-				{repos.map((repo) => (
-					<Grid
-						key={repo.full_name}
-						item
-						xs={12}
-						md={6}
-					>
-						<RepoCard repo={repo} />
-					</Grid>
-				))}
+				<Grid
+					item
+					xs={12}
+				>
+					<RepoDataTable repos={repos} />
+				</Grid>
 			</Grid>
 		</WithAppBar>
 	);

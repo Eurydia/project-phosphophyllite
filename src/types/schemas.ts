@@ -9,11 +9,11 @@ export type RepoSchema = {
 	full_name: string; // "[owner]/[repo_name]"
 	description: string | null; // small description
 	topics: string[] | undefined; // list of topics
-	pushed_at: string | null | undefined;
-	created_at: string | null | undefined;
-	updated_at: string | null | undefined;
+	pushed_at: string | null;
+	created_at: string | null;
+	updated_at: string | null;
 	is_private: boolean;
-	is_archived: boolean | undefined;
+	is_archived: boolean;
 };
 
 export type RepoIssueSchema = {

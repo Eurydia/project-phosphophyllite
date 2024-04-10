@@ -1,14 +1,34 @@
 import moment from "moment";
 
-export const timeSince = (dateString: string) => {
+export const timeSince = (
+	dateString: string | undefined | null,
+	fallback: string = "-",
+) => {
+	if (
+		dateString === undefined ||
+		dateString === null ||
+		dateString === ""
+	) {
+		return fallback;
+	}
+
 	return moment(dateString).fromNow();
 };
 
 export const normalizeDateString = (
-	dateString: string,
+	dateString: string | undefined | null,
+	fallback: string = "-",
 ) => {
+	if (
+		dateString === undefined ||
+		dateString === null ||
+		dateString === ""
+	) {
+		return fallback;
+	}
+
 	return moment(dateString).format(
-		"dddd, MMMM Do YYYY, kk:mm:ss",
+		"MMMM Do YYYY",
 	);
 };
 
