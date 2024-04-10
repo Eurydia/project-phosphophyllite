@@ -267,6 +267,7 @@ export const RepoDataTable: React.FC<
 		<Box
 			sx={{
 				minWidth: "95vw",
+				maxHeight: "100%",
 				overflow: "auto",
 			}}
 		>
