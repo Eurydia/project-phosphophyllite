@@ -33,7 +33,7 @@ import {
 import { WithAppBar } from "~views/WithAppBar";
 import { LoaderData } from "./loader";
 
-export const Home: FC = () => {
+export const HomePage: FC = () => {
 	const {
 		name: loadedName,
 		repos,
@@ -45,16 +45,6 @@ export const Home: FC = () => {
 	const submit = useSubmit();
 	const [name, setName] = useState(loadedName);
 
-	const handleSortChange = (value: string) => {
-		submit(
-			{
-				name,
-				sort: value,
-				topics,
-			},
-			{ action: "/", method: "get" },
-		);
-	};
 	const handleFilterSubmit = () => {
 		submit(
 			{
@@ -83,12 +73,18 @@ export const Home: FC = () => {
 	};
 	const handleSync = async () => {
 		await getRepos().then(
-			(res) => syncCachedRepos(res),
-			(err) => {
-				enqueueSnackbar(err ?? "uhoh", {
-					variant: "error",
+			(res) => {
+				syncCachedRepos(res);
+				enqueueSnackbar({
+					message:
+						"Successfully synced repositories",
+					variant: "success",
 				});
 			},
+			(err) =>
+				enqueueSnackbar(err, {
+					variant: "error",
+				}),
 		);
 		const cachedRepos = await getCachedRepos();
 		await Promise.all(
@@ -97,9 +93,16 @@ export const Home: FC = () => {
 					repo.full_name,
 					repo.id,
 				).then(
-					(res) => syncCachedRepoIssues(res),
+					(res) => {
+						syncCachedRepoIssues(res);
+						enqueueSnackbar({
+							message:
+								"Successfully synced issues",
+							variant: "success",
+						});
+					},
 					(err) =>
-						enqueueSnackbar(err ?? "uhoh", {
+						enqueueSnackbar(err, {
 							variant: "error",
 						}),
 				);
@@ -115,9 +118,16 @@ export const Home: FC = () => {
 					issue.issue_number,
 					issue.id,
 				).then(
-					(res) => syncRepoIssueComments(res),
+					(res) => {
+						syncRepoIssueComments(res);
+						enqueueSnackbar({
+							message:
+								"Successfully synced comments",
+							variant: "success",
+						});
+					},
 					(err) =>
-						enqueueSnackbar(err ?? "uhoh", {
+						enqueueSnackbar(err, {
 							variant: "error",
 						}),
 				);
@@ -130,12 +140,6 @@ export const Home: FC = () => {
 			{
 				action: "/",
 				method: "get",
-			},
-		);
-		enqueueSnackbar(
-			"Synchronization successful.",
-			{
-				variant: "success",
 			},
 		);
 	};

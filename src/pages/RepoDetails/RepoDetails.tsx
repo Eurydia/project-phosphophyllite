@@ -18,7 +18,7 @@ import { WithAppBar } from "~views/WithAppBar";
 import { Layout } from "./Layout";
 import { LoaderData } from "./loader";
 
-export const ProjectInfo: FC = () => {
+export const RepoDetails: FC = () => {
 	const loaderData =
 		useLoaderData() as LoaderData;
 
