@@ -8,9 +8,13 @@ import {
 	createHashRouter,
 } from "react-router-dom";
 import { ErrorBoundry } from "~pages/ErrorBoundary";
-import { Home, loaderHome } from "~pages/Home";
-import { ProjectInfo } from "~pages/RepoDetails/RepoDetails";
-import { loaderProjectInfo } from "~pages/RepoDetails/loader";
+import {
+	Home,
+	loaderHome,
+} from "~pages/HomePage";
+import { RepoDetails } from "~pages/RepoDetails/RepoDetails";
+import { loader } from "~pages/RepoDetails/loader";
+import { SettingsPage } from "~pages/SettingsPage/SettingsPage";
 import { themeComposed } from "./theme";
 
 const router = createHashRouter(
@@ -27,8 +31,12 @@ const router = createHashRouter(
 			children: [
 				{
 					path: "/:owner/:repo",
-					element: <ProjectInfo />,
-					loader: loaderProjectInfo,
+					element: <RepoDetails />,
+					loader: loader,
+				},
+				{
+					path: "/settings",
+					element: <SettingsPage />,
 				},
 			],
 		},

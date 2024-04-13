@@ -7,7 +7,7 @@ import {
 
 const getToken = () => {
 	const token = localStorage.getItem(
-		"personal-key",
+		"personal-access-token",
 	);
 	if (token === null) {
 		return "-1";

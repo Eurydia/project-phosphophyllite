@@ -13,9 +13,6 @@ export const ErrorBoundry: FC = () => {
 			status: string;
 			statusText: string;
 		};
-	// useEffect(() => {
-	// 	document.title = status.toString();
-	// }, []);
 	return (
 		<WithAppBar location={status}>
 			<Container maxWidth="md">
