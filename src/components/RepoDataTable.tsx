@@ -1,5 +1,4 @@
 import {
-	Box,
 	Table,
 	TableBody,
 	TableCell,
@@ -264,30 +263,24 @@ export const RepoDataTable: React.FC<
 	}, [order, orderBy, repos]);
 
 	return (
-		<Box
-			sx={{
-				minWidth: "95vw",
-				maxHeight: "100%",
-				overflow: "auto",
-			}}
+		<TableContainer
+			sx={{ width: "100%", overflowX: "auto" }}
 		>
-			<TableContainer>
-				<Table>
-					<StyledTableHead
-						onRequestSort={handleRequestSort}
-						order={order}
-						orderBy={orderBy}
-					/>
-					<TableBody>
-						{repos_.map((repo) => (
-							<StyledTableRow
-								key={repo.full_name}
-								repo={repo}
-							/>
-						))}
-					</TableBody>
-				</Table>
-			</TableContainer>
-		</Box>
+			<Table>
+				<StyledTableHead
+					onRequestSort={handleRequestSort}
+					order={order}
+					orderBy={orderBy}
+				/>
+				<TableBody>
+					{repos_.map((repo) => (
+						<StyledTableRow
+							key={repo.full_name}
+							repo={repo}
+						/>
+					))}
+				</TableBody>
+			</Table>
+		</TableContainer>
 	);
 };

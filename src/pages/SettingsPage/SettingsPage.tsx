@@ -1,9 +1,10 @@
 import {
-	Container,
+	Button,
 	List,
 	ListItem,
 	ListItemSecondaryAction,
 	ListItemText,
+	ListSubheader,
 	TextField,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
@@ -12,7 +13,10 @@ import { WithAppBar } from "~views/WithAppBar";
 
 export const SettingsPage: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
-	const [password, setPassword] = useState(
+	const [
+		personalAccessToken,
+		setPersonalAccessToken,
+	] = useState(
 		localStorage.getItem(
 			"personal-access-token",
 		) ?? "",
@@ -24,35 +28,44 @@ export const SettingsPage: FC = () => {
 		>,
 	) => {
 		const value = event.target.value.normalize();
-		setPassword(value);
+		setPersonalAccessToken(value);
+	};
+
+	const commitChanges = () => {
 		localStorage.setItem(
 			"personal-access-token",
-			value,
+			personalAccessToken,
 		);
 		enqueueSnackbar({
-			message: "Updated personal access token",
+			message: "Updated personal access token.",
 			variant: "info",
 		});
 	};
 
 	return (
 		<WithAppBar location="Settings">
-			<Container maxWidth="sm">
-				<List>
-					<ListItem>
-						<ListItemText primary="Personal access token (classic)" />
-						<ListItemSecondaryAction>
-							<TextField
-								placeholder="ghp_"
-								type="password"
-								value={password}
-								onChange={handlePasswordChange}
-								size="small"
-							/>
-						</ListItemSecondaryAction>
-					</ListItem>
-				</List>
-			</Container>
+			<List disablePadding>
+				<ListSubheader>API</ListSubheader>
+				<ListItem>
+					<ListItemText primary="Personal access token (classic)" />
+					<ListItemSecondaryAction>
+						<TextField
+							placeholder="ghp_"
+							type="password"
+							value={personalAccessToken}
+							onChange={handlePasswordChange}
+							size="small"
+						/>
+					</ListItemSecondaryAction>
+				</ListItem>
+			</List>
+			<Button
+				size="small"
+				variant="contained"
+				onClick={commitChanges}
+			>
+				Update
+			</Button>
 		</WithAppBar>
 	);
 };

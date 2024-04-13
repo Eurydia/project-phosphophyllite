@@ -1,11 +1,6 @@
 import {
-	FilterListOffRounded,
-	SyncRounded,
-} from "@mui/icons-material";
-import {
 	Button,
 	Grid,
-	IconButton,
 	Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
@@ -76,8 +71,7 @@ export const HomePage: FC = () => {
 			(res) => {
 				syncCachedRepos(res);
 				enqueueSnackbar({
-					message:
-						"Successfully synced repositories",
+					message: "Synced repositories",
 					variant: "success",
 				});
 			},
@@ -96,8 +90,7 @@ export const HomePage: FC = () => {
 					(res) => {
 						syncCachedRepoIssues(res);
 						enqueueSnackbar({
-							message:
-								"Successfully synced issues",
+							message: "Synced issues",
 							variant: "success",
 						});
 					},
@@ -121,8 +114,7 @@ export const HomePage: FC = () => {
 					(res) => {
 						syncRepoIssueComments(res);
 						enqueueSnackbar({
-							message:
-								"Successfully synced comments",
+							message: "Synced comments",
 							variant: "success",
 						});
 					},
@@ -156,7 +148,6 @@ export const HomePage: FC = () => {
 					disableElevation
 					size="small"
 					variant="outlined"
-					startIcon={<SyncRounded />}
 					onClick={handleSync}
 				>
 					Sync
@@ -165,8 +156,9 @@ export const HomePage: FC = () => {
 		>
 			<Grid
 				container
-				padding={2}
 				spacing={2}
+				paddingTop={2}
+				paddingLeft={2}
 			>
 				<Grid
 					item
@@ -183,7 +175,6 @@ export const HomePage: FC = () => {
 						onChange={setName}
 					/>
 				</Grid>
-
 				<Grid
 					item
 					xs={4}
@@ -205,17 +196,6 @@ export const HomePage: FC = () => {
 							)
 						}
 					/>
-				</Grid>
-				<Grid
-					item
-					xs={1}
-				>
-					<IconButton
-						title="Clear filter"
-						onClick={handleFilterClear}
-					>
-						<FilterListOffRounded />
-					</IconButton>
 				</Grid>
 				<Grid
 					item

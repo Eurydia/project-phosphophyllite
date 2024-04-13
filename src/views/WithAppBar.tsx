@@ -1,21 +1,23 @@
 import {
 	AppBar,
 	Box,
+	Divider,
 	Grid,
-	IconButton,
-	Stack,
+	List,
+	ListItem,
+	ListItemButton,
+	ListItemText,
+	Paper,
 	Toolbar,
 } from "@mui/material";
 import {
 	FC,
-	Fragment,
 	ReactNode,
 	useEffect,
 	useRef,
 	useState,
 } from "react";
 import { useSubmit } from "react-router-dom";
-import { IconHexagonMultiple } from "~assets/HexagonGroup";
 
 type WithAppBarProps = {
 	location: ReactNode;
@@ -27,13 +29,12 @@ export const WithAppBar: FC<WithAppBarProps> = (
 ) => {
 	const { location, children, seconadaryAction } =
 		props;
-
 	const submit = useSubmit();
 	const appBarRef = useRef<HTMLElement | null>(
 		null,
 	);
-	const [appBarHeight, setAppBarHeight] =
-		useState("100vh");
+	const [contentHeight, setContentHeight] =
+		useState("0vh");
 
 	useEffect(() => {
 		if (
@@ -42,81 +43,79 @@ export const WithAppBar: FC<WithAppBarProps> = (
 		) {
 			return;
 		}
-		const height =
+		const appBarHeight =
 			appBarRef.current.getBoundingClientRect()
 				.height;
-		setAppBarHeight(`${height}px`);
+
+		setContentHeight(
+			`calc(100vh - ${appBarHeight}px)`,
+		);
 	}, [appBarRef]);
 
-	const handleRedirectHome = () => {
+	const redirectHome = () => {
 		submit({}, { action: "/", method: "get" });
 	};
-	const contentHeight = `calc(100vh - ${appBarHeight})`;
+
 	return (
-		<Fragment>
-			<AppBar
-				ref={appBarRef}
-				variant="outlined"
-				elevation={0}
-				position="relative"
+		<Grid
+			container
+			columns={10}
+			maxWidth="100vw"
+		>
+			<Grid
+				item
+				xs={2}
 			>
-				<Toolbar variant="regular">
-					<Grid
-						container
-						spacing={1}
-						alignItems="center"
+				<Paper
+					square
+					variant="outlined"
+					sx={{ height: "100%" }}
+				>
+					<Toolbar variant="dense" />
+					<Divider />
+					<List
+						disablePadding
+						dense
 					>
-						<Grid
-							item
-							xs={1}
-							display="flex"
-							justifyContent="center"
-						>
-							<IconButton
-								disableRipple
-								title="Home"
-								onClick={handleRedirectHome}
+						<ListItem disableGutters>
+							<ListItemButton
+								onClick={redirectHome}
 							>
-								<IconHexagonMultiple />
-							</IconButton>
-						</Grid>
-						<Grid
-							item
-							xs={7}
-						>
-							{location}
-							{/* <Typography
-								variant="body1"
-								width="100%"
-								overflow="hidden"
-								whiteSpace="nowrap"
-								textOverflow="ellipsis"
-								fontWeight="500"
-							>
-								{location}
-							</Typography> */}
-						</Grid>
-						<Grid
-							item
-							xs={4}
-						>
-							<Stack
-								spacing={2}
-								justifyContent="end"
-								direction="row"
-							>
-								{seconadaryAction}
-							</Stack>
-						</Grid>
-					</Grid>
-				</Toolbar>
-			</AppBar>
-			<Box
-				height={contentHeight}
-				overflow="auto"
+								<ListItemText>Home</ListItemText>
+							</ListItemButton>
+						</ListItem>
+					</List>
+				</Paper>
+			</Grid>
+			<Grid
+				item
+				xs={8}
 			>
-				{children}
-			</Box>
-		</Fragment>
+				<AppBar
+					ref={appBarRef}
+					position="relative"
+					elevation={0}
+					variant="outlined"
+				>
+					<Toolbar
+						variant="dense"
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "space-between",
+						}}
+					>
+						{location}
+						{seconadaryAction}
+					</Toolbar>
+				</AppBar>
+				<Box
+					height={contentHeight}
+					overflow="auto"
+				>
+					{children}
+				</Box>
+			</Grid>
+		</Grid>
 	);
 };
