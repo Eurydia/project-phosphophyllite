@@ -1,18 +1,21 @@
-import { Typography } from "@mui/material";
-import { Fragment, ReactNode } from "react";
-import { Link as RouterLink } from "react-router-dom";
-import { toSearchParam } from "~core/query";
+import { Stack, Typography } from "@mui/material";
+import { ReactNode } from "react";
 import { toTimeStamp } from "~core/time";
 import { RepoSchema } from "~types/schemas";
 
 export const toDetails = (repo: RepoSchema) => {
 	const links = (
-		<Fragment>
+		<Stack
+			component="span"
+			display="flex"
+			flexDirection="row"
+			flexWrap="wrap"
+			gap={1}
+		>
 			<Typography
 				component="a"
 				href={repo.html_url}
 				target="_blank"
-				paddingRight={1}
 			>
 				GitHub repository
 			</Typography>
@@ -23,25 +26,11 @@ export const toDetails = (repo: RepoSchema) => {
 			>
 				Homepage
 			</Typography>
-		</Fragment>
+		</Stack>
 	);
 	const topics =
 		repo.topics && repo.topics.length > 0
-			? repo.topics.map((topic, index) => (
-					<Typography
-						key={`${topic}-${index}`}
-						paddingRight={1}
-						component={RouterLink}
-						to={{
-							pathname: "/",
-							search: toSearchParam({
-								topics: topic,
-							}),
-						}}
-					>
-						{topic}
-					</Typography>
-			  ))
+			? repo.topics.join(", ")
 			: "No topic assigned";
 	const desc =
 		repo.description ?? "No description";
@@ -50,10 +39,10 @@ export const toDetails = (repo: RepoSchema) => {
 		: "Unknown";
 	const modifiedAt = repo.updated_at
 		? toTimeStamp(repo.updated_at)
-		: "Unknown";
+		: "Never";
 	const pushedAt = repo.pushed_at
 		? toTimeStamp(repo.pushed_at)
-		: "Unknown";
+		: "Never";
 	const visibility = repo.is_private
 		? "Private"
 		: "Public";
@@ -66,12 +55,12 @@ export const toDetails = (repo: RepoSchema) => {
 		value: ReactNode,
 	][] = [
 		["Description", desc],
-		["Links", links],
 		["Last pushed", pushedAt],
 		["Last modified", modifiedAt],
 		["Created", createAt],
 		["Visibility", visibility],
 		["Status", status],
+		["Links", links],
 		["Topics", topics],
 	];
 	return detailsItems;

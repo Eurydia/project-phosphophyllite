@@ -3,3 +3,8 @@ export interface SortRule<T> {
 	label: string;
 	compareFn: (a: T, b: T) => number;
 }
+
+export type GenericSelectOptions<T> = {
+	label: string;
+	value: T;
+};

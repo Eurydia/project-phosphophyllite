@@ -73,18 +73,29 @@ export const WithAppBar: FC<WithAppBarProps> = (
 		>
 			<Grid
 				item
-				xs={2}
+				xs={3}
+				md={2}
 			>
 				<Paper
 					square
 					variant="outlined"
-					sx={{ height: "100%" }}
+					elevation={0}
+					sx={{
+						height: "100%",
+						borderTopWidth: 0,
+						borderLeftWidth: 0,
+						borderBottomWidth: 0,
+					}}
 				>
 					<Toolbar variant="dense" />
 					<Divider />
 					<List
 						disablePadding
 						dense
+						sx={{
+							wordBreak: "break-word",
+							whiteSpace: "wrap",
+						}}
 					>
 						{nav.map(({ label, path }) => (
 							<ListItem
@@ -107,18 +118,21 @@ export const WithAppBar: FC<WithAppBarProps> = (
 			</Grid>
 			<Grid
 				item
-				xs={8}
+				xs={7}
+				md={8}
 			>
 				<AppBar
 					ref={appBarRef}
 					position="relative"
+					variant="elevation"
 					elevation={0}
-					variant="outlined"
 				>
 					<Toolbar
 						variant="dense"
 						sx={{
 							display: "flex",
+							flexDirection: "row",
+							flexWrap: "wrap",
 							alignItems: "center",
 							justifyContent: "space-between",
 						}}
@@ -126,6 +140,10 @@ export const WithAppBar: FC<WithAppBarProps> = (
 						{location}
 						{seconadaryAction}
 					</Toolbar>
+					<Divider
+						flexItem
+						variant="fullWidth"
+					/>
 				</AppBar>
 				<Box
 					height={contentHeight}

@@ -1,9 +1,9 @@
 import {
 	ChevronLeftRounded,
-	ChevronRightRounded,
 	ClearRounded,
 } from "@mui/icons-material";
 import {
+	Container,
 	Divider,
 	Drawer,
 	IconButton,
@@ -22,7 +22,6 @@ import { useLoaderData } from "react-router";
 import { Markdown } from "~components/Markdown";
 import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
 import { WithAppBar } from "~views/WithAppBar";
-import { Layout } from "./Layout";
 import { toDetails } from "./helper";
 import { LoaderData } from "./loader";
 
@@ -88,6 +87,8 @@ export const RepoDetailsPage: FC = () => {
 					spacing={1}
 					direction="row"
 					alignItems="center"
+					justifyContent="space-between"
+					flexGrow={{ xs: 1, sm: 0 }}
 				>
 					<Tabs
 						value={tab}
@@ -112,14 +113,14 @@ export const RepoDetailsPage: FC = () => {
 				</Stack>
 			}
 		>
-			<Layout>
-				{tab === 0 && (
+			{tab === 0 && (
+				<Container maxWidth="sm">
 					<Markdown
 						emptyText="..."
 						markdownContent={decodedReadme}
 					/>
-				)}
-			</Layout>
+				</Container>
+			)}
 			<Drawer
 				elevation={0}
 				anchor="right"
@@ -141,23 +142,11 @@ export const RepoDetailsPage: FC = () => {
 						justifyContent: "space-between",
 					}}
 				>
-					<Stack
-						direction="row"
-						spacing={1}
-						alignItems="center"
-					>
-						<IconButton
-							size="small"
-							disableRipple
-							onClick={closeDrawer}
-						>
-							<ChevronRightRounded />
-						</IconButton>
-						<Typography fontWeight="bold">Metadata</Typography>
-					</Stack>
+					<Typography fontWeight="bold">
+						Metadata
+					</Typography>
 					<IconButton
 						size="small"
-						disableRipple
 						onClick={closeDrawer}
 					>
 						<ClearRounded />
@@ -167,20 +156,10 @@ export const RepoDetailsPage: FC = () => {
 					flexItem
 					variant="fullWidth"
 				/>
-				<List
-					sx={{
-						display: "flex",
-						flexWrap: "wrap",
-						flexDirection: "row",
-						position: "relative",
-					}}
-				>
+				<List>
 					{toDetails(loaderData.repo).map(
 						([label, value]) => (
-							<ListItem
-								key={label}
-								sx={{ display: "inline" }}
-							>
+							<ListItem key={label}>
 								<ListItemText
 									primary={label}
 									secondary={value}
