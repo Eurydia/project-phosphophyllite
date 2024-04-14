@@ -49,6 +49,7 @@ export const Markdown: FC<MarkdownProps> = (
 			display="block"
 			sx={{
 				...sx,
+				fontFamily: "IBM Plex Serif",
 				wordBreak: "break-word",
 				wordWrap: "break-word",
 			}}

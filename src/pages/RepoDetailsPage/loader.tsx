@@ -8,15 +8,12 @@ import {
 	RepoSchema,
 } from "~types/schemas";
 
-export type LoaderData =
-	| {
-			tab: "index";
-			repo: RepoSchema;
-	  }
-	| { tab: "issues"; issues: RepoIssueSchema[] };
+export type LoaderData = {
+	repo: RepoSchema;
+	issues: RepoIssueSchema[];
+};
 export const loader: LoaderFunction = async ({
 	params,
-	request,
 }) => {
 	const owner = params.owner;
 	const repoName = params.repo;
@@ -39,21 +36,10 @@ export const loader: LoaderFunction = async ({
 		});
 	}
 	document.title = repo.name;
-	const searchParam = new URL(request.url)
-		.searchParams;
-	const tabParam = searchParam.get("tab");
-	let loaderData: LoaderData = {
-		tab: "index",
+	const loaderData: LoaderData = {
 		repo,
+		issues: await getCachedIssues(repo.id),
 	};
-	if (
-		tabParam === "issues" &&
-		repo !== undefined
-	) {
-		loaderData = {
-			tab: "issues",
-			issues: await getCachedIssues(repo.id),
-		};
-	}
+
 	return loaderData;
 };

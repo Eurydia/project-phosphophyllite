@@ -4,6 +4,11 @@ import {
 	RepoIssueSchema,
 	RepoSchema,
 } from "~types/schemas";
+import {
+	getRepoIssueComment,
+	getRepoIssues,
+	getRepos,
+} from "./api";
 
 export const getCachedRepos = async () => {
 	return (await dbPromise).getAll("repos");
@@ -61,7 +66,7 @@ export const getCachedIssueComments = async (
 	);
 };
 
-export const syncCachedRepos = async (
+const updateCachedRepos = async (
 	repos: RepoSchema[],
 ) => {
 	const db = await dbPromise;
@@ -70,7 +75,7 @@ export const syncCachedRepos = async (
 	);
 };
 
-export const syncCachedRepoIssues = async (
+const updateCachedRepoIssues = async (
 	issues: RepoIssueSchema[],
 ) => {
 	const db = await dbPromise;
@@ -81,7 +86,7 @@ export const syncCachedRepoIssues = async (
 	);
 };
 
-export const syncRepoIssueComments = async (
+const updateCachedRepoIssueComments = async (
 	issueComments: RepoIssueCommentSchema[],
 ) => {
 	const db = await dbPromise;
@@ -89,5 +94,65 @@ export const syncRepoIssueComments = async (
 		issueComments.map((comment) =>
 			db.put("issueComments", comment),
 		),
+	);
+};
+
+export const syncCachedRepos = async (
+	onFailure: (err: any) => void,
+) => {
+	return await getRepos().then(
+		(res) => {
+			updateCachedRepos(res);
+			return true;
+		},
+		(err) => {
+			onFailure(err);
+			return false;
+		},
+	);
+};
+export const syncCachedRepoIssues = async (
+	onFailure: (err: any) => void,
+) => {
+	const cachedRepos = await getCachedRepos();
+	return await Promise.all(
+		cachedRepos.map(async (repo) => {
+			return await getRepoIssues(
+				repo.full_name,
+				repo.id,
+			).then(
+				(res) => {
+					updateCachedRepoIssues(res);
+					return true;
+				},
+				(err) => {
+					onFailure(err);
+					return false;
+				},
+			);
+		}),
+	);
+};
+export const syncCachedRepoIssueComments = async (
+	onFailure: (err: any) => void,
+) => {
+	const cachedIssues = await getCachedIssuesAll();
+	return await Promise.all(
+		cachedIssues.map(async (issue) => {
+			return await getRepoIssueComment(
+				issue.repo_full_name,
+				issue.issue_number,
+				issue.id,
+			).then(
+				(res) => {
+					updateCachedRepoIssueComments(res);
+					return true;
+				},
+				(err) => {
+					onFailure(err);
+					return false;
+				},
+			);
+		}),
 	);
 };

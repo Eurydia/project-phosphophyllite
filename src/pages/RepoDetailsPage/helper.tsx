@@ -1,24 +1,11 @@
-import {
-	List,
-	ListItem,
-	ListItemText,
-	ListSubheader,
-	Typography,
-} from "@mui/material";
-import { FC, Fragment, ReactNode } from "react";
+import { Typography } from "@mui/material";
+import { Fragment, ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { toSearchParam } from "~core/query";
 import { toTimeStamp } from "~core/time";
 import { RepoSchema } from "~types/schemas";
 
-type RepoMetadatDetailsProps = {
-	repo: RepoSchema;
-};
-export const RepoMetadatDetails: FC<
-	RepoMetadatDetailsProps
-> = (props) => {
-	const { repo } = props;
-
+export const toDetails = (repo: RepoSchema) => {
 	const links = (
 		<Fragment>
 			<Typography
@@ -78,8 +65,8 @@ export const RepoMetadatDetails: FC<
 		label: string,
 		value: ReactNode,
 	][] = [
-		["Links", links],
 		["Description", desc],
+		["Links", links],
 		["Last pushed", pushedAt],
 		["Last modified", modifiedAt],
 		["Created", createAt],
@@ -87,22 +74,5 @@ export const RepoMetadatDetails: FC<
 		["Status", status],
 		["Topics", topics],
 	];
-
-	return (
-		<List>
-			<ListSubheader
-				disableGutters
-				disableSticky
-			>
-				Metadata
-			</ListSubheader>
-			{detailsItems.map(([label, value]) => (
-				<ListItem key={label}>
-					<ListItemText secondary={value}>
-						{label}
-					</ListItemText>
-				</ListItem>
-			))}
-		</List>
-	);
+	return detailsItems;
 };

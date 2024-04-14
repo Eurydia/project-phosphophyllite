@@ -12,8 +12,14 @@ import {
 	Home,
 	loaderHome,
 } from "~pages/HomePage";
-import { RepoDetails } from "~pages/RepoDetails/RepoDetails";
-import { loader } from "~pages/RepoDetails/loader";
+import {
+	RepoDetailsPage,
+	loaderRepoDetailsPage,
+} from "~pages/RepoDetailsPage";
+import {
+	RepoListPage,
+	loaderRepoListPage,
+} from "~pages/RepoListPage";
 import { SettingsPage } from "~pages/SettingsPage/SettingsPage";
 import { themeComposed } from "./theme";
 
@@ -30,9 +36,14 @@ const router = createHashRouter(
 			errorElement: <ErrorBoundry />,
 			children: [
 				{
+					path: "/repositories",
+					element: <RepoListPage />,
+					loader: loaderRepoListPage,
+				},
+				{
 					path: "/:owner/:repo",
-					element: <RepoDetails />,
-					loader: loader,
+					element: <RepoDetailsPage />,
+					loader: loaderRepoDetailsPage,
 				},
 				{
 					path: "/settings",

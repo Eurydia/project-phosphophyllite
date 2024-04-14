@@ -19,6 +19,15 @@ import {
 } from "react";
 import { useSubmit } from "react-router-dom";
 
+const nav: { label: string; path: string }[] = [
+	{ label: "~", path: "/" },
+	{
+		label: "Repositories",
+		path: "/repositories",
+	},
+	{ label: "Settings", path: "/settings" },
+];
+
 type WithAppBarProps = {
 	location: ReactNode;
 	children: ReactNode;
@@ -52,8 +61,8 @@ export const WithAppBar: FC<WithAppBarProps> = (
 		);
 	}, [appBarRef]);
 
-	const redirectHome = () => {
-		submit({}, { action: "/", method: "get" });
+	const redirectPath = (path: string) => {
+		submit({}, { action: path, method: "get" });
 	};
 
 	return (
@@ -77,13 +86,22 @@ export const WithAppBar: FC<WithAppBarProps> = (
 						disablePadding
 						dense
 					>
-						<ListItem disableGutters>
-							<ListItemButton
-								onClick={redirectHome}
+						{nav.map(({ label, path }) => (
+							<ListItem
+								disableGutters
+								key={path}
 							>
-								<ListItemText>Home</ListItemText>
-							</ListItemButton>
-						</ListItem>
+								<ListItemButton
+									onClick={() =>
+										redirectPath(path)
+									}
+								>
+									<ListItemText>
+										{label}
+									</ListItemText>
+								</ListItemButton>
+							</ListItem>
+						))}
 					</List>
 				</Paper>
 			</Grid>

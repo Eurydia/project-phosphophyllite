@@ -5,23 +5,26 @@ import {
 	TypographyProps,
 } from "@mui/material";
 import { FC } from "react";
-import { useLocation } from "react-router";
 
 type StyledBreadcrumbs = {
+	paths: string;
 	breadcrumbsProps?: BreadcrumbsProps;
 	typographyProps?: Omit<TypographyProps, "ref">;
 };
 export const StyledBreadcrumbs: FC<
 	StyledBreadcrumbs
 > = (props) => {
-	const { breadcrumbsProps, typographyProps } =
-		props;
-	const { pathname } = useLocation();
-	const pathnames = pathname.split("/");
+	const {
+		paths,
+		breadcrumbsProps,
+		typographyProps,
+	} = props;
+
+	const paths_ = paths.split("/");
 
 	return (
 		<Breadcrumbs {...breadcrumbsProps}>
-			{pathnames.map((path, index) => (
+			{paths_.map((path, index) => (
 				<Typography
 					{...typographyProps}
 					key={`${index}-${path}`}
