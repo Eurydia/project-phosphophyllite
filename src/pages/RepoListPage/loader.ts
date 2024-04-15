@@ -2,34 +2,41 @@ import { LoaderFunction } from "react-router-dom";
 import {
 	getCachedRepos,
 	getCachedTopics,
-	getRepos,
 } from "~database/index";
+import { GenericSelectOptions } from "~types/generics";
 import { RepoSchema } from "~types/schemas";
 
 export type LoaderData = {
 	repos: RepoSchema[];
-	topicOptions: {
-		label: string;
-		value: string;
-	}[];
+	topicOptions: GenericSelectOptions<string>[];
+	topics: string[];
 };
-export const loader: LoaderFunction =
-	async (): Promise<LoaderData> => {
-		document.title = "Repositories";
-		const topicOptions: {
-			label: string;
-			value: string;
-		}[] = (await getCachedTopics()).map(
-			(topic) => {
-				return { label: topic, value: topic };
-			},
-		);
-		const repos =
-			(await getCachedRepos()) ||
-			(await getRepos());
+export const loader: LoaderFunction = async ({
+	request,
+}): Promise<LoaderData> => {
+	document.title = "repositories";
+	const topicOptions: GenericSelectOptions<string>[] =
+		(await getCachedTopics()).map((topic) => {
+			return { label: topic, value: topic };
+		});
+	const repos = await getCachedRepos();
+	const topicsParam = new URL(
+		request.url,
+	).searchParams.get("topics");
 
-		return {
-			topicOptions,
-			repos,
-		};
+	let topics: string[] = [];
+	if (topicsParam !== null) {
+		topics = topicsParam
+			.normalize()
+			.trim()
+			.split(",")
+			.map((topic) => topic.trim())
+			.filter((topic) => topic.length > 0);
+	}
+
+	return {
+		topicOptions,
+		repos,
+		topics,
 	};
+};

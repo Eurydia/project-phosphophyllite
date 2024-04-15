@@ -40,7 +40,6 @@ const themeComponent = createTheme({
 				},
 				"table": {
 					minWidth: "max-content",
-					overflow: "auto",
 					borderSpacing: "1rem 0.5rem",
 				},
 				"a": {

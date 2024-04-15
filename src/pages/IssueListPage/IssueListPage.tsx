@@ -1,26 +1,28 @@
 import { Box } from "@mui/material";
 import { FC } from "react";
 import { useLoaderData } from "react-router-dom";
-import { RepoDataTable } from "~components/RepoDataTable";
+import { IssueDataTable } from "~components/IssueDataTable";
 import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
 import { WithAppBar } from "~views/WithAppBar";
 import { LoaderData } from "./loader";
 
-export const RepoListPage: FC = () => {
-	const { repos, topicOptions, topics } =
+export const IssueListPage: FC = () => {
+	const { issues, repoOptions } =
 		useLoaderData() as LoaderData;
 
 	return (
 		<WithAppBar
 			location={
-				<StyledBreadcrumbs paths="~/repositories" />
+				<StyledBreadcrumbs paths="~/issues" />
 			}
 		>
-			<Box padding={2}>
-				<RepoDataTable
-					topicOptions={topicOptions}
-					repos={repos}
-					topics={topics}
+			<Box
+				paddingTop={2}
+				paddingX={2}
+			>
+				<IssueDataTable
+					issues={issues}
+					repoOptions={repoOptions}
 				/>
 			</Box>
 		</WithAppBar>

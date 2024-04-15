@@ -3,6 +3,7 @@ import {
 	ClearRounded,
 } from "@mui/icons-material";
 import {
+	Box,
 	Container,
 	Divider,
 	Drawer,
@@ -19,14 +20,117 @@ import {
 import { Buffer } from "buffer";
 import { FC, useState } from "react";
 import { useLoaderData } from "react-router";
+import { IssueDataTable } from "~components/IssueDataTable";
 import { Markdown } from "~components/Markdown";
 import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
 import { WithAppBar } from "~views/WithAppBar";
-import { toDetails } from "./helper";
 import { LoaderData } from "./loader";
 
+import { ReactNode } from "react";
+import { Link } from "react-router-dom";
+import { toSearchParam } from "~core/query";
+import { toTimeStamp } from "~core/time";
+import { RepoSchema } from "~types/schemas";
+
+const REPO_METADATA_DEFINITIONS: {
+	label: string;
+	render: (repo: RepoSchema) => ReactNode;
+}[] = [
+	{
+		label: "Description",
+		render: (repo) =>
+			repo.description ?? "No description",
+	},
+	{
+		label: "Last pushed",
+		render: (repo) =>
+			repo.pushed_at
+				? toTimeStamp(repo.pushed_at)
+				: "Never",
+	},
+	{
+		label: "Last updated",
+		render: (repo) =>
+			repo.updated_at
+				? toTimeStamp(repo.updated_at)
+				: "Never",
+	},
+	{
+		label: "Created",
+		render: (repo) =>
+			repo.created_at
+				? toTimeStamp(repo.created_at)
+				: "Unknown",
+	},
+	{
+		label: "Visibility",
+		render: (repo) =>
+			repo.is_private ? "Private" : "Public",
+	},
+	{
+		label: "Status",
+		render: (repo) =>
+			repo.is_private ? "Archived" : "Active",
+	},
+	{
+		label: "Links",
+		render: (repo) => (
+			<Stack
+				component="span"
+				flexDirection="row"
+				flexWrap="wrap"
+				gap={1}
+			>
+				<Typography
+					component="a"
+					href={repo.html_url}
+					target="_blank"
+				>
+					GitHub repository
+				</Typography>
+				<Typography
+					component="a"
+					href={repo.homepage ?? undefined}
+					target="_blank"
+				>
+					Homepage
+				</Typography>
+			</Stack>
+		),
+	},
+	{
+		label: "Topics",
+		render: (repo) =>
+			repo.topics && repo.topics.length > 0 ? (
+				<Stack
+					component="span"
+					gap={1}
+					flexDirection="row"
+					flexWrap="wrap"
+				>
+					{repo.topics.map((topic) => (
+						<Typography
+							key={topic}
+							component={Link}
+							to={{
+								pathname: "/repositories",
+								search: toSearchParam({
+									topics: topic,
+								}),
+							}}
+						>
+							{topic}
+						</Typography>
+					))}
+				</Stack>
+			) : (
+				"No topic assigned"
+			),
+	},
+];
+
 export const RepoDetailsPage: FC = () => {
-	const loaderData =
+	const { repo, issues } =
 		useLoaderData() as LoaderData;
 
 	const [tab, setTab] = useState(0);
@@ -41,9 +145,9 @@ export const RepoDetailsPage: FC = () => {
 	};
 
 	let decodedReadme: string | undefined;
-	if (loaderData.repo.readme !== undefined) {
+	if (repo.readme !== undefined) {
 		decodedReadme = Buffer.from(
-			loaderData.repo.readme,
+			repo.readme,
 			"base64",
 		).toString();
 	}
@@ -79,47 +183,58 @@ export const RepoDetailsPage: FC = () => {
 		<WithAppBar
 			location={
 				<StyledBreadcrumbs
-					paths={`~/${loaderData.repo.full_name}`}
+					paths={`~/repositories/${repo.full_name}`}
 				/>
 			}
 			seconadaryAction={
-				<Stack
-					spacing={1}
-					direction="row"
-					alignItems="center"
-					justifyContent="space-between"
-					flexGrow={{ xs: 1, sm: 0 }}
+				<IconButton
+					onClick={toggleDrawer}
+					size="small"
+					disableRipple
 				>
-					<Tabs
-						value={tab}
-						onChange={(_, tab) => setTab(tab)}
-					>
-						<Tab
-							value={0}
-							label="~"
-						/>
-						<Tab
-							value={1}
-							label="Issues"
-						/>
-					</Tabs>
-					<IconButton
-						onClick={toggleDrawer}
-						size="small"
-						disableRipple
-					>
-						<ChevronLeftRounded />
-					</IconButton>
-				</Stack>
+					<ChevronLeftRounded />
+				</IconButton>
 			}
 		>
+			<Toolbar
+				disableGutters
+				variant="dense"
+			>
+				<Tabs
+					value={tab}
+					onChange={(_, tab) => setTab(tab)}
+				>
+					<Tab
+						value={0}
+						label="Readme"
+					/>
+					<Tab
+						value={1}
+						label="Issues"
+					/>
+				</Tabs>
+			</Toolbar>
+			<Divider />
 			{tab === 0 && (
 				<Container maxWidth="sm">
 					<Markdown
-						emptyText="..."
+						emptyText="This repository does not contain a readme."
 						markdownContent={decodedReadme}
 					/>
 				</Container>
+			)}
+			{tab === 1 && (
+				<Box padding={2}>
+					<IssueDataTable
+						repoOptions={[
+							{
+								label: repo.full_name,
+								value: repo.full_name,
+							},
+						]}
+						issues={issues}
+					/>
+				</Box>
 			)}
 			<Drawer
 				elevation={0}
@@ -127,11 +242,6 @@ export const RepoDetailsPage: FC = () => {
 				variant="temporary"
 				open={drawerOpen}
 				onClose={closeDrawer}
-				PaperProps={{
-					sx: {
-						width: "max(250px, 30vw)",
-					},
-				}}
 			>
 				<Toolbar
 					variant="dense"
@@ -156,14 +266,18 @@ export const RepoDetailsPage: FC = () => {
 					flexItem
 					variant="fullWidth"
 				/>
-				<List>
-					{toDetails(loaderData.repo).map(
-						([label, value]) => (
+				<List
+					disablePadding
+					dense
+				>
+					{REPO_METADATA_DEFINITIONS.map(
+						({ label, render }) => (
 							<ListItem key={label}>
 								<ListItemText
-									primary={label}
-									secondary={value}
-								/>
+									secondary={render(repo)}
+								>
+									{label}
+								</ListItemText>
 							</ListItem>
 						),
 					)}

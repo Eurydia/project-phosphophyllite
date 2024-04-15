@@ -1,5 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import { ReactNode } from "react";
+import { Link } from "react-router-dom";
+import { toSearchParam } from "~core/query";
 import { toTimeStamp } from "~core/time";
 import { RepoSchema } from "~types/schemas";
 
@@ -7,7 +9,6 @@ export const toDetails = (repo: RepoSchema) => {
 	const links = (
 		<Stack
 			component="span"
-			display="flex"
 			flexDirection="row"
 			flexWrap="wrap"
 			gap={1}
@@ -29,9 +30,30 @@ export const toDetails = (repo: RepoSchema) => {
 		</Stack>
 	);
 	const topics =
-		repo.topics && repo.topics.length > 0
-			? repo.topics.join(", ")
-			: "No topic assigned";
+		repo.topics && repo.topics.length > 0 ? (
+			<Stack
+				gap={1}
+				flexDirection="row"
+				flexWrap="wrap"
+			>
+				{repo.topics.map((topic) => (
+					<Typography
+						key={topic}
+						component={Link}
+						to={{
+							pathname: "/repositories",
+							search: toSearchParam({
+								topics: topic,
+							}),
+						}}
+					>
+						{topic}
+					</Typography>
+				))}
+			</Stack>
+		) : (
+			"No topic assigned"
+		);
 	const desc =
 		repo.description ?? "No description";
 	const createAt = repo.created_at

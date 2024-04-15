@@ -27,6 +27,10 @@ export const StyledBreadcrumbs: FC<
 			{paths_.map((path, index) => (
 				<Typography
 					{...typographyProps}
+					textOverflow="ellipsis"
+					whiteSpace="nowrap"
+					overflow="hidden"
+					width="100%"
 					key={`${index}-${path}`}
 				>
 					{path}

@@ -13,6 +13,10 @@ import {
 	loaderHome,
 } from "~pages/HomePage";
 import {
+	IssueListPage,
+	loaderIssueListPage,
+} from "~pages/IssueListPage";
+import {
 	RepoDetailsPage,
 	loaderRepoDetailsPage,
 } from "~pages/RepoDetailsPage";
@@ -41,9 +45,19 @@ const router = createHashRouter(
 					loader: loaderRepoListPage,
 				},
 				{
-					path: "/:owner/:repo",
+					path: "/repositories/:owner/:repo",
 					element: <RepoDetailsPage />,
 					loader: loaderRepoDetailsPage,
+				},
+				{
+					path: "/repositories/:owner/:repo/:issueId",
+					element: <RepoDetailsPage />,
+					loader: loaderRepoDetailsPage,
+				},
+				{
+					path: "/issues",
+					element: <IssueListPage />,
+					loader: loaderIssueListPage,
 				},
 				{
 					path: "/settings",

@@ -18,10 +18,8 @@
     "@fontsource/roboto": "^5.0.12",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
-    "@mui/x-data-grid": "^7.1.1",
     "buffer": "^6.0.3",
     "idb": "^8.0.0",
-    "lz-string": "^1.5.0",
     "match-sorter": "^6.3.4",
     "notistack": "^3.0.1",
     "octokit": "^3.1.2",
@@ -39,7 +37,6 @@
     "unified": "^11.0.4"
   },
   "devDependencies": {
-    "@monaco-editor/react": "^4.6.0",
     "@octokit/types": "^12.6.0",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",

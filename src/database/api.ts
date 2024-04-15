@@ -121,7 +121,10 @@ export const getRepoIssues = async (
 			updated_at,
 			closed_at,
 			body,
+			user,
 		}) => ({
+			owner_type:
+				user === null ? null : user.type,
 			repo_id: repoId,
 			repo_full_name: fullName,
 			id,

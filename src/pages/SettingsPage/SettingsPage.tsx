@@ -3,27 +3,29 @@ import {
 	Divider,
 	List,
 	ListItem,
-	ListItemSecondaryAction,
 	ListItemText,
 	ListSubheader,
 	SelectChangeEvent,
 	Stack,
 	TextField,
 } from "@mui/material";
-import {
-	FILTER_MODE_OPTIONS,
-	FILTER_STATUS_OPTIONS,
-	FILTER_VISIBILITY_OPTIONS,
-} from "constants/filterOptions";
 import { useSnackbar } from "notistack";
 import {
 	ChangeEvent,
 	FC,
+	ReactNode,
 	useMemo,
 	useState,
 } from "react";
 import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
 import { StyledSelect } from "~components/StyledSelect";
+import {
+	ISSUE_FILTER_OWNER_TYPE_OPTIONS,
+	ISSUE_FILTER_STATE_OPTIONS,
+	REPO_FILTER_STATUS_OPTIONS,
+	REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS,
+	REPO_FILTER_VISIBILITY_OPTIONS,
+} from "~constants";
 import { normalizeDateString } from "~core/time";
 import {
 	syncCachedRepoIssueComments,
@@ -31,11 +33,55 @@ import {
 	syncCachedRepos,
 } from "~database/cached";
 import {
-	getRepoFilterStatus,
-	getRepoFilterTopicMode,
-	getRepoFilterVisibility,
+	getIssueFilterPrefState,
+	getRepoFilterPrefStatus,
+	getRepoFilterPrefTopicMatchStrategy,
+	getRepoFilterPrefVisibility,
+	setIssueFilterPrefOwnerType,
+	setIssueFilterPrefState,
+	setRepoFilterPrefStatus,
+	setRepoFilterPrefTopicMatchStrategy,
+	setRepoFilterPrefVisibility,
 } from "~database/preferences";
 import { WithAppBar } from "~views/WithAppBar";
+
+type WrappableListItemProps = {
+	children?: ReactNode;
+	primary?: string;
+	secondary?: string;
+};
+const WrappableListItem: FC<
+	WrappableListItemProps
+> = (props) => {
+	const { secondary, primary, children } = props;
+	return (
+		<ListItem disableGutters>
+			<Stack
+				width="100%"
+				display="flex"
+				flexDirection="row"
+				flexWrap="wrap"
+				alignItems="start"
+				justifyContent="space-between"
+			>
+				<ListItemText
+					primary={primary}
+					secondary={secondary}
+					sx={{
+						width: "max(200px, 40%)",
+					}}
+				/>
+				<Stack
+					alignItems="center"
+					flexDirection="row"
+					minWidth="max(200px, 25%)"
+				>
+					{children}
+				</Stack>
+			</Stack>
+		</ListItem>
+	);
+};
 
 const SettingsAPI: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
@@ -81,19 +127,17 @@ const SettingsAPI: FC = () => {
 				</ListSubheader>
 			}
 		>
-			<ListItem>
-				<ListItemText primary="Personal access token (classic)" />
-				<ListItemSecondaryAction>
-					<TextField
-						placeholder="ghp_"
-						type="password"
-						value={personalAccessToken}
-						onChange={handlePasswordChange}
-						size="small"
-					/>
-				</ListItemSecondaryAction>
-			</ListItem>
-			<ListItem>
+			<WrappableListItem primary="Personal access token (classic)">
+				<TextField
+					fullWidth
+					placeholder="ghp_"
+					type="password"
+					value={personalAccessToken}
+					onChange={handlePasswordChange}
+					size="small"
+				/>
+			</WrappableListItem>
+			<ListItem disableGutters>
 				<Button
 					disableElevation
 					size="small"
@@ -143,18 +187,6 @@ const SettingsSync: FC = () => {
 		});
 
 	const handleSyncRepos = () => {
-		const timestamp = new Date(
-			Date.now(),
-		).toISOString();
-		localStorage.setItem(
-			"last-sync-repos",
-			timestamp,
-		);
-		setLastSyncRepos(
-			`Last sync: ${normalizeDateString(
-				timestamp,
-			)}`,
-		);
 		syncCachedRepos((err) => {
 			enqueueSnackbar({
 				message: String(err),
@@ -167,22 +199,22 @@ const SettingsSync: FC = () => {
 					message: "Synced repositories",
 					variant: "success",
 				});
+				const timestamp = new Date(
+					Date.now(),
+				).toISOString();
+				localStorage.setItem(
+					"last-sync-repos",
+					timestamp,
+				);
+				setLastSyncRepos(
+					`Last sync: ${normalizeDateString(
+						timestamp,
+					)}`,
+				);
 			}
 		});
 	};
 	const handleSyncIssues = () => {
-		const timestamp = new Date(
-			Date.now(),
-		).toISOString();
-		localStorage.setItem(
-			"last-sync-issues",
-			timestamp,
-		);
-		setLastSyncIssues(
-			`Last sync: ${normalizeDateString(
-				timestamp,
-			)}`,
-		);
 		syncCachedRepoIssues((err) => {
 			enqueueSnackbar({
 				message: String(err),
@@ -195,23 +227,23 @@ const SettingsSync: FC = () => {
 					message: "Synced issues",
 					variant: "success",
 				});
+				const timestamp = new Date(
+					Date.now(),
+				).toISOString();
+				localStorage.setItem(
+					"last-sync-issues",
+					timestamp,
+				);
+				setLastSyncIssues(
+					`Last sync: ${normalizeDateString(
+						timestamp,
+					)}`,
+				);
 			}
 		});
 	};
 
 	const handleSyncComments = () => {
-		const timestamp = new Date(
-			Date.now(),
-		).toISOString();
-		setLastSyncComments(
-			`Last sync: ${normalizeDateString(
-				timestamp,
-			)}`,
-		);
-		localStorage.setItem(
-			"last-sync-comments",
-			timestamp,
-		);
 		syncCachedRepoIssueComments((err) => {
 			enqueueSnackbar({
 				message: String(err),
@@ -219,6 +251,18 @@ const SettingsSync: FC = () => {
 			});
 		}).then((res) => {
 			if (res.every((v) => v)) {
+				const timestamp = new Date(
+					Date.now(),
+				).toISOString();
+				setLastSyncComments(
+					`Last sync: ${normalizeDateString(
+						timestamp,
+					)}`,
+				);
+				localStorage.setItem(
+					"last-sync-comments",
+					timestamp,
+				);
 				enqueueSnackbar({
 					message: "Synced comments",
 					variant: "success",
@@ -230,6 +274,7 @@ const SettingsSync: FC = () => {
 	const disableSync = useMemo(() => {
 		return !Boolean(savedToken);
 	}, [savedToken]);
+
 	return (
 		<List
 			disablePadding
@@ -242,99 +287,85 @@ const SettingsSync: FC = () => {
 				</ListSubheader>
 			}
 		>
-			<ListItem>
-				<ListItemText secondary={lastSyncRepos}>
-					Sync repositories
-				</ListItemText>
-				<ListItemSecondaryAction>
-					<Button
-						disableElevation
-						disabled={disableSync}
-						size="small"
-						variant="contained"
-						onClick={handleSyncRepos}
-					>
-						Sync repositories
-					</Button>
-				</ListItemSecondaryAction>
-			</ListItem>
-			<ListItem>
-				<ListItemText secondary={lastSyncIssues}>
-					Sync issues
-				</ListItemText>
-				<ListItemSecondaryAction>
-					<Button
-						disableElevation
-						disabled={disableSync}
-						size="small"
-						variant="contained"
-						onClick={handleSyncIssues}
-					>
-						Sync issues
-					</Button>
-				</ListItemSecondaryAction>
-			</ListItem>
-			<ListItem>
-				<ListItemText
-					secondary={lastSyncComments}
+			<WrappableListItem
+				primary="Sync repositories"
+				secondary={lastSyncRepos}
+			>
+				<Button
+					fullWidth
+					disableElevation
+					disabled={disableSync}
+					size="small"
+					variant="contained"
+					onClick={handleSyncRepos}
 				>
-					Sync comments
-				</ListItemText>
-				<ListItemSecondaryAction>
-					<Button
-						disableElevation
-						disabled={disableSync}
-						size="small"
-						variant="contained"
-						onClick={handleSyncComments}
-					>
-						Sync Comments
-					</Button>
-				</ListItemSecondaryAction>
-			</ListItem>
+					Sync repositories
+				</Button>
+			</WrappableListItem>
+			<WrappableListItem
+				primary="Sync issues"
+				secondary={lastSyncIssues}
+			>
+				<Button
+					fullWidth
+					disableElevation
+					disabled={disableSync}
+					size="small"
+					variant="contained"
+					onClick={handleSyncIssues}
+				>
+					Sync issues
+				</Button>
+			</WrappableListItem>
+			<WrappableListItem
+				primary="Sync comments"
+				secondary={lastSyncComments}
+			>
+				<Button
+					fullWidth
+					disableElevation
+					disabled={disableSync}
+					size="small"
+					variant="contained"
+					onClick={handleSyncComments}
+				>
+					Sync Comments
+				</Button>
+			</WrappableListItem>
 		</List>
 	);
 };
 
 const SettingsRepoFilterPref: FC = () => {
 	const [mode, setMode] = useState(
-		getRepoFilterTopicMode(),
+		getRepoFilterPrefTopicMatchStrategy(),
 	);
 	const [visibility, setVisibility] = useState(
-		getRepoFilterVisibility(),
+		getRepoFilterPrefVisibility(),
 	);
 	const [status, setStatus] = useState(
-		getRepoFilterStatus(),
+		getRepoFilterPrefStatus(),
 	);
 
-	const handleModeChange = (
+	const handleTopicMatchStrategyChange = (
 		event: SelectChangeEvent<string>,
 	) => {
 		const value = event.target.value;
-		localStorage.setItem(
-			"repo-filter-topic-mode",
-			value,
-		);
+		setRepoFilterPrefTopicMatchStrategy(value);
 		setMode(value);
 	};
 	const handleVisiblityChange = (
 		event: SelectChangeEvent<string>,
 	) => {
 		const value = event.target.value;
-		localStorage.setItem(
-			"repo-filter-visibility",
-			value,
-		);
+		setRepoFilterPrefVisibility(value);
 		setVisibility(value);
 	};
 	const handleStatusChange = (
 		event: SelectChangeEvent<string>,
 	) => {
 		const value = event.target.value;
-		localStorage.setItem(
-			"repo-filter-status",
-			value,
-		);
+		setRepoFilterPrefStatus(value);
 		setStatus(value);
 	};
 
@@ -346,51 +377,105 @@ const SettingsRepoFilterPref: FC = () => {
 					disableGutters
 					disableSticky
 				>
-					Repositories filter
+					Repository filter preferences
 				</ListSubheader>
 			}
 		>
-			<ListItem>
-				<ListItemText>
-					Match strategy
-				</ListItemText>
-				<ListItemSecondaryAction>
-					<StyledSelect
-						displayEmpty
-						subheader="Match strategy"
-						size="small"
-						value={mode}
-						options={FILTER_MODE_OPTIONS}
-						onChange={handleModeChange}
-					/>
-				</ListItemSecondaryAction>
-			</ListItem>
-			<ListItem>
-				<ListItemText>Visibility</ListItemText>
-				<ListItemSecondaryAction>
-					<StyledSelect
-						displayEmpty
-						subheader="Visibility"
-						size="small"
-						value={visibility}
-						options={FILTER_VISIBILITY_OPTIONS}
-						onChange={handleVisiblityChange}
-					/>
-				</ListItemSecondaryAction>
-			</ListItem>
-			<ListItem>
-				<ListItemText>Status</ListItemText>
-				<ListItemSecondaryAction>
-					<StyledSelect
-						displayEmpty
-						subheader="Status"
-						size="small"
-						value={status}
-						options={FILTER_STATUS_OPTIONS}
-						onChange={handleStatusChange}
-					/>
-				</ListItemSecondaryAction>
-			</ListItem>
+			<WrappableListItem primary="Match strategy">
+				<StyledSelect
+					fullWidth
+					displayEmpty
+					size="small"
+					value={mode}
+					options={
+						REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS
+					}
+					onChange={
+						handleTopicMatchStrategyChange
+					}
+				/>
+			</WrappableListItem>
+			<WrappableListItem primary="Visibility">
+				<StyledSelect
+					fullWidth
+					displayEmpty
+					size="small"
+					value={visibility}
+					options={REPO_FILTER_VISIBILITY_OPTIONS}
+					onChange={handleVisiblityChange}
+				/>
+			</WrappableListItem>
+			<WrappableListItem primary="Status">
+				<StyledSelect
+					fullWidth
+					displayEmpty
+					size="small"
+					value={status}
+					options={REPO_FILTER_STATUS_OPTIONS}
+					onChange={handleStatusChange}
+				/>
+			</WrappableListItem>
+		</List>
+	);
+};
+
+const SettingsIssueFilterPref: FC = () => {
+	const [ownerType, setOwnerType] = useState(
+		getIssueFilterPrefState(),
+	);
+	const [state, setState] = useState(
+		getIssueFilterPrefState(),
+	);
+
+	const handleOwnerTypeChange = (
+		event: SelectChangeEvent<string>,
+	) => {
+		const value = event.target.value;
+		setIssueFilterPrefOwnerType(value);
+		setOwnerType(value);
+	};
+	const handleStateChange = (
+		event: SelectChangeEvent<string>,
+	) => {
+		const value = event.target.value;
+		setIssueFilterPrefState(value);
+		setState(value);
+	};
+
+	return (
+		<List
+			disablePadding
+			subheader={
+				<ListSubheader
+					disableGutters
+					disableSticky
+				>
+					Issue filter preferences
+				</ListSubheader>
+			}
+		>
+			<WrappableListItem primary="Owner type">
+				<StyledSelect
+					fullWidth
+					displayEmpty
+					size="small"
+					value={ownerType}
+					options={
+						ISSUE_FILTER_OWNER_TYPE_OPTIONS
+					}
+					onChange={handleOwnerTypeChange}
+				/>
+			</WrappableListItem>
+			<WrappableListItem primary="State">
+				<StyledSelect
+					fullWidth
+					displayEmpty
+					size="small"
+					value={state}
+					options={ISSUE_FILTER_STATE_OPTIONS}
+					onChange={handleStateChange}
+				/>
+			</WrappableListItem>
 		</List>
 	);
 };
@@ -399,7 +484,7 @@ export const SettingsPage: FC = () => {
 	return (
 		<WithAppBar
 			location={
-				<StyledBreadcrumbs paths="~/Settings" />
+				<StyledBreadcrumbs paths="~/settings" />
 			}
 		>
 			<Stack
@@ -409,6 +494,7 @@ export const SettingsPage: FC = () => {
 				divider={<Divider variant="middle" />}
 			>
 				<SettingsRepoFilterPref />
+				<SettingsIssueFilterPref />
 				<SettingsAPI />
 				<SettingsSync />
 			</Stack>

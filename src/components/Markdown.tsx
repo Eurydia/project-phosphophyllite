@@ -22,9 +22,8 @@ export const Markdown: FC<MarkdownProps> = (
 		...rest
 	} = props;
 
-	const contentRef = useRef<HTMLElement | null>(
-		null,
-	);
+	const contentRef =
+		useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
 		if (
@@ -43,12 +42,12 @@ export const Markdown: FC<MarkdownProps> = (
 		<Typography
 			{...rest}
 			ref={contentRef}
-			maxWidth="100%"
-			height="100%"
-			overflow="auto"
+			component="div"
 			display="block"
+			width="100%"
 			sx={{
 				...sx,
+				overflowX: "auto",
 				fontFamily: "IBM Plex Serif",
 				wordBreak: "break-word",
 				wordWrap: "break-word",

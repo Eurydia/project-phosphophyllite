@@ -31,6 +31,7 @@ export type RepoIssueSchema = {
 	updated_at: string;
 	closed_at: string | null;
 	body: string | null | undefined;
+	owner_type: string | null;
 };
 
 export type RepoIssueCommentSchema = {
