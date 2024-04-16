@@ -1,0 +1,2 @@
+import{g as e}from"./@babel-v6KKqBqE.js";function r(){return typeof navigator=="object"&&"userAgent"in navigator?navigator.userAgent:typeof process=="object"&&process.version!==void 0?`Node.js/${process.version.substr(1)} (${process.platform}; ${process.arch})`:"<environment undetectable>"}const t=Object.freeze(Object.defineProperty({__proto__:null,getUserAgent:r},Symbol.toStringTag,{value:"Module"})),n=e(t);export{r as g,n as r};
+//# sourceMappingURL=universal-user-agent-BARPCsji.js.map
