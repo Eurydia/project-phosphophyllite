@@ -122,11 +122,11 @@ export const syncCachedRepos = async (
 	return await getRepos().then(
 		(res) => {
 			updateCachedRepos(res);
-			return true;
+			return [true];
 		},
 		(err) => {
 			onFailure(err);
-			return false;
+			return [false];
 		},
 	);
 };
