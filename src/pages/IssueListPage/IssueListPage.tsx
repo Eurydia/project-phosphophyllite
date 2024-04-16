@@ -7,13 +7,24 @@ import { WithAppBar } from "~views/WithAppBar";
 import { LoaderData } from "./loader";
 
 export const IssueListPage: FC = () => {
-	const { issues, repoOptions } =
-		useLoaderData() as LoaderData;
+	const {
+		issues,
+		repoOptions,
+		title,
+		ownerType,
+		repoFullNames,
+		state,
+	} = useLoaderData() as LoaderData;
 
 	return (
 		<WithAppBar
 			location={
-				<StyledBreadcrumbs paths="~/issues" />
+				<StyledBreadcrumbs
+					breadcrumbsProps={{
+						sx: { flexGrow: 1 },
+					}}
+					paths="~/issues"
+				/>
 			}
 		>
 			<Box
@@ -23,6 +34,10 @@ export const IssueListPage: FC = () => {
 				<IssueDataTable
 					issues={issues}
 					repoOptions={repoOptions}
+					title={title}
+					ownerType={ownerType}
+					repoFullNames={repoFullNames}
+					state={state}
 				/>
 			</Box>
 		</WithAppBar>

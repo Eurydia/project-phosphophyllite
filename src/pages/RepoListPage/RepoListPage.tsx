@@ -7,8 +7,15 @@ import { WithAppBar } from "~views/WithAppBar";
 import { LoaderData } from "./loader";
 
 export const RepoListPage: FC = () => {
-	const { repos, topicOptions, topics } =
-		useLoaderData() as LoaderData;
+	const {
+		repos,
+		topicOptions,
+		topics,
+		name,
+		visibility,
+		status,
+		topicMatchStrategy,
+	} = useLoaderData() as LoaderData;
 
 	return (
 		<WithAppBar
@@ -21,6 +28,10 @@ export const RepoListPage: FC = () => {
 					topicOptions={topicOptions}
 					repos={repos}
 					topics={topics}
+					name={name}
+					visibility={visibility}
+					status={status}
+					topicMatchStrategy={topicMatchStrategy}
 				/>
 			</Box>
 		</WithAppBar>

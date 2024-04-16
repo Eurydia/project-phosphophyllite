@@ -33,6 +33,7 @@ import {
 	syncCachedRepos,
 } from "~database/cached";
 import {
+	getIssueFilterPrefOwnerType,
 	getIssueFilterPrefState,
 	getRepoFilterPrefStatus,
 	getRepoFilterPrefTopicMatchStrategy,
@@ -421,7 +422,7 @@ const SettingsRepoFilterPref: FC = () => {
 
 const SettingsIssueFilterPref: FC = () => {
 	const [ownerType, setOwnerType] = useState(
-		getIssueFilterPrefState(),
+		getIssueFilterPrefOwnerType(),
 	);
 	const [state, setState] = useState(
 		getIssueFilterPrefState(),

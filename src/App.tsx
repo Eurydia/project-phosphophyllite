@@ -13,6 +13,10 @@ import {
 	loaderHome,
 } from "~pages/HomePage";
 import {
+	IssueDetailsPage,
+	loaderIssueDetailsPage,
+} from "~pages/IssueDetailsPage";
+import {
 	IssueListPage,
 	loaderIssueListPage,
 } from "~pages/IssueListPage";
@@ -50,9 +54,9 @@ const router = createHashRouter(
 					loader: loaderRepoDetailsPage,
 				},
 				{
-					path: "/repositories/:owner/:repo/:issueId",
-					element: <RepoDetailsPage />,
-					loader: loaderRepoDetailsPage,
+					path: "/repositories/:owner/:repo/issues/:issueNumber",
+					element: <IssueDetailsPage />,
+					loader: loaderIssueDetailsPage,
 				},
 				{
 					path: "/issues",

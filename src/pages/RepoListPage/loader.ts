@@ -1,8 +1,14 @@
 import { LoaderFunction } from "react-router-dom";
+import { filterRepos } from "~core/filtering";
 import {
 	getCachedRepos,
 	getCachedTopics,
 } from "~database/index";
+import {
+	getRepoFilterPrefStatus,
+	getRepoFilterPrefTopicMatchStrategy,
+	getRepoFilterPrefVisibility,
+} from "~database/preferences";
 import { GenericSelectOptions } from "~types/generics";
 import { RepoSchema } from "~types/schemas";
 
@@ -10,6 +16,10 @@ export type LoaderData = {
 	repos: RepoSchema[];
 	topicOptions: GenericSelectOptions<string>[];
 	topics: string[];
+	name: string;
+	visibility: string;
+	status: string;
+	topicMatchStrategy: string;
 };
 export const loader: LoaderFunction = async ({
 	request,
@@ -19,11 +29,11 @@ export const loader: LoaderFunction = async ({
 		(await getCachedTopics()).map((topic) => {
 			return { label: topic, value: topic };
 		});
-	const repos = await getCachedRepos();
-	const topicsParam = new URL(
-		request.url,
-	).searchParams.get("topics");
+	let repos = await getCachedRepos();
 
+	const searchParams = new URL(request.url)
+		.searchParams;
+	const topicsParam = searchParams.get("topics");
 	let topics: string[] = [];
 	if (topicsParam !== null) {
 		topics = topicsParam
@@ -34,9 +44,32 @@ export const loader: LoaderFunction = async ({
 			.filter((topic) => topic.length > 0);
 	}
 
+	const name = searchParams.get("name") || "";
+	const status =
+		searchParams.get("status") ||
+		getRepoFilterPrefStatus();
+	const visibility =
+		searchParams.get("visibility") ||
+		getRepoFilterPrefVisibility();
+	const topicMatchStrategy =
+		searchParams.get("topicMatchStrategy") ||
+		getRepoFilterPrefTopicMatchStrategy();
+	repos = filterRepos(
+		repos,
+		name,
+		topics,
+		visibility,
+		status,
+		topicMatchStrategy,
+	);
+
 	return {
 		topicOptions,
 		repos,
 		topics,
+		name,
+		visibility,
+		status,
+		topicMatchStrategy,
 	};
 };

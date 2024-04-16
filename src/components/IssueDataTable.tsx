@@ -16,18 +16,15 @@ import {
 	Typography,
 	capitalize,
 } from "@mui/material";
+import { FC, ReactNode, useState } from "react";
 import {
-	FC,
-	ReactNode,
-	useEffect,
-	useState,
-} from "react";
-import { Link } from "react-router-dom";
+	Link,
+	useSubmit,
+} from "react-router-dom";
 import {
 	ISSUE_FILTER_OWNER_TYPE_OPTIONS,
 	ISSUE_FILTER_STATE_OPTIONS,
 } from "~constants";
-import { filterIssues } from "~core/filtering";
 import {
 	orderByNumber,
 	orderByString,
@@ -72,7 +69,16 @@ const COLUMN_DEFINITION: HeadCell[] = [
 	{
 		id: "repo_full_name",
 		label: "Repository",
-		render: (issue) => issue.repo_full_name,
+		render: (issue) => (
+			<Typography
+				component={Link}
+				to={{
+					pathname: `/repositories/${issue.repo_full_name}`,
+				}}
+			>
+				{issue.repo_full_name}
+			</Typography>
+		),
 	},
 
 	{
@@ -196,69 +202,84 @@ export const IssueDataTable: React.FC<
 	const {
 		repoOptions,
 		issues,
-		repoFullNames,
-		ownerType,
-		state,
-		title,
+		title: title_,
+		repoFullNames: repoFullNames_,
+		ownerType: ownerType_,
+		state: state_,
 	} = props;
-
-	const [filteredIssues, setFilteredIssues] =
-		useState(issues);
-	const [_title, setTitle] = useState(
-		title ?? "",
+	const submit = useSubmit();
+	const [title, setTitle] = useState(
+		title_ ?? "",
 	);
-	const [_repoFullNames, setRepoFullNames] =
-		useState(repoFullNames ?? []);
-	const [_ownerType, setOwnerType] = useState(
-		ownerType ?? getIssueFilterPrefOwnerType(),
-	);
-	const [_state, setState] = useState(
-		state ?? getIssueFilterPrefState(),
-	);
+	const repoFullNames = repoFullNames_ ?? [];
+	const ownerType =
+		ownerType_ ?? getIssueFilterPrefOwnerType();
+	const state =
+		state_ ?? getIssueFilterPrefState();
 	const handleOwnerTypeChange = (
 		event: SelectChangeEvent<string>,
 	) => {
-		setOwnerType(event.target.value);
+		const value = event.target.value;
+		submit(
+			{
+				title,
+				state,
+				ownerType: value,
+				repoFullNames,
+			},
+			{ action: "./", method: "get" },
+		);
 	};
 	const handleStateChange = (
 		event: SelectChangeEvent<string>,
 	) => {
-		setState(event.target.value);
+		const value = event.target.value;
+		submit(
+			{
+				title,
+				state: value,
+				ownerType,
+				repoFullNames,
+			},
+			{ action: "./", method: "get" },
+		);
 	};
 	const handleRepoFullNamesChange = (
 		event: SelectChangeEvent<string[]>,
 	) => {
-		const values = event.target.value
-			.toString()
-			.normalize()
-			.trim()
-			.split(",")
-			.map((value) => value.trim())
-			.filter((value) => value.length > 0);
-
-		setRepoFullNames(values);
+		const value = event.target.value;
+		submit(
+			{
+				title,
+				state,
+				ownerType,
+				repoFullNames: value,
+			},
+			{ action: "./", method: "get" },
+		);
 	};
 	const handleRepoFullNamesReset = () => {
-		setRepoFullNames([]);
-	};
-
-	useEffect(() => {
-		setFilteredIssues(
-			filterIssues(
-				issues,
-				_title,
-				_ownerType,
-				_repoFullNames,
-				_state,
-			),
+		submit(
+			{
+				title,
+				state,
+				ownerType,
+				repoFullNames: [],
+			},
+			{ action: "./", method: "get" },
 		);
-	}, [
-		issues,
-		_title,
-		_ownerType,
-		_repoFullNames,
-		_state,
-	]);
+	};
+	const handleTitleSubmit = () => {
+		submit(
+			{
+				title,
+				state,
+				ownerType,
+				repoFullNames,
+			},
+			{ action: "./", method: "get" },
+		);
+	};
 
 	const [filterOpen, setFilterOpen] =
 		useState(false);
@@ -281,8 +302,8 @@ export const IssueDataTable: React.FC<
 					justifyContent="space-between"
 				>
 					<Typography>
-						Showing {filteredIssues.length}{" "}
-						{filteredIssues.length === 1
+						Showing {issues.length}{" "}
+						{issues.length === 1
 							? "issue"
 							: "issues"}
 					</Typography>
@@ -294,8 +315,9 @@ export const IssueDataTable: React.FC<
 							autoComplete="off"
 							placeholder="Search issue"
 							size="small"
-							value={_title}
+							value={title}
 							onChange={setTitle}
+							onEnter={handleTitleSubmit}
 						/>
 						<IconButton
 							size="small"
@@ -327,7 +349,7 @@ export const IssueDataTable: React.FC<
 								`${value.length} selected`
 							}
 							size="small"
-							value={_repoFullNames}
+							value={repoFullNames}
 							options={repoOptions}
 							onChange={handleRepoFullNamesChange}
 						/>
@@ -344,7 +366,7 @@ export const IssueDataTable: React.FC<
 							displayEmpty
 							subheader="State"
 							size="small"
-							value={_state}
+							value={state}
 							options={ISSUE_FILTER_STATE_OPTIONS}
 							onChange={handleStateChange}
 						/>
@@ -355,7 +377,7 @@ export const IssueDataTable: React.FC<
 							displayEmpty
 							subheader="Type"
 							size="small"
-							value={_ownerType}
+							value={ownerType}
 							options={
 								ISSUE_FILTER_OWNER_TYPE_OPTIONS
 							}
@@ -365,7 +387,7 @@ export const IssueDataTable: React.FC<
 				</List>
 			</Collapse>
 			<StyledDataTable
-				items={filteredIssues}
+				items={issues}
 				columnDefinition={COLUMN_DEFINITION}
 				defaultOrderBy="updated_at"
 				orderingFn={getOrderingFn}

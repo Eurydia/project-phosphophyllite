@@ -40,20 +40,39 @@ export const getCachedTopics = async () => {
 	return topics;
 };
 
-export const getCachedIssuesAll = async () => {
+export const getCachedIssues = async () => {
 	return dbPromise.then((db) =>
 		db.getAll("issues"),
 	);
 };
 
-export const getCachedIssues = async (
-	repoId: number,
+export const getCachedRepoIssues = async (
+	repoFullName: string,
 ) => {
+	const repo = await getCachedRepo(repoFullName);
+	if (repo === undefined) {
+		return [];
+	}
 	return (await dbPromise).getAllFromIndex(
 		"issues",
 		"by-repo_id",
-		repoId,
+		repo.id,
 	);
+};
+
+export const getCachedRepoIssue = async (
+	repoFullName: string,
+	issueNumber: number,
+) => {
+	const issues = await getCachedRepoIssues(
+		repoFullName,
+	);
+	for (const issue of issues) {
+		if (issue.issue_number === issueNumber) {
+			return issue;
+		}
+	}
+	return undefined;
 };
 
 export const getCachedIssueComments = async (
@@ -136,7 +155,7 @@ export const syncCachedRepoIssues = async (
 export const syncCachedRepoIssueComments = async (
 	onFailure: (err: any) => void,
 ) => {
-	const cachedIssues = await getCachedIssuesAll();
+	const cachedIssues = await getCachedIssues();
 	return await Promise.all(
 		cachedIssues.map(async (issue) => {
 			return await getRepoIssueComment(

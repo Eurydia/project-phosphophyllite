@@ -130,8 +130,15 @@ const REPO_METADATA_DEFINITIONS: {
 ];
 
 export const RepoDetailsPage: FC = () => {
-	const { repo, issues } =
-		useLoaderData() as LoaderData;
+	const {
+		repoOptions,
+		repo,
+		issues,
+		title,
+		ownerType,
+		repoFullNames,
+		state,
+	} = useLoaderData() as LoaderData;
 
 	const [tab, setTab] = useState(0);
 	const [drawerOpen, setDrawerOpen] =
@@ -151,33 +158,6 @@ export const RepoDetailsPage: FC = () => {
 			"base64",
 		).toString();
 	}
-
-	// if (loaderData.tab === "issues") {
-	// 	content = (
-	// 		<Stack spacing={2}>
-	// 			{loaderData.issues.map(
-	// 				({ title, id, state, html_url }) => (
-	// 					<Card
-	// 						key={`issue-${id}`}
-	// 						variant="outlined"
-	// 					>
-	// 						<CardContent>
-	// 							<Typography>{title}</Typography>
-	// 							<Typography>{state}</Typography>
-	// 							<Typography
-	// 								href={html_url}
-	// 								component="a"
-	// 								target="_blank"
-	// 							>
-	// 								{html_url}
-	// 							</Typography>
-	// 						</CardContent>
-	// 					</Card>
-	// 				),
-	// 			)}
-	// 		</Stack>
-	// 	);
-	// }
 
 	return (
 		<WithAppBar
@@ -226,13 +206,12 @@ export const RepoDetailsPage: FC = () => {
 			{tab === 1 && (
 				<Box padding={2}>
 					<IssueDataTable
-						repoOptions={[
-							{
-								label: repo.full_name,
-								value: repo.full_name,
-							},
-						]}
+						repoOptions={repoOptions}
 						issues={issues}
+						title={title}
+						ownerType={ownerType}
+						repoFullNames={repoFullNames}
+						state={state}
 					/>
 				</Box>
 			)}
@@ -242,6 +221,9 @@ export const RepoDetailsPage: FC = () => {
 				variant="temporary"
 				open={drawerOpen}
 				onClose={closeDrawer}
+				PaperProps={{
+					sx: { width: "max(300px, 30vw)" },
+				}}
 			>
 				<Toolbar
 					variant="dense"

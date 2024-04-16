@@ -20,23 +20,20 @@ import {
 	REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS,
 	REPO_FILTER_VISIBILITY_OPTIONS,
 } from "constants/REPO_FILTER_OPTIONS";
+import { FC, ReactNode, useState } from "react";
 import {
-	FC,
-	ReactNode,
-	useEffect,
-	useState,
-} from "react";
-import { Link } from "react-router-dom";
-import { filterRepos } from "~core/filtering";
+	Link,
+	useSubmit,
+} from "react-router-dom";
 import {
 	orderByBoolean,
 	orderByString,
 } from "~core/sorting";
 import { normalizeDateString } from "~core/time";
 import {
-	getIssueFilterPrefState,
 	getRepoFilterPrefStatus,
 	getRepoFilterPrefTopicMatchStrategy,
+	getRepoFilterPrefVisibility,
 } from "~database/preferences";
 import { GenericSelectOptions } from "~types/generics";
 import { RepoSchema } from "~types/schemas";
@@ -184,89 +181,110 @@ export const RepoDataTable: React.FC<
 > = (props) => {
 	const {
 		repos,
-		topicOptions,
-		name,
-		topicMatchStrategy,
-		status,
-		topics,
-		visibility,
+		topicOptions: topicOptions_,
+		name: name_,
+		topicMatchStrategy: topicMatchStrategy_,
+		status: status_,
+		topics: topics_,
+		visibility: visibility_,
 	} = props;
 
-	const [filteredRepos, setFilteredRepos] =
-		useState(repos);
-	const [_name, setFilterName] = useState(
-		name || "",
-	);
-	const [_topics, setFilterTopics] = useState(
-		topics ?? [],
-	);
-	const [
-		_topicMatchStrategy,
-		setFilterTopicMatchStrategy,
-	] = useState(
-		topicMatchStrategy ||
-			getRepoFilterPrefTopicMatchStrategy(),
-	);
-	const [_visibility, setFilterVisibility] =
-		useState(
-			visibility || getIssueFilterPrefState(),
-		);
-	const [_status, setFilterStatus] = useState(
-		status || getRepoFilterPrefStatus(),
-	);
+	const submit = useSubmit();
 
-	const handleFilterStrategyChange = (
-		event: SelectChangeEvent<string>,
-	) => {
-		setFilterTopicMatchStrategy(
-			event.target.value,
+	const [name, setName] = useState(name_ || "");
+	const topics = topics_ ?? [];
+	const topicMatchStrategy =
+		topicMatchStrategy_ ||
+		getRepoFilterPrefTopicMatchStrategy();
+	const visibility =
+		visibility_ || getRepoFilterPrefVisibility();
+	const status =
+		status_ || getRepoFilterPrefStatus();
+
+	const handleNameSubmit = () => {
+		submit(
+			{
+				name,
+				topics,
+				topicMatchStrategy,
+				visibility,
+				status,
+			},
+			{ action: "./", method: "get" },
 		);
 	};
-	const handleFilterStatusChange = (
+	const handleTopicMatchStrategyChange = (
 		event: SelectChangeEvent<string>,
 	) => {
-		setFilterStatus(event.target.value);
+		const value = event.target.value;
+		submit(
+			{
+				name,
+				topics,
+				topicMatchStrategy: value,
+				visibility,
+				status,
+			},
+			{ action: "./", method: "get" },
+		);
 	};
-	const handleFilterVisibilityChange = (
+	const handleStatusChange = (
 		event: SelectChangeEvent<string>,
 	) => {
-		setFilterVisibility(event.target.value);
+		const value = event.target.value;
+		submit(
+			{
+				name,
+				topics,
+				topicMatchStrategy,
+				visibility,
+				status: value,
+			},
+			{ action: "./", method: "get" },
+		);
 	};
-	const handleFilterTopicChange = (
+	const handleVisibilityChange = (
+		event: SelectChangeEvent<string>,
+	) => {
+		const value = event.target.value;
+		submit(
+			{
+				name,
+				topics,
+				topicMatchStrategy,
+				visibility: value,
+				status,
+			},
+			{ action: "./", method: "get" },
+		);
+	};
+	const handleTopicsChange = (
 		event: SelectChangeEvent<string[]>,
 	) => {
-		const value = event.target.value
-			.toString()
-			.normalize();
-		setFilterTopics(
-			value
-				.split(",")
-				.filter((value_) => Boolean(value_)),
+		const value = event.target.value;
+		submit(
+			{
+				name,
+				topics: value,
+				topicMatchStrategy,
+				visibility,
+				status,
+			},
+			{ action: "./", method: "get" },
 		);
 	};
-	const handleResetFilterTopic = () => {
-		setFilterTopics([]);
-	};
-
-	useEffect(() => {
-		setFilteredRepos(
-			filterRepos(
-				repos,
-				_name,
-				_topics,
-				_visibility,
-				_status,
-				_topicMatchStrategy,
-			),
+	const handleTopicsReset = () => {
+		submit(
+			{
+				name,
+				topics: [],
+				topicMatchStrategy,
+				visibility,
+				status,
+			},
+			{ action: "./", method: "get" },
 		);
-	}, [
-		repos,
-		_name,
-		_topics,
-		_status,
-		_visibility,
-		_topicMatchStrategy,
-	]);
+	};
 
 	const [filterOpen, setFilterOpen] =
 		useState(false);
@@ -289,8 +307,8 @@ export const RepoDataTable: React.FC<
 					justifyContent="space-between"
 				>
 					<Typography>
-						Showing {filteredRepos.length}{" "}
-						{filteredRepos.length === 1
+						Showing {repos.length}{" "}
+						{repos.length === 1
 							? "repository"
 							: "repositories"}
 					</Typography>
@@ -302,8 +320,9 @@ export const RepoDataTable: React.FC<
 							autoComplete="off"
 							placeholder="Search repository"
 							size="small"
-							value={_name}
-							onChange={setFilterName}
+							value={name}
+							onChange={setName}
+							onEnter={handleNameSubmit}
 						/>
 						<IconButton
 							size="small"
@@ -335,13 +354,13 @@ export const RepoDataTable: React.FC<
 								`${value.length} selected`
 							}
 							size="small"
-							value={_topics}
-							options={topicOptions}
-							onChange={handleFilterTopicChange}
+							value={topics}
+							options={topicOptions_}
+							onChange={handleTopicsChange}
 						/>
 						<IconButton
 							size="small"
-							onClick={handleResetFilterTopic}
+							onClick={handleTopicsReset}
 						>
 							<ClearRounded />
 						</IconButton>
@@ -352,12 +371,12 @@ export const RepoDataTable: React.FC<
 							displayEmpty
 							subheader="Match strategy"
 							size="small"
-							value={_topicMatchStrategy}
+							value={topicMatchStrategy}
 							options={
 								REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS
 							}
 							onChange={
-								handleFilterStrategyChange
+								handleTopicMatchStrategyChange
 							}
 						/>
 					</WrappableListItem>
@@ -367,13 +386,11 @@ export const RepoDataTable: React.FC<
 							displayEmpty
 							subheader="Visibility"
 							size="small"
-							value={_visibility}
+							value={visibility}
 							options={
 								REPO_FILTER_VISIBILITY_OPTIONS
 							}
-							onChange={
-								handleFilterVisibilityChange
-							}
+							onChange={handleVisibilityChange}
 						/>
 					</WrappableListItem>
 					<WrappableListItem text="Status">
@@ -382,15 +399,15 @@ export const RepoDataTable: React.FC<
 							displayEmpty
 							subheader="Status"
 							size="small"
-							value={_status}
+							value={status}
 							options={REPO_FILTER_STATUS_OPTIONS}
-							onChange={handleFilterStatusChange}
+							onChange={handleStatusChange}
 						/>
 					</WrappableListItem>
 				</List>
 			</Collapse>
 			<StyledDataTable
-				items={filteredRepos}
+				items={repos}
 				orderingFn={getOrderingFn}
 				defaultOrderBy="pushed_at"
 				columnDefinition={COLUMN_DEFINITION}
