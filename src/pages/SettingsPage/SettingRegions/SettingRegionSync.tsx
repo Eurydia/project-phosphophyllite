@@ -106,7 +106,7 @@ export const SettingRegionSync: FC = () => {
 		}
 		setSyncing((prev) => {
 			const next = [...prev];
-			next[0] = false;
+			next[index] = false;
 			return next;
 		});
 	};

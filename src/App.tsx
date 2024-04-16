@@ -69,27 +69,6 @@ const router = createHashRouter(
 				},
 			],
 		},
-		// {
-		// 	path: "/ticket",
-		// 	errorElement: <Error />,
-		// 	children: [
-		// 		{
-		// 			index: true,
-		// 			element: <TicketIdx />,
-		// 			loader: loaderTicketHome,
-		// 		},
-		// 		{
-		// 			path: "/ticket/create",
-		// 			element: <TicketCreate />,
-		// 			loader: loaderTicketCreate,
-		// 		},
-		// 		{
-		// 			path: "/ticket/:ticketId",
-		// 			element: <TicketInfo />,
-		// 			loader: loaderTicketInfo,
-		// 		},
-		// 	],
-		// },
 	],
 	{
 		basename: "/",
@@ -103,9 +82,10 @@ export const App = () => {
 			<SnackbarProvider
 				preventDuplicate
 				maxSnack={3}
+				autoHideDuration={3500}
 				anchorOrigin={{
 					vertical: "bottom",
-					horizontal: "right",
+					horizontal: "left",
 				}}
 			>
 				<RouterProvider router={router} />

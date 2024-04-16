@@ -25,5 +25,10 @@ export const parseMarkdown = (
 		})
 		.use(rehypeStringify)
 		.processSync(content.normalize())
-		.toString();
+		.toString()
+		.replace(
+			`<table`,
+			`<div style='display: block; width: 100%; overflow-x: auto'><table`,
+		)
+		.replace(`</table>`, `</table></div>`);
 };

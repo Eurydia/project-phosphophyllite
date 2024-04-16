@@ -7,7 +7,7 @@ const themePalette = createTheme({
 	palette: {
 		mode: "dark",
 		primary: {
-			main: "#00D3D0",
+			main: alpha("#00D3D0", 0.7),
 		},
 		secondary: {
 			main: "#D68F3E",
@@ -17,8 +17,8 @@ const themePalette = createTheme({
 			paper: "#1B1D2D",
 		},
 		text: {
-			primary: alpha("#fff", 0.78),
-			secondary: alpha("#fff", 0.57),
+			primary: alpha("#fff", 0.67),
+			secondary: alpha("#fff", 0.5),
 		},
 	},
 });
@@ -36,7 +36,6 @@ const themeComponent = createTheme({
 				"pre": {
 					width: "100%",
 					overflow: "auto",
-					scrollbarWidth: "thin",
 				},
 				"table": {
 					minWidth: "max-content",
