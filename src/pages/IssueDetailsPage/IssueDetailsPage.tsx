@@ -103,6 +103,12 @@ export const IssueDetailsPage: FC = () => {
 				location={
 					<StyledBreadcrumbs
 						paths={`~/repositories/${issue.repo_full_name}/issues/${issue.issue_number}`}
+						breadcrumbsProps={{
+							sx: {
+								overflow: "auto",
+								flexGrow: { xs: 0, sm: 1 },
+							},
+						}}
 					/>
 				}
 				seconadaryAction={
@@ -137,7 +143,6 @@ export const IssueDetailsPage: FC = () => {
 								emptyText="This issue does not have a body or its body not cached."
 							/>
 						</Paper>
-
 						{comments.map((comment) => (
 							<Box key={`comment-${comment.id}`}>
 								<List
@@ -163,19 +168,6 @@ export const IssueDetailsPage: FC = () => {
 													comment.updated_at,
 												),
 												"Never")
-											}
-										/>
-									</ListItem>
-									<ListItem>
-										<ListItemText
-											primary={
-												<Typography
-													component="a"
-													href={comment.html_url}
-													target="_blank"
-												>
-													URL
-												</Typography>
 											}
 										/>
 									</ListItem>

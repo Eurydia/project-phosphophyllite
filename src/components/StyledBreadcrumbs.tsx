@@ -28,11 +28,7 @@ export const StyledBreadcrumbs: FC<
 				<Typography
 					{...typographyProps}
 					key={`${index}-${path}`}
-					textOverflow="ellipsis"
-					overflow="hidden"
-					display="block"
 					whiteSpace="nowrap"
-					maxWidth="200px"
 				>
 					{path}
 				</Typography>

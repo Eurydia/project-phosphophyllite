@@ -9,7 +9,6 @@ import {
 	List,
 	ListItem,
 	ListItemText,
-	ListSubheader,
 	SelectChangeEvent,
 	Stack,
 	Toolbar,
@@ -80,7 +79,15 @@ const COLUMN_DEFINITION: HeadCell[] = [
 			</Typography>
 		),
 	},
-
+	{
+		id: "opened_at",
+		label: "Last opened",
+		render: (issue) =>
+			normalizeDateString(
+				issue.opened_at,
+				"Never",
+			),
+	},
 	{
 		id: "owner_type",
 		label: "Type",
@@ -95,13 +102,19 @@ const COLUMN_DEFINITION: HeadCell[] = [
 		id: "updated_at",
 		label: "Last updated",
 		render: (issue) =>
-			normalizeDateString(issue.updated_at),
+			normalizeDateString(
+				issue.updated_at,
+				"Never",
+			),
 	},
 	{
 		id: "created_at",
 		label: "Created",
 		render: (issue) =>
-			normalizeDateString(issue.created_at),
+			normalizeDateString(
+				issue.created_at,
+				"Unknown",
+			),
 	},
 ];
 
@@ -292,54 +305,43 @@ export const IssueDataTable: React.FC<
 			<Toolbar
 				disableGutters
 				variant="dense"
+				sx={{
+					flexDirection: "row",
+					width: "100%",
+					flexWrap: "wrap",
+					gap: 1,
+					alignItems: "center",
+					justifyContent: "space-between",
+				}}
 			>
+				<Typography>
+					Showing {issues.length}{" "}
+					{issues.length === 1
+						? "issue"
+						: "issues"}
+				</Typography>
 				<Stack
-					width="100%"
-					flexDirection="row"
-					flexWrap="wrap"
-					gap={1}
 					alignItems="center"
-					justifyContent="space-between"
+					direction="row"
 				>
-					<Typography>
-						Showing {issues.length}{" "}
-						{issues.length === 1
-							? "issue"
-							: "issues"}
-					</Typography>
-					<Stack
-						alignItems="center"
-						direction="row"
+					<StyledTextField
+						autoComplete="off"
+						placeholder="Search issue"
+						size="small"
+						value={title}
+						onChange={setTitle}
+						onEnter={handleTitleSubmit}
+					/>
+					<IconButton
+						size="small"
+						onClick={toggleFilter}
 					>
-						<StyledTextField
-							autoComplete="off"
-							placeholder="Search issue"
-							size="small"
-							value={title}
-							onChange={setTitle}
-							onEnter={handleTitleSubmit}
-						/>
-						<IconButton
-							size="small"
-							onClick={toggleFilter}
-						>
-							<FilterListRounded />
-						</IconButton>
-					</Stack>
+						<FilterListRounded />
+					</IconButton>
 				</Stack>
 			</Toolbar>
 			<Collapse in={filterOpen}>
-				<List
-					disablePadding
-					subheader={
-						<ListSubheader
-							disableGutters
-							disableSticky
-						>
-							Filter options
-						</ListSubheader>
-					}
-				>
+				<List disablePadding>
 					<WrappableListItem text="Repositories">
 						<StyledSelectMultiple
 							fullWidth

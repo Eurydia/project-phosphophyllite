@@ -54,6 +54,7 @@ export const getRepos = async () => {
 				private: is_private,
 			}) => ({
 				id,
+				opened_at: null,
 				html_url,
 				homepage,
 				pushed_at,
@@ -123,6 +124,7 @@ export const getRepoIssues = async (
 			body,
 			user,
 		}) => ({
+			opened_at: "",
 			owner_type:
 				user === null ? null : user.type,
 			repo_id: repoId,

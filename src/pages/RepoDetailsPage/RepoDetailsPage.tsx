@@ -164,13 +164,22 @@ export const RepoDetailsPage: FC = () => {
 			location={
 				<StyledBreadcrumbs
 					paths={`~/repositories/${repo.full_name}`}
+					breadcrumbsProps={{
+						sx: {
+							overflow: "auto",
+							flexGrow: { xs: 0, sm: 1 },
+						},
+					}}
 				/>
 			}
 			seconadaryAction={
 				<IconButton
+					disableRipple
 					onClick={toggleDrawer}
 					size="small"
-					disableRipple
+					sx={{
+						flexGrow: 0,
+					}}
 				>
 					<ChevronLeftRounded />
 				</IconButton>
@@ -218,11 +227,10 @@ export const RepoDetailsPage: FC = () => {
 			<Drawer
 				elevation={0}
 				anchor="right"
-				variant="temporary"
 				open={drawerOpen}
 				onClose={closeDrawer}
 				PaperProps={{
-					sx: { width: "max(300px, 30vw)" },
+					sx: { width: 240 },
 				}}
 			>
 				<Toolbar

@@ -1,5 +1,7 @@
 export type RepoSchema = {
+	// custom property not present from API
 	readme: string | undefined; // encoded readme content
+	opened_at: string | null; // last opened
 	// ---
 
 	id: number;
@@ -17,8 +19,10 @@ export type RepoSchema = {
 };
 
 export type RepoIssueSchema = {
+	// custom property not present from API
 	repo_id: number; // owner repo id
 	repo_full_name: string;
+	opened_at: string;
 	// ---
 
 	id: number; // self id
@@ -35,6 +39,7 @@ export type RepoIssueSchema = {
 };
 
 export type RepoIssueCommentSchema = {
+	// custom property not present from API
 	issue_id: number; // owner issue id
 
 	// ---

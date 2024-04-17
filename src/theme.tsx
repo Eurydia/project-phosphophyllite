@@ -24,6 +24,14 @@ const themePalette = createTheme({
 });
 const themeComponent = createTheme({
 	components: {
+		MuiBreadcrumbs: {
+			styleOverrides: {
+				ol: {
+					flexWrap: "nowrap",
+					width: "100%",
+				},
+			},
+		},
 		MuiCssBaseline: {
 			styleOverrides: {
 				"html": {

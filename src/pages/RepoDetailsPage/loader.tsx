@@ -4,6 +4,7 @@ import {
 	getCachedRepo,
 	getCachedRepoIssues,
 } from "~database/cached";
+import { dbPromise } from "~database/migration";
 import {
 	getIssueFilterPrefOwnerType,
 	getIssueFilterPrefState,
@@ -48,11 +49,15 @@ export const loader: LoaderFunction = async ({
 		});
 	}
 
+	(await dbPromise).put("repos", {
+		...repo,
+		opened_at: new Date(Date.now()).toISOString(),
+	});
+
 	document.title = repo.name;
 
 	const searchParams = new URL(request.url)
 		.searchParams;
-
 	const title = searchParams.get("title") || "";
 	const ownerType =
 		searchParams.get("ownerType") ||

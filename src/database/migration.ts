@@ -36,6 +36,9 @@ export const dbPromise = openDB<Database>(
 	{
 		upgrade(db, oldVersion) {
 			if (oldVersion <= 0) {
+				db.deleteObjectStore("repos");
+				db.deleteObjectStore("issues");
+				db.deleteObjectStore("issueComments");
 				const repoStore = db.createObjectStore(
 					"repos",
 					{

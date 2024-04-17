@@ -2,13 +2,20 @@ export const orderByString = (
 	a: string | null | undefined,
 	b: string | null | undefined,
 ): number => {
-	if (a === null || b === null) {
+	// moves nullish values to the end
+
+	const a_ = a ?? false;
+	const b_ = b ?? false;
+	if (!a_ && b_) {
+		return 1;
+	}
+	if (!a_ && !b_) {
 		return 0;
 	}
-	if (a === undefined || b === undefined) {
-		return 0;
+	if (a_ && !b_) {
+		return -1;
 	}
-	return b.localeCompare(a);
+	return b!.localeCompare(a!);
 };
 
 export const orderByBoolean = (
@@ -30,12 +37,17 @@ export const orderByNumber = (
 	a: number | null | undefined,
 	b: number | null | undefined,
 ) => {
-	if (a === null || b === null) {
+	const a_ = a ?? false;
+	const b_ = b ?? false;
+	if (!a_ && b_) {
+		return 1;
+	}
+	if (!a_ && !b_) {
 		return 0;
 	}
-	if (a === undefined || b === undefined) {
-		return 0;
+	if (a_ && !b_) {
+		return -1;
 	}
 
-	return b - a;
+	return b! - a!;
 };

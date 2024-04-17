@@ -3,15 +3,20 @@ import { FC } from "react";
 import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
 import { WithAppBar } from "~views/WithAppBar";
 import { SettingRegionAPI } from "./SettingRegions/SettingRegionAPI";
+import { SettingRegionIssueFilterPref } from "./SettingRegions/SettingRegionIssueFilterPref";
 import { SettingRegionRepoFilterPref } from "./SettingRegions/SettingRegionRepoFilterPref";
 import { SettingRegionSync } from "./SettingRegions/SettingRegionSync";
-import { SettingRegionIssueFilterPref } from "./SettingRegions/SettingRegionIssueFilterPref";
 
 export const SettingsPage: FC = () => {
 	return (
 		<WithAppBar
 			location={
-				<StyledBreadcrumbs paths="~/settings" />
+				<StyledBreadcrumbs
+					paths="~/settings"
+					breadcrumbsProps={{
+						sx: { flexGrow: 1 },
+					}}
+				/>
 			}
 		>
 			<Stack

@@ -9,7 +9,6 @@ import {
 	List,
 	ListItem,
 	ListItemText,
-	ListSubheader,
 	SelectChangeEvent,
 	Stack,
 	Toolbar,
@@ -61,6 +60,15 @@ const COLUMN_DEFINITION: DataCell[] = [
 		),
 	},
 	{
+		id: "opened_at",
+		label: "Last opened",
+		render: (repo) =>
+			normalizeDateString(
+				repo.opened_at,
+				"Never",
+			),
+	},
+	{
 		id: "is_archived",
 		label: "Status",
 		render: (repo) =>
@@ -76,19 +84,28 @@ const COLUMN_DEFINITION: DataCell[] = [
 		id: "pushed_at",
 		label: "Last pushed",
 		render: (repo) =>
-			normalizeDateString(repo.pushed_at),
+			normalizeDateString(
+				repo.pushed_at,
+				"Never",
+			),
 	},
 	{
 		id: "updated_at",
 		label: "Last updated",
 		render: (repo) =>
-			normalizeDateString(repo.updated_at),
+			normalizeDateString(
+				repo.updated_at,
+				"Never",
+			),
 	},
 	{
 		id: "created_at",
 		label: "Created",
 		render: (repo) =>
-			normalizeDateString(repo.created_at),
+			normalizeDateString(
+				repo.created_at,
+				"Unknown",
+			),
 	},
 ];
 
@@ -113,6 +130,7 @@ const getOrderingFn = (
 				);
 		case "full_name":
 		case "pushed_at":
+		case "opened_at":
 		case "created_at":
 		case "updated_at":
 			return (a, b) =>
@@ -297,54 +315,43 @@ export const RepoDataTable: React.FC<
 			<Toolbar
 				disableGutters
 				variant="dense"
+				sx={{
+					flexDirection: "row",
+					width: "100%",
+					flexWrap: "wrap",
+					gap: 1,
+					alignItems: "center",
+					justifyContent: "space-between",
+				}}
 			>
+				<Typography>
+					Showing {repos.length}{" "}
+					{repos.length === 1
+						? "repository"
+						: "repositories"}
+				</Typography>
 				<Stack
-					width="100%"
-					flexDirection="row"
-					flexWrap="wrap"
-					gap={1}
 					alignItems="center"
-					justifyContent="space-between"
+					direction="row"
 				>
-					<Typography>
-						Showing {repos.length}{" "}
-						{repos.length === 1
-							? "repository"
-							: "repositories"}
-					</Typography>
-					<Stack
-						alignItems="center"
-						direction="row"
+					<StyledTextField
+						autoComplete="off"
+						placeholder="Search repository"
+						size="small"
+						value={name}
+						onChange={setName}
+						onEnter={handleNameSubmit}
+					/>
+					<IconButton
+						size="small"
+						onClick={toggleFilter}
 					>
-						<StyledTextField
-							autoComplete="off"
-							placeholder="Search repository"
-							size="small"
-							value={name}
-							onChange={setName}
-							onEnter={handleNameSubmit}
-						/>
-						<IconButton
-							size="small"
-							onClick={toggleFilter}
-						>
-							<FilterListRounded />
-						</IconButton>
-					</Stack>
+						<FilterListRounded />
+					</IconButton>
 				</Stack>
 			</Toolbar>
 			<Collapse in={filterOpen}>
-				<List
-					disablePadding
-					subheader={
-						<ListSubheader
-							disableGutters
-							disableSticky
-						>
-							Filter options
-						</ListSubheader>
-					}
-				>
+				<List disablePadding>
 					<WrappableListItem text="Topics">
 						<StyledSelectMultiple
 							fullWidth

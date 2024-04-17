@@ -20,7 +20,12 @@ export const RepoListPage: FC = () => {
 	return (
 		<WithAppBar
 			location={
-				<StyledBreadcrumbs paths="~/repositories" />
+				<StyledBreadcrumbs
+					paths="~/repositories"
+					breadcrumbsProps={{
+						sx: { flexGrow: 1 },
+					}}
+				/>
 			}
 		>
 			<Box padding={2}>

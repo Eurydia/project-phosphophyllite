@@ -1,17 +1,23 @@
 import {
+	CloseRounded,
+	ListRounded,
+} from "@mui/icons-material";
+import {
 	AppBar,
 	Box,
 	Divider,
-	Grid,
+	Drawer,
+	IconButton,
 	List,
 	ListItem,
 	ListItemButton,
 	ListItemText,
-	Paper,
 	Toolbar,
+	Typography,
 } from "@mui/material";
 import {
 	FC,
+	Fragment,
 	ReactNode,
 	useEffect,
 	useRef,
@@ -43,6 +49,11 @@ export const WithAppBar: FC<WithAppBarProps> = (
 	const { location, children, seconadaryAction } =
 		props;
 	const submit = useSubmit();
+	const [drawerOpen, setDrawerOpen] =
+		useState(false);
+	const toggleDrawer = () => {
+		setDrawerOpen(!drawerOpen);
+	};
 	const appBarRef = useRef<HTMLElement | null>(
 		null,
 	);
@@ -61,7 +72,7 @@ export const WithAppBar: FC<WithAppBarProps> = (
 				.height;
 
 		setContentHeight(
-			`calc(100vh - ${appBarHeight}px)`,
+			`calc(100svh - ${appBarHeight}px)`,
 		);
 	}, [appBarRef]);
 
@@ -70,61 +81,8 @@ export const WithAppBar: FC<WithAppBarProps> = (
 	};
 
 	return (
-		<Grid
-			container
-			columns={10}
-			maxWidth="100vw"
-		>
-			<Grid
-				item
-				xs={3}
-				md={2}
-			>
-				<Paper
-					square
-					variant="outlined"
-					elevation={0}
-					sx={{
-						height: "100%",
-						borderTopWidth: 0,
-						borderLeftWidth: 0,
-						borderBottomWidth: 0,
-					}}
-				>
-					<Toolbar variant="dense" />
-					<Divider />
-					<List
-						disablePadding
-						dense
-						sx={{
-							wordBreak: "break-word",
-							whiteSpace: "wrap",
-						}}
-					>
-						{nav.map(({ label, path }) => (
-							<ListItem
-								disableGutters
-								key={path}
-							>
-								<ListItemButton
-									onClick={() =>
-										redirectPath(path)
-									}
-								>
-									<ListItemText>
-										{label}
-									</ListItemText>
-								</ListItemButton>
-							</ListItem>
-						))}
-					</List>
-				</Paper>
-			</Grid>
-			<Grid
-				item
-				xs={7}
-				md={8}
-			>
+		<Fragment>
+			<Box maxWidth="100vw">
 				<AppBar
 					ref={appBarRef}
 					position="relative"
@@ -136,11 +94,18 @@ export const WithAppBar: FC<WithAppBarProps> = (
 						sx={{
 							display: "flex",
 							flexDirection: "row",
-							flexWrap: "wrap",
+							flexWrap: "nowrap",
 							alignItems: "center",
 							justifyContent: "space-between",
 						}}
 					>
+						<IconButton
+							size="small"
+							onClick={toggleDrawer}
+							sx={{ flexGrow: 0 }}
+						>
+							<ListRounded />
+						</IconButton>
 						{location}
 						{seconadaryAction}
 					</Toolbar>
@@ -155,7 +120,67 @@ export const WithAppBar: FC<WithAppBarProps> = (
 				>
 					{children}
 				</Box>
-			</Grid>
-		</Grid>
+			</Box>
+			<Drawer
+				open={drawerOpen}
+				onClose={toggleDrawer}
+				PaperProps={{
+					square: true,
+					variant: "outlined",
+					elevation: 0,
+					sx: {
+						width: 240,
+						height: "100%",
+						borderTopWidth: 0,
+						borderLeftWidth: 0,
+						borderBottomWidth: 0,
+					},
+				}}
+			>
+				<Toolbar
+					variant="dense"
+					sx={{
+						display: "flex",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "space-between",
+					}}
+				>
+					<IconButton
+						size="small"
+						onClick={toggleDrawer}
+					>
+						<CloseRounded />
+					</IconButton>
+					<Typography fontWeight="bold">
+						Navigation
+					</Typography>
+				</Toolbar>
+				<Divider />
+				<List
+					disablePadding
+					dense
+					sx={{
+						wordBreak: "break-word",
+						whiteSpace: "wrap",
+					}}
+				>
+					{nav.map(({ label, path }) => (
+						<ListItem
+							disableGutters
+							key={path}
+						>
+							<ListItemButton
+								onClick={() => redirectPath(path)}
+							>
+								<ListItemText>
+									{label}
+								</ListItemText>
+							</ListItemButton>
+						</ListItem>
+					))}
+				</List>
+			</Drawer>
+		</Fragment>
 	);
 };
