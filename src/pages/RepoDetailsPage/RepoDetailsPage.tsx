@@ -27,7 +27,10 @@ import { WithAppBar } from "~views/WithAppBar";
 import { LoaderData } from "./loader";
 
 import { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import {
+	Link,
+	useSubmit,
+} from "react-router-dom";
 import { toSearchParam } from "~core/query";
 import { toTimeStamp } from "~core/time";
 import { RepoSchema } from "~types/schemas";
@@ -138,12 +141,24 @@ export const RepoDetailsPage: FC = () => {
 		ownerType,
 		repoFullNames,
 		state,
+		tab,
 	} = useLoaderData() as LoaderData;
 
-	const [tab, setTab] = useState(0);
+	const submit = useSubmit();
+	const handleTabChange = (
+		_: React.SyntheticEvent<Element, Event>,
+		value: string,
+	) => {
+		submit(
+			{
+				tab: value,
+			},
+			{ action: "./", method: "get" },
+		);
+	};
+
 	const [drawerOpen, setDrawerOpen] =
 		useState(false);
-
 	const toggleDrawer = () => {
 		setDrawerOpen(!drawerOpen);
 	};
@@ -163,7 +178,7 @@ export const RepoDetailsPage: FC = () => {
 		<WithAppBar
 			location={
 				<StyledBreadcrumbs
-					paths={`~/repositories/${repo.full_name}`}
+					path={`~/repositories/${repo.full_name}`}
 					breadcrumbsProps={{
 						sx: {
 							overflow: "auto",
@@ -191,28 +206,27 @@ export const RepoDetailsPage: FC = () => {
 			>
 				<Tabs
 					value={tab}
-					onChange={(_, tab) => setTab(tab)}
+					onChange={handleTabChange}
 				>
 					<Tab
-						value={0}
+						value="readme"
 						label="Readme"
 					/>
 					<Tab
-						value={1}
+						value="issues"
 						label="Issues"
 					/>
 				</Tabs>
 			</Toolbar>
 			<Divider />
-			{tab === 0 && (
+			{tab !== "issues" ? (
 				<Container maxWidth="sm">
 					<Markdown
 						emptyText="This repository does not contain a readme."
 						markdownContent={decodedReadme}
 					/>
 				</Container>
-			)}
-			{tab === 1 && (
+			) : (
 				<Box padding={2}>
 					<IssueDataTable
 						repoOptions={repoOptions}

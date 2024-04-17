@@ -37,44 +37,46 @@ export const getRepos = async () => {
 	const pages = await octokit.paginate(
 		"GET /user/repos",
 	);
-	const repos: RepoSchema[] = await Promise.all(
-		pages.map(
-			async ({
-				name,
+	const req = pages.map(
+		async ({
+			name,
+			full_name,
+			topics,
+			created_at,
+			updated_at,
+			description,
+			id,
+			html_url,
+			homepage,
+			pushed_at,
+			archived: is_archived,
+			private: is_private,
+		}) => ({
+			id,
+			html_url,
+			homepage,
+			pushed_at,
+			name,
+			full_name,
+			description,
+			topics,
+			created_at,
+			updated_at,
+			is_archived,
+			is_private,
+			readme: await getRepoReadMe(
 				full_name,
-				topics,
-				created_at,
-				updated_at,
-				description,
-				id,
-				html_url,
-				homepage,
-				pushed_at,
-				archived: is_archived,
-				private: is_private,
-			}) => ({
-				id,
-				html_url,
-				homepage,
-				pushed_at,
-				name,
-				full_name,
-				description,
-				topics,
-				created_at,
-				updated_at,
-				is_archived,
-				is_private,
-				readme: await getRepoReadMe(
-					full_name,
-				).catch((err) => {
-					if (err.status === 404) {
-						return undefined;
-					}
-					throw err;
-				}),
+			).catch((err) => {
+				if (err.status === 404) {
+					return undefined;
+				}
+				throw err;
 			}),
-		),
+		}),
+	);
+
+	const repos: RepoSchema[] = await Promise.all(
+		req,
 	);
 
 	return repos;

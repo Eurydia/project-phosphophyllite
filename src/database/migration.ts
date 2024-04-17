@@ -34,53 +34,48 @@ export const dbPromise = openDB<Database>(
 	"primary",
 	1,
 	{
-		upgrade(db, oldVersion) {
-			if (oldVersion <= 0) {
-				db.deleteObjectStore("repos");
-				db.deleteObjectStore("issues");
-				db.deleteObjectStore("issueComments");
-				const repoStore = db.createObjectStore(
-					"repos",
-					{
-						keyPath: "id",
-						autoIncrement: false,
-					},
-				);
-				repoStore.createIndex(
-					"by-full_name",
-					"full_name",
-					{
-						unique: true,
-						multiEntry: false,
-					},
-				);
-				repoStore.createIndex("by-id", "id", {
+		upgrade(db) {
+			const repoStore = db.createObjectStore(
+				"repos",
+				{
+					keyPath: "id",
+					autoIncrement: false,
+				},
+			);
+			repoStore.createIndex(
+				"by-full_name",
+				"full_name",
+				{
 					unique: true,
 					multiEntry: false,
+				},
+			);
+			repoStore.createIndex("by-id", "id", {
+				unique: true,
+				multiEntry: false,
+			});
+			const issueStore = db.createObjectStore(
+				"issues",
+				{
+					keyPath: "id",
+					autoIncrement: false,
+				},
+			);
+			issueStore.createIndex(
+				"by-repo_id",
+				"repo_id",
+				{ multiEntry: true, unique: false },
+			);
+			const issueCommentStore =
+				db.createObjectStore("issueComments", {
+					keyPath: "id",
+					autoIncrement: false,
 				});
-				const issueStore = db.createObjectStore(
-					"issues",
-					{
-						keyPath: "id",
-						autoIncrement: false,
-					},
-				);
-				issueStore.createIndex(
-					"by-repo_id",
-					"repo_id",
-					{ multiEntry: true, unique: false },
-				);
-				const issueCommentStore =
-					db.createObjectStore("issueComments", {
-						keyPath: "id",
-						autoIncrement: false,
-					});
-				issueCommentStore.createIndex(
-					"by-issue_id",
-					"issue_id",
-					{ multiEntry: true, unique: false },
-				);
-			}
+			issueCommentStore.createIndex(
+				"by-issue_id",
+				"issue_id",
+				{ multiEntry: true, unique: false },
+			);
 		},
 	},
 );

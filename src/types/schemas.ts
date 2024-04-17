@@ -1,5 +1,5 @@
 export type RepoSchema = {
-	// custom property not present from API
+	// custom property not present on API
 	readme: string | undefined; // encoded readme content
 	// ---
 
@@ -18,7 +18,7 @@ export type RepoSchema = {
 };
 
 export type RepoIssueSchema = {
-	// custom property not present from API
+	// custom property not present on API
 	repo_id: number; // owner repo id
 	repo_full_name: string;
 	// ---
@@ -37,7 +37,7 @@ export type RepoIssueSchema = {
 };
 
 export type RepoIssueCommentSchema = {
-	// custom property not present from API
+	// custom property not present on API
 	issue_id: number; // owner issue id
 
 	// ---

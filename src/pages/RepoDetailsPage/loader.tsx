@@ -15,6 +15,7 @@ import {
 } from "~types/schemas";
 
 export type LoaderData = {
+	tab: string;
 	repo: RepoSchema;
 	issues: RepoIssueSchema[];
 	title: string;
@@ -51,6 +52,10 @@ export const loader: LoaderFunction = async ({
 
 	const searchParams = new URL(request.url)
 		.searchParams;
+	const tab =
+		searchParams.get("tab") === "issues"
+			? "issues"
+			: "readme";
 	const title = searchParams.get("title") || "";
 	const ownerType =
 		searchParams.get("ownerType") ||
@@ -88,6 +93,7 @@ export const loader: LoaderFunction = async ({
 		repoFullNames,
 		state,
 		repoOptions,
+		tab,
 	};
 
 	return loaderData;

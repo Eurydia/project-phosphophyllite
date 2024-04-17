@@ -20,7 +20,7 @@ export const IssueListPage: FC = () => {
 		<WithAppBar
 			location={
 				<StyledBreadcrumbs
-					paths="~/issues"
+					path="~/issues"
 					breadcrumbsProps={{
 						sx: { flexGrow: 1 },
 					}}

@@ -19,7 +19,12 @@ import {
 	REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS,
 	REPO_FILTER_VISIBILITY_OPTIONS,
 } from "constants/REPO_FILTER_OPTIONS";
-import { FC, ReactNode, useState } from "react";
+import {
+	FC,
+	Fragment,
+	ReactNode,
+	useState,
+} from "react";
 import {
 	Link,
 	useSubmit,
@@ -53,20 +58,11 @@ const COLUMN_DEFINITION: DataCell[] = [
 		render: (repo) => (
 			<Typography
 				component={Link}
-				to={`./${repo.full_name}`}
+				to={`/repositories/${repo.full_name}`}
 			>
 				{repo.full_name}
 			</Typography>
 		),
-	},
-	{
-		id: "opened_at",
-		label: "Last opened",
-		render: (repo) =>
-			normalizeDateString(
-				repo.opened_at,
-				"Never",
-			),
 	},
 	{
 		id: "is_archived",
@@ -130,7 +126,6 @@ const getOrderingFn = (
 				);
 		case "full_name":
 		case "pushed_at":
-		case "opened_at":
 		case "created_at":
 		case "updated_at":
 			return (a, b) =>
@@ -186,8 +181,10 @@ const WrappableListItem: FC<
 };
 
 type RepoDataTableProps = {
+	disableFilter?: boolean;
+	orderBy?: keyof RepoSchema;
 	repos: RepoSchema[];
-	topicOptions: GenericSelectOptions<string>[];
+	topicOptions?: GenericSelectOptions<string>[];
 	name?: string;
 	topics?: string[];
 	topicMatchStrategy?: string;
@@ -198,6 +195,8 @@ export const RepoDataTable: React.FC<
 	RepoDataTableProps
 > = (props) => {
 	const {
+		orderBy,
+		disableFilter,
 		repos,
 		topicOptions: topicOptions_,
 		name: name_,
@@ -219,7 +218,10 @@ export const RepoDataTable: React.FC<
 	const status =
 		status_ || getRepoFilterPrefStatus();
 
-	const handleNameSubmit = () => {
+	const handleSubmit = (
+		key: string,
+		value: string,
+	) => {
 		submit(
 			{
 				name,
@@ -227,81 +229,41 @@ export const RepoDataTable: React.FC<
 				topicMatchStrategy,
 				visibility,
 				status,
+				[key]: value,
 			},
 			{ action: "./", method: "get" },
 		);
+	};
+
+	const handleNameSubmit = () => {
+		handleSubmit("name", name);
 	};
 	const handleTopicMatchStrategyChange = (
 		event: SelectChangeEvent<string>,
 	) => {
 		const value = event.target.value;
-		submit(
-			{
-				name,
-				topics,
-				topicMatchStrategy: value,
-				visibility,
-				status,
-			},
-			{ action: "./", method: "get" },
-		);
+		handleSubmit("topicMatchStrategy", value);
 	};
 	const handleStatusChange = (
 		event: SelectChangeEvent<string>,
 	) => {
 		const value = event.target.value;
-		submit(
-			{
-				name,
-				topics,
-				topicMatchStrategy,
-				visibility,
-				status: value,
-			},
-			{ action: "./", method: "get" },
-		);
+		handleSubmit("status", value);
 	};
 	const handleVisibilityChange = (
 		event: SelectChangeEvent<string>,
 	) => {
 		const value = event.target.value;
-		submit(
-			{
-				name,
-				topics,
-				topicMatchStrategy,
-				visibility: value,
-				status,
-			},
-			{ action: "./", method: "get" },
-		);
+		handleSubmit("visibility", value);
 	};
 	const handleTopicsChange = (
 		event: SelectChangeEvent<string[]>,
 	) => {
 		const value = event.target.value;
-		submit(
-			{
-				name,
-				topics: value,
-				topicMatchStrategy,
-				visibility,
-				status,
-			},
-			{ action: "./", method: "get" },
-		);
+		handleSubmit("topics", value.toString());
 	};
 	const handleTopicsReset = () => {
-		submit(
-			{
-				name,
-				topics: [],
-				topicMatchStrategy,
-				visibility,
-				status,
-			},
-			{ action: "./", method: "get" },
-		);
+		handleSubmit("topics", "value.toString()");
 	};
 
 	const [filterOpen, setFilterOpen] =
@@ -312,111 +274,116 @@ export const RepoDataTable: React.FC<
 
 	return (
 		<Box>
-			<Toolbar
-				disableGutters
-				variant="dense"
-				sx={{
-					flexDirection: "row",
-					width: "100%",
-					flexWrap: "wrap",
-					gap: 1,
-					alignItems: "center",
-					justifyContent: "space-between",
-				}}
-			>
-				<Typography>
-					Showing {repos.length}{" "}
-					{repos.length === 1
-						? "repository"
-						: "repositories"}
-				</Typography>
-				<Stack
-					alignItems="center"
-					direction="row"
-				>
-					<StyledTextField
-						autoComplete="off"
-						placeholder="Search repository"
-						size="small"
-						value={name}
-						onChange={setName}
-						onEnter={handleNameSubmit}
-					/>
-					<IconButton
-						size="small"
-						onClick={toggleFilter}
+			{!disableFilter && (
+				<Fragment>
+					<Toolbar
+						disableGutters
+						variant="dense"
+						sx={{
+							flexDirection: "row",
+							width: "100%",
+							flexWrap: "wrap",
+							gap: 1,
+							alignItems: "center",
+							justifyContent: "space-between",
+						}}
 					>
-						<FilterListRounded />
-					</IconButton>
-				</Stack>
-			</Toolbar>
-			<Collapse in={filterOpen}>
-				<List disablePadding>
-					<WrappableListItem text="Topics">
-						<StyledSelectMultiple
-							fullWidth
-							displayEmpty
-							subheader="Topics"
-							renderValue={(value) =>
-								`${value.length} selected`
-							}
-							size="small"
-							value={topics}
-							options={topicOptions_}
-							onChange={handleTopicsChange}
-						/>
-						<IconButton
-							size="small"
-							onClick={handleTopicsReset}
+						<Stack
+							alignItems="center"
+							direction="row"
 						>
-							<ClearRounded />
-						</IconButton>
-					</WrappableListItem>
-					<WrappableListItem text="Topic match strategy">
-						<StyledSelect
-							fullWidth
-							displayEmpty
-							subheader="Match strategy"
-							size="small"
-							value={topicMatchStrategy}
-							options={
-								REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS
-							}
-							onChange={
-								handleTopicMatchStrategyChange
-							}
-						/>
-					</WrappableListItem>
-					<WrappableListItem text="Visibility">
-						<StyledSelect
-							fullWidth
-							displayEmpty
-							subheader="Visibility"
-							size="small"
-							value={visibility}
-							options={
-								REPO_FILTER_VISIBILITY_OPTIONS
-							}
-							onChange={handleVisibilityChange}
-						/>
-					</WrappableListItem>
-					<WrappableListItem text="Status">
-						<StyledSelect
-							fullWidth
-							displayEmpty
-							subheader="Status"
-							size="small"
-							value={status}
-							options={REPO_FILTER_STATUS_OPTIONS}
-							onChange={handleStatusChange}
-						/>
-					</WrappableListItem>
-				</List>
-			</Collapse>
+							<StyledTextField
+								autoComplete="off"
+								placeholder="Search repository"
+								size="small"
+								value={name}
+								onChange={setName}
+								onEnter={handleNameSubmit}
+							/>
+							<IconButton
+								size="small"
+								onClick={toggleFilter}
+							>
+								<FilterListRounded />
+							</IconButton>
+						</Stack>
+						<Typography>
+							Showing {repos.length}{" "}
+							{repos.length === 1
+								? "repository"
+								: "repositories"}
+						</Typography>
+					</Toolbar>
+					<Collapse in={filterOpen}>
+						<List disablePadding>
+							<WrappableListItem text="Topics">
+								<StyledSelectMultiple
+									fullWidth
+									displayEmpty
+									subheader="Topics"
+									renderValue={(value) =>
+										`${value.length} selected`
+									}
+									size="small"
+									value={topics}
+									options={topicOptions_}
+									onChange={handleTopicsChange}
+								/>
+								<IconButton
+									size="small"
+									onClick={handleTopicsReset}
+								>
+									<ClearRounded />
+								</IconButton>
+							</WrappableListItem>
+							<WrappableListItem text="Topic match strategy">
+								<StyledSelect
+									fullWidth
+									displayEmpty
+									size="small"
+									value={topicMatchStrategy}
+									options={
+										REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS
+									}
+									onChange={
+										handleTopicMatchStrategyChange
+									}
+								/>
+							</WrappableListItem>
+							<WrappableListItem text="Visibility">
+								<StyledSelect
+									fullWidth
+									displayEmpty
+									size="small"
+									value={visibility}
+									options={
+										REPO_FILTER_VISIBILITY_OPTIONS
+									}
+									onChange={
+										handleVisibilityChange
+									}
+								/>
+							</WrappableListItem>
+							<WrappableListItem text="Status">
+								<StyledSelect
+									fullWidth
+									displayEmpty
+									size="small"
+									value={status}
+									options={
+										REPO_FILTER_STATUS_OPTIONS
+									}
+									onChange={handleStatusChange}
+								/>
+							</WrappableListItem>
+						</List>
+					</Collapse>
+				</Fragment>
+			)}
 			<StyledDataTable
 				items={repos}
 				orderingFn={getOrderingFn}
-				defaultOrderBy="pushed_at"
+				defaultOrderBy={orderBy ?? "pushed_at"}
 				columnDefinition={COLUMN_DEFINITION}
 			/>
 		</Box>

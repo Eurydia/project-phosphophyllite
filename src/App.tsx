@@ -6,6 +6,7 @@ import { SnackbarProvider } from "notistack";
 import {
 	RouterProvider,
 	createHashRouter,
+	redirect,
 } from "react-router-dom";
 import { ErrorBoundry } from "~pages/ErrorBoundary";
 import {
@@ -49,6 +50,14 @@ const router = createHashRouter(
 					loader: loaderRepoListPage,
 				},
 				{
+					path: "/repositories/:owner",
+					element: null,
+					loader: ({ params }) =>
+						redirect(
+							`/repositories/?name=${params.owner}`,
+						),
+				},
+				{
 					path: "/repositories/:owner/:repo",
 					element: <RepoDetailsPage />,
 					loader: loaderRepoDetailsPage,
@@ -57,6 +66,14 @@ const router = createHashRouter(
 					path: "/repositories/:owner/:repo/issues/:issueNumber",
 					element: <IssueDetailsPage />,
 					loader: loaderIssueDetailsPage,
+				},
+				{
+					path: "/repositories/:owner/:repo/issues",
+					element: null,
+					loader: ({ params }) =>
+						redirect(
+							`/repositories/${params.owner}/${params.repo}/?tab=issues`,
+						),
 				},
 				{
 					path: "/issues",

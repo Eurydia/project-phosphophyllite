@@ -12,7 +12,7 @@ export const SettingsPage: FC = () => {
 		<WithAppBar
 			location={
 				<StyledBreadcrumbs
-					paths="~/settings"
+					path="~/settings"
 					breadcrumbsProps={{
 						sx: { flexGrow: 1 },
 					}}

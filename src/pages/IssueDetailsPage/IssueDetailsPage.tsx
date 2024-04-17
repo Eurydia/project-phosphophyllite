@@ -11,7 +11,6 @@ import {
 	List,
 	ListItem,
 	ListItemText,
-	Paper,
 	Stack,
 	Toolbar,
 	Typography,
@@ -25,10 +24,7 @@ import { LoaderData } from "./loader";
 
 import { ReactNode } from "react";
 import { Markdown } from "~components/Markdown";
-import {
-	normalizeDateString,
-	toTimeStamp,
-} from "~core/time";
+import { toTimeStamp } from "~core/time";
 import { RepoIssueSchema } from "~types/schemas";
 
 const METADATA_DEFINITIONS: {
@@ -102,7 +98,7 @@ export const IssueDetailsPage: FC = () => {
 			<WithAppBar
 				location={
 					<StyledBreadcrumbs
-						paths={`~/repositories/${issue.repo_full_name}/issues/${issue.issue_number}`}
+						path={`~/repositories/${issue.repo_full_name}/issues/${issue.issue_number}`}
 						breadcrumbsProps={{
 							sx: {
 								overflow: "auto",
@@ -132,51 +128,22 @@ export const IssueDetailsPage: FC = () => {
 							/>
 						}
 					>
-						<Paper
-							variant="outlined"
-							sx={{ padding: 2 }}
-						>
-							<Markdown
-								markdownContent={
-									issue.body ?? undefined
-								}
-								emptyText="This issue does not have a body or its body not cached."
-							/>
-						</Paper>
-						{comments.map((comment) => (
+						<Markdown
+							markdownContent={
+								issue.body ?? undefined
+							}
+							emptyText="This issue does not have a body or its body is not cached."
+						/>
+						{comments.map((comment, index) => (
 							<Box key={`comment-${comment.id}`}>
-								<List
-									dense
-									disablePadding
-								>
-									<ListItem disablePadding>
-										<ListItemText
-											primary="Created"
-											secondary={
-												(normalizeDateString(
-													comment.created_at,
-												),
-												"Unknown")
-											}
-										/>
-									</ListItem>
-									<ListItem>
-										<ListItemText
-											primary="Last updated"
-											secondary={
-												(normalizeDateString(
-													comment.updated_at,
-												),
-												"Never")
-											}
-										/>
-									</ListItem>
-								</List>
+								<Typography fontWeight="bold">
+									Comment #{index + 1}
+								</Typography>
 								<Markdown
 									markdownContent={
 										comment.body ?? undefined
 									}
-									emptyText="This issue does not have a body or its body not cached."
+									emptyText="This comment does not have a body or its body not is cached."
 								/>
 							</Box>
 						))}
