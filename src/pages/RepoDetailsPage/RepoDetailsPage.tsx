@@ -18,22 +18,20 @@ import {
 	Typography,
 } from "@mui/material";
 import { Buffer } from "buffer";
-import { FC, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import { useLoaderData } from "react-router";
-import { IssueDataTable } from "~components/IssueDataTable";
-import { Markdown } from "~components/Markdown";
-import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
-import { WithAppBar } from "~views/WithAppBar";
-import { LoaderData } from "./loader";
-
-import { ReactNode } from "react";
 import {
 	Link,
 	useSubmit,
 } from "react-router-dom";
+import { IssueDataTable } from "~components/IssueDataTable";
+import { Markdown } from "~components/Markdown";
+import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
 import { toSearchParam } from "~core/query";
 import { toTimeStamp } from "~core/time";
 import { RepoSchema } from "~types/schemas";
+import { WithAppBar } from "~views/WithAppBar";
+import { LoaderData } from "./loader";
 
 const REPO_METADATA_DEFINITIONS: {
 	label: string;
@@ -132,7 +130,11 @@ const REPO_METADATA_DEFINITIONS: {
 	},
 ];
 
-export const RepoDetailsPage: FC = () => {
+type RepoDetailsPageProps = { tab: number };
+export const RepoDetailsPage: FC<
+	RepoDetailsPageProps
+> = (props) => {
+	const { tab } = props;
 	const {
 		repoOptions,
 		repo,
@@ -141,20 +143,18 @@ export const RepoDetailsPage: FC = () => {
 		ownerType,
 		repoFullNames,
 		state,
-		tab,
 	} = useLoaderData() as LoaderData;
 
 	const submit = useSubmit();
 	const handleTabChange = (
 		_: React.SyntheticEvent<Element, Event>,
-		value: string,
+		value: number,
 	) => {
-		submit(
-			{
-				tab: value,
-			},
-			{ action: "./", method: "get" },
-		);
+		let path = `/repositories/${repo.full_name}`;
+		if (value === 1) {
+			path = `${path}/issues`;
+		}
+		submit({}, { action: path, method: "get" });
 	};
 
 	const [drawerOpen, setDrawerOpen] =
@@ -209,17 +209,17 @@ export const RepoDetailsPage: FC = () => {
 					onChange={handleTabChange}
 				>
 					<Tab
-						value="readme"
+						value={0}
 						label="Readme"
 					/>
 					<Tab
-						value="issues"
+						value={1}
 						label="Issues"
 					/>
 				</Tabs>
 			</Toolbar>
 			<Divider />
-			{tab !== "issues" ? (
+			{tab !== 1 ? (
 				<Container maxWidth="sm">
 					<Markdown
 						emptyText="This repository does not contain a readme."

@@ -59,7 +59,12 @@ const router = createHashRouter(
 				},
 				{
 					path: "/repositories/:owner/:repo",
-					element: <RepoDetailsPage />,
+					element: <RepoDetailsPage tab={0} />,
+					loader: loaderRepoDetailsPage,
+				},
+				{
+					path: "/repositories/:owner/:repo/issues",
+					element: <RepoDetailsPage tab={1} />,
 					loader: loaderRepoDetailsPage,
 				},
 				{
@@ -67,14 +72,7 @@ const router = createHashRouter(
 					element: <IssueDetailsPage />,
 					loader: loaderIssueDetailsPage,
 				},
-				{
-					path: "/repositories/:owner/:repo/issues",
-					element: null,
-					loader: ({ params }) =>
-						redirect(
-							`/repositories/${params.owner}/${params.repo}/?tab=issues`,
-						),
-				},
+
 				{
 					path: "/issues",
 					element: <IssueListPage />,
