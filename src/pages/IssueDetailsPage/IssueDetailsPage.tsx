@@ -1,202 +1,217 @@
 import {
-	ChevronLeftRounded,
-	ClearRounded,
-} from "@mui/icons-material";
-import {
 	Box,
 	Container,
-	Divider,
-	Drawer,
-	IconButton,
 	List,
 	ListItem,
 	ListItemText,
-	Stack,
-	Toolbar,
+	SxProps,
+	Theme,
 	Typography,
 	capitalize,
 } from "@mui/material";
-import { FC, Fragment, useState } from "react";
+import { FC } from "react";
 import { useLoaderData } from "react-router";
-import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
 import { WithAppBar } from "~views/WithAppBar";
 import { LoaderData } from "./loader";
 
 import { ReactNode } from "react";
 import { Markdown } from "~components/Markdown";
-import { toTimeStamp } from "~core/time";
-import { RepoIssueSchema } from "~types/schemas";
+import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
+import {
+	normalizeDateString,
+	toTimeStamp,
+} from "~core/time";
+import {
+	RepoIssueCommentSchema,
+	RepoIssueSchema,
+} from "~types/schemas";
 
 const METADATA_DEFINITIONS: {
+	flexGrow: number;
 	label: string;
 	render: (repo: RepoIssueSchema) => ReactNode;
 }[] = [
 	{
-		label: "Title",
-		render: (issue) => issue.title,
+		label: "Last updated",
+		render: (issue) =>
+			toTimeStamp(issue.updated_at, "Never"),
+		flexGrow: 1,
+	},
+	{
+		label: "Created",
+		render: (issue) =>
+			toTimeStamp(issue.created_at, "Unknown"),
+		flexGrow: 1,
+	},
+	{
+		label: "Closed",
+		render: (issue) =>
+			toTimeStamp(issue.closed_at, "Not closed"),
+		flexGrow: 1,
 	},
 	{
 		label: "State",
 		render: (issue) => capitalize(issue.state),
+		flexGrow: 0,
 	},
 	{
 		label: "Owner type",
 		render: (issue) =>
 			issue.owner_type ?? "Unknown",
-	},
-	{
-		label: "Last modified",
-		render: (issue) =>
-			issue.updated_at
-				? toTimeStamp(issue.updated_at)
-				: "Never",
-	},
-	{
-		label: "Closed",
-		render: (issue) =>
-			issue.closed_at
-				? toTimeStamp(issue.closed_at)
-				: "Not closed",
-	},
-	{
-		label: "Created",
-		render: (issue) =>
-			issue.created_at
-				? toTimeStamp(issue.created_at)
-				: "Unknown",
-	},
-	{
-		label: "Links",
-		render: (issue) => (
-			<Typography
-				component="a"
-				href={issue.html_url}
-				target="_blank"
-			>
-				Github issue
-			</Typography>
-		),
+		flexGrow: 0,
 	},
 ];
+
+type IssueMetaDataListProps = {
+	issue: RepoIssueSchema;
+};
+const IssueMetaData: FC<
+	IssueMetaDataListProps
+> = (props) => {
+	const { issue } = props;
+	return (
+		<List
+			dense
+			disablePadding
+			sx={{
+				display: "flex",
+				flexDirection: "row",
+				flexWrap: "wrap",
+			}}
+		>
+			{METADATA_DEFINITIONS.map(
+				({ label, render, flexGrow }) => (
+					<ListItem
+						disableGutters
+						disablePadding
+						key={label}
+						sx={{
+							flexGrow,
+							width: 240,
+						}}
+					>
+						<ListItemText
+							primary={render(issue)}
+							secondary={label}
+						/>
+					</ListItem>
+				),
+			)}
+		</List>
+	);
+};
+
+type IssueCommentProps = {
+	comment: RepoIssueCommentSchema;
+	index: number;
+};
+const IssueComment: FC<IssueCommentProps> = (
+	props,
+) => {
+	const { index, comment } = props;
+	return (
+		<Box>
+			<Typography
+				fontWeight="bold"
+				component="a"
+				href={comment.html_url}
+				sx={{
+					textDecoration: "none",
+				}}
+			>
+				Comment #{index}
+			</Typography>
+			<List
+				dense
+				sx={{
+					display: "flex",
+					flexDirection: "row",
+				}}
+			>
+				<ListItemText
+					primary={normalizeDateString(
+						comment.created_at,
+					)}
+					secondary="Created"
+					sx={{
+						flexGrow: 1,
+					}}
+				/>
+				<ListItemText
+					primary={normalizeDateString(
+						comment.updated_at,
+					)}
+					secondary="Last updated"
+				/>
+			</List>
+			<Markdown
+				markdownContent={
+					comment.body ?? undefined
+				}
+				emptyText="This comment does not have a body or its body not is cached."
+			/>
+		</Box>
+	);
+};
 
 export const IssueDetailsPage: FC = () => {
 	const { issue, comments } =
 		useLoaderData() as LoaderData;
 
-	const [drawerOpen, setDrawerOpen] =
-		useState(false);
-
-	const toggleDrawer = () => {
-		setDrawerOpen(!drawerOpen);
-	};
-	const closeDrawer = () => {
-		setDrawerOpen(false);
+	const path = `~/repositories/${issue.repo_full_name}/issues/${issue.issue_number}`;
+	const breadcrumbsProps: SxProps<Theme> = {
+		sx: {
+			overflow: "auto",
+			flexGrow: { xs: 0, sm: 1 },
+		},
 	};
 
 	return (
-		<Fragment>
-			<WithAppBar
-				location={
-					<StyledBreadcrumbs
-						path={`~/repositories/${issue.repo_full_name}/issues/${issue.issue_number}`}
-						breadcrumbsProps={{
-							sx: {
-								overflow: "auto",
-								flexGrow: { xs: 0, sm: 1 },
-							},
-						}}
-					/>
-				}
-				seconadaryAction={
-					<IconButton
-						onClick={toggleDrawer}
-						size="small"
-						disableRipple
-					>
-						<ChevronLeftRounded />
-					</IconButton>
-				}
-			>
-				<Container maxWidth="sm">
-					<Stack
-						spacing={2}
-						padding={2}
-						divider={
-							<Divider
-								flexItem
-								variant="fullWidth"
-							/>
-						}
-					>
-						<Markdown
-							markdownContent={
-								issue.body ?? undefined
-							}
-							emptyText="This issue does not have a body or its body is not cached."
-						/>
-						{comments.map((comment, index) => (
-							<Box key={`comment-${comment.id}`}>
-								<Typography fontWeight="bold">
-									Comment #{index + 1}
-								</Typography>
-								<Markdown
-									markdownContent={
-										comment.body ?? undefined
-									}
-									emptyText="This comment does not have a body or its body not is cached."
-								/>
-							</Box>
-						))}
-					</Stack>
-				</Container>
-			</WithAppBar>
-			<Drawer
-				elevation={0}
-				anchor="right"
-				variant="temporary"
-				open={drawerOpen}
-				onClose={closeDrawer}
-			>
-				<Toolbar
-					variant="dense"
-					sx={{
-						display: "flex",
-						flexDirection: "row",
-						alignItems: "center",
-						justifyContent: "space-between",
-					}}
-				>
-					<Typography fontWeight="bold">
-						Metadata
-					</Typography>
-					<IconButton
-						size="small"
-						onClick={closeDrawer}
-					>
-						<ClearRounded />
-					</IconButton>
-				</Toolbar>
-				<Divider
-					flexItem
-					variant="fullWidth"
+		<WithAppBar
+			location={
+				<StyledBreadcrumbs
+					path={path}
+					breadcrumbsProps={breadcrumbsProps}
 				/>
-				<List
-					disablePadding
-					dense
-				>
-					{METADATA_DEFINITIONS.map(
-						({ label, render }) => (
-							<ListItem key={label}>
-								<ListItemText
-									secondary={render(issue)}
-								>
-									{label}
-								</ListItemText>
-							</ListItem>
-						),
-					)}
-				</List>
-			</Drawer>
-		</Fragment>
+			}
+		>
+			<Container
+				maxWidth="sm"
+				sx={{
+					display: "flex",
+					paddingY: 4,
+					gap: 2,
+					flexDirection: "column",
+				}}
+			>
+				<Box>
+					<Typography
+						fontWeight="bold"
+						fontSize="x-large"
+						component="a"
+						href={issue.html_url}
+						sx={{
+							textDecoration: "none",
+						}}
+					>
+						{issue.title}
+					</Typography>
+					<IssueMetaData issue={issue} />
+					<Markdown
+						markdownContent={
+							issue.body ?? undefined
+						}
+						emptyText="This issue does not have a body or its body is not cached."
+					/>
+				</Box>
+				{comments.map((comment, index) => (
+					<IssueComment
+						key={`comment-${comment.id}`}
+						index={index + 1}
+						comment={comment}
+					/>
+				))}
+			</Container>
+		</WithAppBar>
 	);
 };

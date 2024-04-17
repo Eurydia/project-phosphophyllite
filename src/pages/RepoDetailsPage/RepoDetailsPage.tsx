@@ -45,23 +45,17 @@ const REPO_METADATA_DEFINITIONS: {
 	{
 		label: "Last pushed",
 		render: (repo) =>
-			repo.pushed_at
-				? toTimeStamp(repo.pushed_at)
-				: "Never",
+			toTimeStamp(repo.pushed_at, "Never"),
 	},
 	{
 		label: "Last updated",
 		render: (repo) =>
-			repo.updated_at
-				? toTimeStamp(repo.updated_at)
-				: "Never",
+			toTimeStamp(repo.updated_at, "Never"),
 	},
 	{
 		label: "Created",
 		render: (repo) =>
-			repo.created_at
-				? toTimeStamp(repo.created_at)
-				: "Unknown",
+			toTimeStamp(repo.created_at, "Unknown"),
 	},
 	{
 		label: "Visibility",
@@ -174,11 +168,16 @@ export const RepoDetailsPage: FC<
 		).toString();
 	}
 
+	let path = `~/repositories/${repo.full_name}`;
+	if (tab === 1) {
+		path = `${path}/issues`;
+	}
+
 	return (
 		<WithAppBar
 			location={
 				<StyledBreadcrumbs
-					path={`~/repositories/${repo.full_name}`}
+					path={path}
 					breadcrumbsProps={{
 						sx: {
 							overflow: "auto",
@@ -220,7 +219,10 @@ export const RepoDetailsPage: FC<
 			</Toolbar>
 			<Divider />
 			{tab !== 1 ? (
-				<Container maxWidth="sm">
+				<Container
+					maxWidth="sm"
+					sx={{ paddingY: 4 }}
+				>
 					<Markdown
 						emptyText="This repository does not contain a readme."
 						markdownContent={decodedReadme}

@@ -33,8 +33,16 @@ export const normalizeDateString = (
 };
 
 export const toTimeStamp = (
-	dateString: string,
+	dateString: string | null | undefined,
+	fallback: string,
 ) => {
+	if (
+		dateString === undefined ||
+		dateString === null ||
+		dateString === ""
+	) {
+		return fallback;
+	}
 	const timeAt = normalizeDateString(dateString);
 	const delta = timeSince(dateString);
 	return `${timeAt} (${delta})`;

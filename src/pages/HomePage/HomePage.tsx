@@ -21,6 +21,7 @@ export const HomePage: FC = () => {
 		recentRepos,
 		recentIssues,
 	} = useLoaderData() as LoaderData;
+
 	return (
 		<WithAppBar
 			location={
@@ -55,6 +56,7 @@ export const HomePage: FC = () => {
 							}
 							titleTypographyProps={{
 								color: "secondary",
+								fontWeight: "900",
 							}}
 						/>
 					</Card>
@@ -71,6 +73,7 @@ export const HomePage: FC = () => {
 							}
 							titleTypographyProps={{
 								color: "secondary",
+								fontWeight: "900",
 							}}
 						/>
 					</Card>
@@ -87,6 +90,7 @@ export const HomePage: FC = () => {
 							}
 							titleTypographyProps={{
 								color: "secondary",
+								fontWeight: "900",
 							}}
 						/>
 					</Card>
@@ -103,6 +107,7 @@ export const HomePage: FC = () => {
 							}
 							titleTypographyProps={{
 								color: "secondary",
+								fontWeight: "900",
 							}}
 						/>
 					</Card>

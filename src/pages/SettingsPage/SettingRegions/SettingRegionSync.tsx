@@ -5,7 +5,7 @@ import {
 	ListSubheader,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { FC, useMemo, useState } from "react";
+import { FC, useState } from "react";
 import { normalizeDateString } from "~core/time";
 import {
 	syncCachedRepoIssueComments,
@@ -59,14 +59,11 @@ const LAST_SYNC = [
 export const SettingRegionSync: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
 
-	const savedToken =
-		localStorage.getItem(
-			"personal-access-token",
-		) ?? "";
-
-	const [syncing, setSyncing] = useState<
-		boolean[]
-	>([false, false, false]);
+	const [syncing, setSyncing] = useState([
+		false,
+		false,
+		false,
+	]);
 	const [lastSyncs, setLastSync] =
 		useState(LAST_SYNC);
 
@@ -110,9 +107,6 @@ export const SettingRegionSync: FC = () => {
 			return next;
 		});
 	};
-	const disableSync = useMemo(() => {
-		return !Boolean(savedToken);
-	}, [savedToken]);
 
 	return (
 		<List
@@ -136,9 +130,7 @@ export const SettingRegionSync: FC = () => {
 						<Button
 							fullWidth
 							disableElevation
-							disabled={
-								disableSync || syncing[index]
-							}
+							disabled={syncing[index]}
 							size="small"
 							variant="contained"
 							onClick={() => handleSync(index)}
