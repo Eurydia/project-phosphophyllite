@@ -3,7 +3,6 @@ import {
 	getCachedIssueComments,
 	getCachedRepoIssue,
 } from "~database/cached";
-import { dbPromise } from "~database/migration";
 import {
 	RepoIssueCommentSchema,
 	RepoIssueSchema,
@@ -52,23 +51,6 @@ export const loader: LoaderFunction = async ({
 				"Issue does not exist or it is not cached.",
 		});
 	}
-	const db = await dbPromise;
-	const opened_at = new Date(
-		Date.now(),
-	).toISOString();
-	const cachedRepo = await db.get(
-		"repos",
-		fullName,
-	);
-	await db.put("repos", {
-		...cachedRepo!,
-		opened_at,
-	});
-	await db.put("issues", {
-		...issue,
-		opened_at,
-	});
-
 	document.title = issue.title;
 	const loaderData: LoaderData = {
 		issue,

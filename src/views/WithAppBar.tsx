@@ -28,14 +28,14 @@ import { useSubmit } from "react-router-dom";
 const nav: { label: string; path: string }[] = [
 	{ label: "~", path: "/" },
 	{
-		label: "Repositories",
+		label: "repositories",
 		path: "/repositories",
 	},
 	{
-		label: "Issues",
+		label: "issues",
 		path: "/issues",
 	},
-	{ label: "Settings", path: "/settings" },
+	{ label: "settings", path: "/settings" },
 ];
 
 type WithAppBarProps = {

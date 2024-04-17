@@ -4,7 +4,6 @@ import {
 	getCachedRepo,
 	getCachedRepoIssues,
 } from "~database/cached";
-import { dbPromise } from "~database/migration";
 import {
 	getIssueFilterPrefOwnerType,
 	getIssueFilterPrefState,
@@ -48,12 +47,6 @@ export const loader: LoaderFunction = async ({
 			statusText: "Repository not found in cache",
 		});
 	}
-
-	(await dbPromise).put("repos", {
-		...repo,
-		opened_at: new Date(Date.now()).toISOString(),
-	});
-
 	document.title = repo.name;
 
 	const searchParams = new URL(request.url)

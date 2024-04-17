@@ -89,18 +89,9 @@ const updateCachedRepos = async (
 	repos: RepoSchema[],
 ) => {
 	const db = await dbPromise;
-	const req = repos.map(async (repo) => {
-		const cachedRepo = await db.get(
-			"repos",
-			repo.full_name,
-		);
-		let opened_at: string | null = null;
-		if (cachedRepo !== undefined) {
-			opened_at = cachedRepo.opened_at;
-		}
-		const repo_ = { ...repo, opened_at };
-		return db.put("repos", repo_);
-	});
+	const req = repos.map((repo) =>
+		db.put("repos", repo),
+	);
 	const res = await Promise.all(req);
 	return res;
 };
@@ -109,18 +100,9 @@ const updateCachedRepoIssues = async (
 	issues: RepoIssueSchema[],
 ) => {
 	const db = await dbPromise;
-	const req = issues.map(async (issue) => {
-		const cachedIssue = await db.get(
-			"issues",
-			issue.id,
-		);
-		let opened_at: string = "";
-		if (cachedIssue !== undefined) {
-			opened_at = cachedIssue.opened_at;
-		}
-		const issue_ = { ...issue, opened_at };
-		return db.put("issues", issue_);
-	});
+	const req = issues.map((issue) =>
+		db.put("issues", issue),
+	);
 	const res = await Promise.all(req);
 	return res;
 };
