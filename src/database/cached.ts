@@ -177,3 +177,40 @@ export const syncCachedRepoIssueComments = async (
 		}),
 	);
 };
+
+export const getCollections = async () => {
+	const db = await dbPromise;
+	return await db.getAll("collections");
+};
+export const getCollection = async (
+	name: string,
+) => {
+	const db = await dbPromise;
+	return await db.get("collections", name);
+};
+
+export const addCollection = async (
+	name: string,
+	description: string,
+	repos: string[],
+) => {
+	const db = await dbPromise;
+	return db.add("collections", {
+		name,
+		description,
+		repos,
+	});
+};
+
+export const updateCollection = async (
+	name: string,
+	description: string,
+	repos: string[],
+) => {
+	const db = await dbPromise;
+	return db.put("collections", {
+		name,
+		description,
+		repos,
+	});
+};

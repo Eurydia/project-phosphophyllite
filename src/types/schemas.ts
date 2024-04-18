@@ -47,3 +47,9 @@ export type RepoIssueCommentSchema = {
 	updated_at: string;
 	body: string | undefined;
 };
+
+export type CollectionSchema = {
+	name: string;
+	description?: string;
+	repos: string[];
+};
