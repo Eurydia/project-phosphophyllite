@@ -3,19 +3,12 @@ import {
 	ThemeProvider,
 } from "@mui/material";
 import { SnackbarProvider } from "notistack";
+import { FC } from "react";
 import {
 	RouterProvider,
 	createHashRouter,
 	redirect,
 } from "react-router-dom";
-import {
-	CollectionDetailsPage,
-	loaderCollectionDetailsPage,
-} from "~pages/CollectionDetailsPage";
-import {
-	CollectionListPage,
-	loaderCollectionListPage,
-} from "~pages/CollectionListPage";
 import { ErrorBoundry } from "~pages/ErrorBoundary";
 import {
 	Home,
@@ -86,16 +79,6 @@ const router = createHashRouter(
 					loader: loaderIssueListPage,
 				},
 				{
-					path: "/collections",
-					element: <CollectionListPage />,
-					loader: loaderCollectionListPage,
-				},
-				{
-					path: "/collections/:collectionName",
-					element: <CollectionDetailsPage />,
-					loader: loaderCollectionDetailsPage,
-				},
-				{
 					path: "/settings",
 					element: <SettingsPage />,
 				},
@@ -107,7 +90,7 @@ const router = createHashRouter(
 	},
 );
 
-export const App = () => {
+export const App: FC = () => {
 	return (
 		<ThemeProvider theme={themeComposed}>
 			<CssBaseline />
