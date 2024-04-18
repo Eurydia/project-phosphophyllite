@@ -8,6 +8,14 @@ import {
 	createHashRouter,
 	redirect,
 } from "react-router-dom";
+import {
+	CollectionDetailsPage,
+	loaderCollectionDetailsPage,
+} from "~pages/CollectionDetailsPage";
+import {
+	CollectionListPage,
+	loaderCollectionListPage,
+} from "~pages/CollectionListPage";
 import { ErrorBoundry } from "~pages/ErrorBoundary";
 import {
 	Home,
@@ -72,11 +80,20 @@ const router = createHashRouter(
 					element: <IssueDetailsPage />,
 					loader: loaderIssueDetailsPage,
 				},
-
 				{
 					path: "/issues",
 					element: <IssueListPage />,
 					loader: loaderIssueListPage,
+				},
+				{
+					path: "/collections",
+					element: <CollectionListPage />,
+					loader: loaderCollectionListPage,
+				},
+				{
+					path: "/collections/:collectionName",
+					element: <CollectionDetailsPage />,
+					loader: loaderCollectionDetailsPage,
 				},
 				{
 					path: "/settings",
@@ -97,7 +114,7 @@ export const App = () => {
 			<SnackbarProvider
 				preventDuplicate
 				maxSnack={3}
-				autoHideDuration={3500}
+				autoHideDuration={1750}
 				anchorOrigin={{
 					vertical: "bottom",
 					horizontal: "left",

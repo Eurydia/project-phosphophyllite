@@ -9,22 +9,16 @@ import {
 } from "@mui/material";
 import {
 	MouseEvent,
-	ReactNode,
 	useMemo,
 	useState,
 } from "react";
-
-type DataCell<T> = {
-	id: keyof T;
-	label: string;
-	render: (item: T) => ReactNode;
-};
+import { GenericDataCell } from "~types/generics";
 
 type StyledTableHeadProps<T> = {
 	order: "asc" | "desc";
 	orderBy: keyof T;
 	onRequestSort: (value: keyof T) => void;
-	columnDefinition: DataCell<T>[];
+	columnDefinition: GenericDataCell<T>[];
 };
 const StyledTableHead = <T,>(
 	props: StyledTableHeadProps<T>,
@@ -72,7 +66,7 @@ const StyledTableHead = <T,>(
 
 type StyledTableRowProps<T> = {
 	item: T;
-	columnDefinition: DataCell<T>[];
+	columnDefinition: GenericDataCell<T>[];
 };
 const StyledTableRow = <T,>(
 	props: StyledTableRowProps<T>,
@@ -94,7 +88,7 @@ const StyledTableRow = <T,>(
 
 type StyledDataTableProps<T> = {
 	items: T[];
-	columnDefinition: DataCell<T>[];
+	columnDefinition: GenericDataCell<T>[];
 	defaultOrderBy: keyof T;
 	orderingFn: (
 		property: keyof T,
