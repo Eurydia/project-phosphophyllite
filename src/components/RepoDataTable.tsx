@@ -263,7 +263,7 @@ export const RepoDataTable: React.FC<
 		handleSubmit("topics", value.toString());
 	};
 	const handleTopicsReset = () => {
-		handleSubmit("topics", "value.toString()");
+		handleSubmit("topics", "");
 	};
 
 	const [filterOpen, setFilterOpen] =
