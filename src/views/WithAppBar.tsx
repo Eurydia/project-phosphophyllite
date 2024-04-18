@@ -35,10 +35,6 @@ const nav: { label: string; path: string }[] = [
 		label: "issues",
 		path: "/issues",
 	},
-	{
-		label: "collections",
-		path: "/collections",
-	},
 	{ label: "settings", path: "/settings" },
 ];
 
