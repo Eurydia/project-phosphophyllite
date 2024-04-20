@@ -1,5 +1,7 @@
 import {
 	ClearRounded,
+	ExpandLessRounded,
+	ExpandMoreRounded,
 	FilterListRounded,
 } from "@mui/icons-material";
 import {
@@ -193,53 +195,51 @@ const WrappableListItem: FC<
 	);
 };
 
-type IssueDataTableProps = {
-	disableFilter?: boolean;
-	orderBy?: keyof RepoIssueSchema;
-	issues: RepoIssueSchema[];
-	title?: string;
-	ownerType?: string;
-	repoFullNames?: string[];
-	state?: string;
-	repoOptions?: GenericSelectOptions<string>[];
+type StyledToolbarProps = {
+	title: string;
+	repoFullNames: string[];
+	ownerType: string;
+	state: string;
+	itemCount: number;
+	repoOptions: GenericSelectOptions<string>[];
 };
-export const IssueDataTable: React.FC<
-	IssueDataTableProps
-> = (props) => {
+const StyledToolbar: FC<StyledToolbarProps> = (
+	props,
+) => {
 	const {
-		orderBy,
-		disableFilter,
+		ownerType,
+		repoFullNames,
+		state,
+		title: loadedTitle,
+		itemCount,
 		repoOptions,
-		issues,
-		title: title_,
-		repoFullNames: repoFullNames_,
-		ownerType: ownerType_,
-		state: state_,
 	} = props;
-	const submit = useSubmit();
-	const [title, setTitle] = useState(
-		title_ ?? "",
-	);
-	const repoFullNames = repoFullNames_ ?? [];
-	const ownerType =
-		ownerType_ ?? getIssueFilterPrefOwnerType();
-	const state =
-		state_ ?? getIssueFilterPrefState();
 
+	const submit = useSubmit();
+	const [title, setTitle] = useState(loadedTitle);
 	const handleSubmit = (
-		key: string,
-		value: string,
+		key: string | undefined = undefined,
+		value: string | undefined = undefined,
 	) => {
-		submit(
-			{
-				title,
-				state,
-				ownerType,
-				repoFullNames,
-				[key]: value,
-			},
-			{ action: "./", method: "get" },
-		);
+		const query: Record<
+			string,
+			string | string[]
+		> = {
+			title,
+			state,
+			ownerType,
+			repoFullNames,
+		};
+		if (
+			key !== undefined &&
+			value !== undefined
+		) {
+			query[key] = value;
+		}
+		submit(query, {
+			action: "./",
+			method: "get",
+		});
 	};
 	const handleOwnerTypeChange = (
 		event: SelectChangeEvent<string>,
@@ -265,9 +265,6 @@ export const IssueDataTable: React.FC<
 	const handleRepoFullNamesReset = () => {
 		handleSubmit("repoFullNames", "");
 	};
-	const handleTitleSubmit = () => {
-		handleSubmit("title", title);
-	};
 
 	const [filterOpen, setFilterOpen] =
 		useState(false);
@@ -275,101 +272,154 @@ export const IssueDataTable: React.FC<
 		setFilterOpen(!filterOpen);
 	};
 
+	let itemCountMsg = `Showing ${itemCount}`;
+	if (itemCount === 1) {
+		itemCountMsg = `${itemCountMsg} issue`;
+	} else {
+		itemCountMsg = `${itemCountMsg} issues`;
+	}
+
+	let expandIcon = filterOpen ? (
+		<ExpandLessRounded />
+	) : (
+		<ExpandMoreRounded />
+	);
+
+	return (
+		<Fragment>
+			<Toolbar
+				disableGutters
+				variant="dense"
+				sx={{
+					flexDirection: "row",
+					width: "100%",
+					flexWrap: "wrap",
+					gap: 1,
+					alignItems: "center",
+					justifyContent: "space-between",
+				}}
+			>
+				<Stack
+					alignItems="center"
+					direction="row"
+				>
+					<StyledTextField
+						autoComplete="off"
+						placeholder="Search issue"
+						size="small"
+						value={title}
+						onChange={setTitle}
+						onEnter={handleSubmit}
+					/>
+					<IconButton
+						size="small"
+						onClick={handleSubmit}
+					>
+						<FilterListRounded titleAccess="Filter issues" />
+					</IconButton>
+					<IconButton
+						size="small"
+						onClick={toggleFilter}
+					>
+						{expandIcon}
+					</IconButton>
+				</Stack>
+				<Typography>{itemCountMsg}</Typography>
+			</Toolbar>
+			<Collapse in={filterOpen}>
+				<List disablePadding>
+					<WrappableListItem text="Repositories">
+						<StyledSelectMultiple
+							fullWidth
+							displayEmpty
+							subheader="Repositories"
+							renderValue={() =>
+								`${repoFullNames.length} selected`
+							}
+							size="small"
+							value={repoFullNames}
+							options={repoOptions}
+							onChange={handleRepoFullNamesChange}
+						/>
+						<IconButton
+							size="small"
+							onClick={handleRepoFullNamesReset}
+						>
+							<ClearRounded />
+						</IconButton>
+					</WrappableListItem>
+					<WrappableListItem text="State">
+						<StyledSelect
+							fullWidth
+							displayEmpty
+							size="small"
+							value={state}
+							options={ISSUE_FILTER_STATE_OPTIONS}
+							onChange={handleStateChange}
+						/>
+					</WrappableListItem>
+					<WrappableListItem text="Owner type">
+						<StyledSelect
+							fullWidth
+							displayEmpty
+							size="small"
+							value={ownerType}
+							options={
+								ISSUE_FILTER_OWNER_TYPE_OPTIONS
+							}
+							onChange={handleOwnerTypeChange}
+						/>
+					</WrappableListItem>
+				</List>
+			</Collapse>
+		</Fragment>
+	);
+};
+
+type IssueDataTableProps = {
+	disableFilter?: boolean;
+	orderBy?: keyof RepoIssueSchema;
+	issues: RepoIssueSchema[];
+	title?: string;
+	ownerType?: string;
+	repoFullNames?: string[];
+	state?: string;
+	repoOptions?: GenericSelectOptions<string>[];
+};
+export const IssueDataTable: React.FC<
+	IssueDataTableProps
+> = (props) => {
+	const {
+		orderBy,
+		disableFilter,
+		issues,
+		repoOptions: loadedRepoOptions,
+		title: loadedTitle,
+		repoFullNames: loadedRepoFullNames,
+		ownerType: loadedOwnerType,
+		state: loadedState,
+	} = props;
+
+	const title = loadedTitle ?? "";
+	const repoFullNames = loadedRepoFullNames ?? [];
+	const ownerType =
+		loadedOwnerType ??
+		getIssueFilterPrefOwnerType();
+	const state =
+		loadedState ?? getIssueFilterPrefState();
+	const repoOptions = loadedRepoOptions ?? [];
+
 	return (
 		<Box>
 			{!disableFilter && (
-				<Fragment>
-					<Toolbar
-						disableGutters
-						variant="dense"
-						sx={{
-							flexDirection: "row",
-							width: "100%",
-							flexWrap: "wrap",
-							gap: 1,
-							alignItems: "center",
-							justifyContent: "space-between",
-						}}
-					>
-						<Stack
-							alignItems="center"
-							direction="row"
-						>
-							<StyledTextField
-								autoComplete="off"
-								placeholder="Search issue"
-								size="small"
-								value={title}
-								onChange={setTitle}
-								onEnter={handleTitleSubmit}
-							/>
-							<IconButton
-								size="small"
-								onClick={toggleFilter}
-							>
-								<FilterListRounded />
-							</IconButton>
-						</Stack>
-						<Typography>
-							Showing {issues.length}{" "}
-							{issues.length === 1
-								? "issue"
-								: "issues"}
-						</Typography>
-					</Toolbar>
-					<Collapse in={filterOpen}>
-						<List disablePadding>
-							<WrappableListItem text="Repositories">
-								<StyledSelectMultiple
-									fullWidth
-									displayEmpty
-									subheader="Repositories"
-									renderValue={(value) =>
-										`${value.length} selected`
-									}
-									size="small"
-									value={repoFullNames}
-									options={repoOptions}
-									onChange={
-										handleRepoFullNamesChange
-									}
-								/>
-								<IconButton
-									size="small"
-									onClick={
-										handleRepoFullNamesReset
-									}
-								>
-									<ClearRounded />
-								</IconButton>
-							</WrappableListItem>
-							<WrappableListItem text="State">
-								<StyledSelect
-									fullWidth
-									displayEmpty
-									size="small"
-									value={state}
-									options={
-										ISSUE_FILTER_STATE_OPTIONS
-									}
-									onChange={handleStateChange}
-								/>
-							</WrappableListItem>
-							<WrappableListItem text="State">
-								<StyledSelect
-									fullWidth
-									displayEmpty
-									size="small"
-									value={ownerType}
-									options={
-										ISSUE_FILTER_OWNER_TYPE_OPTIONS
-									}
-									onChange={handleOwnerTypeChange}
-								/>
-							</WrappableListItem>
-						</List>
-					</Collapse>
-				</Fragment>
+				<StyledToolbar
+					itemCount={issues.length}
+					ownerType={ownerType}
+					repoFullNames={repoFullNames}
+					repoOptions={repoOptions}
+					state={state}
+					title={title}
+				/>
 			)}
 			<StyledDataTable
 				items={issues}
