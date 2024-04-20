@@ -313,9 +313,9 @@ const StyledToolbar: FC<StyledToolbarProps> = (
 					/>
 					<IconButton
 						size="small"
-						onClick={handleSubmit}
+						onClick={() => handleSubmit()}
 					>
-						<FilterListRounded titleAccess="Filter issues" />
+						<FilterListRounded />
 					</IconButton>
 					<IconButton
 						size="small"
