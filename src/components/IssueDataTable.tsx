@@ -332,7 +332,6 @@ const StyledToolbar: FC<StyledToolbarProps> = (
 						<StyledSelectMultiple
 							fullWidth
 							displayEmpty
-							subheader="Repositories"
 							renderValue={() =>
 								`${repoFullNames.length} selected`
 							}
