@@ -12,7 +12,7 @@ import {
 	REPO_FILTER_VISIBILITY_OPTIONS,
 } from "~constants";
 import {
-	getRepoFilterPrefCustomPrefix,
+	getRepoFilterPrefPropertyPrefix,
 	getRepoFilterPrefStatus,
 	getRepoFilterPrefTopicMatchStrategy,
 	getRepoFilterPrefVisibility,
@@ -27,7 +27,7 @@ const DEF_MODE =
 	getRepoFilterPrefTopicMatchStrategy();
 const DEF_VIS = getRepoFilterPrefVisibility();
 const DEF_PREFIX =
-	getRepoFilterPrefCustomPrefix();
+	getRepoFilterPrefPropertyPrefix();
 const DEF_STATUS = getRepoFilterPrefStatus();
 export const SettingRegionRepoFilterPref: FC =
 	() => {

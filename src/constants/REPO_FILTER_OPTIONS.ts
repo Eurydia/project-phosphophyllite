@@ -1,4 +1,4 @@
-import { GenericSelectOptions } from "~types/generics";
+import { GenericSelectOption } from "~types/generics";
 
 export const REPO_FILTER_PREF_CUSTOM_PREFIX =
 	"repo-filter-pref-custom-prefix";
@@ -10,7 +10,7 @@ export const REPO_FILTER_PREF_VISIBILITY_KEY =
 export const REPO_FILTER_PREF_STATUS_KEY =
 	"repo-filter-pref-status";
 
-export const REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS: GenericSelectOptions<string>[] =
+export const REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS: GenericSelectOption<string>[] =
 	[
 		{
 			label: "Match all",
@@ -22,7 +22,7 @@ export const REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS: GenericSelectOptions<stri
 		},
 	];
 
-export const REPO_FILTER_VISIBILITY_OPTIONS: GenericSelectOptions<string>[] =
+export const REPO_FILTER_VISIBILITY_OPTIONS: GenericSelectOption<string>[] =
 	[
 		{
 			label: "All",
@@ -38,7 +38,7 @@ export const REPO_FILTER_VISIBILITY_OPTIONS: GenericSelectOptions<string>[] =
 		},
 	];
 
-export const REPO_FILTER_STATUS_OPTIONS: GenericSelectOptions<string>[] =
+export const REPO_FILTER_STATUS_OPTIONS: GenericSelectOption<string>[] =
 	[
 		{
 			label: "All",

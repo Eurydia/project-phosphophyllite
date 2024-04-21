@@ -1,37 +1,43 @@
 import {
-	ListSubheader,
 	MenuItem,
 	Select,
 	SelectProps,
 } from "@mui/material";
 import { FC } from "react";
+import { GenericSelectOption } from "~types/generics";
 
 type StyledSelectMultipleProps = Omit<
 	SelectProps<string[]>,
 	"multiple"
 > & {
-	options?: { label: string; value: string }[];
-	subheader?: string;
+	options?: GenericSelectOption<string>[];
 };
 export const StyledSelectMultiple: FC<
 	StyledSelectMultipleProps
 > = (props) => {
-	const { options, subheader, ...rest } = props;
-	const options_ = options ?? [];
+	const { options: loadedOptions, ...rest } =
+		props;
+
+	let options: GenericSelectOption<string>[] = [
+		{ label: "No option", value: "No option" },
+	];
+	let disableOptions = true;
+	if (
+		loadedOptions !== undefined &&
+		loadedOptions.length > 0
+	) {
+		options = loadedOptions;
+		disableOptions = false;
+	}
 	return (
 		<Select
 			{...rest}
 			multiple
 		>
-			{subheader !== "" &&
-				subheader !== undefined && (
-					<ListSubheader disableSticky>
-						{subheader}
-					</ListSubheader>
-				)}
-			{options_.map(({ value, label }, index) => (
+			{options.map(({ value, label }, index) => (
 				<MenuItem
 					disableRipple
+					disabled={disableOptions}
 					key={`${value}-${index}`}
 					value={value}
 				>

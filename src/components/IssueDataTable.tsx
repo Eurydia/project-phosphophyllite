@@ -40,7 +40,7 @@ import {
 	getIssueFilterPrefOwnerType,
 	getIssueFilterPrefState,
 } from "~database/preferences";
-import { GenericSelectOptions } from "~types/generics";
+import { GenericSelectOption } from "~types/generics";
 import { RepoIssueSchema } from "~types/schemas";
 import { StyledDataTable } from "./StyledDataTable";
 import { StyledSelect } from "./StyledSelect";
@@ -201,7 +201,7 @@ type StyledToolbarProps = {
 	ownerType: string;
 	state: string;
 	itemCount: number;
-	repoOptions: GenericSelectOptions<string>[];
+	repoOptions: GenericSelectOption<string>[];
 };
 const StyledToolbar: FC<StyledToolbarProps> = (
 	props,
@@ -384,7 +384,7 @@ type IssueDataTableProps = {
 	ownerType?: string;
 	repoFullNames?: string[];
 	state?: string;
-	repoOptions?: GenericSelectOptions<string>[];
+	repoOptions?: GenericSelectOption<string>[];
 };
 export const IssueDataTable: React.FC<
 	IssueDataTableProps

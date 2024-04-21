@@ -5,12 +5,12 @@ import {
 	getIssueFilterPrefOwnerType,
 	getIssueFilterPrefState,
 } from "~database/preferences";
-import { GenericSelectOptions } from "~types/generics";
+import { GenericSelectOption } from "~types/generics";
 import { RepoIssueSchema } from "~types/schemas";
 
 export type LoaderData = {
 	issues: RepoIssueSchema[];
-	repoOptions: GenericSelectOptions<string>[];
+	repoOptions: GenericSelectOption<string>[];
 	title: string;
 	ownerType: string;
 	repoFullNames: string[];
@@ -29,7 +29,7 @@ export const loader: LoaderFunction = async ({
 	);
 	const options = [...uniqueRepoOptions];
 	options.sort();
-	const repoOptions: GenericSelectOptions<string>[] =
+	const repoOptions: GenericSelectOption<string>[] =
 		options.map((value) => ({
 			label: value,
 			value,

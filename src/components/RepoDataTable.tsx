@@ -37,11 +37,12 @@ import {
 } from "~core/sorting";
 import { normalizeDateString } from "~core/time";
 import {
+	getRepoFilterPrefPropertyPrefix,
 	getRepoFilterPrefStatus,
 	getRepoFilterPrefTopicMatchStrategy,
 	getRepoFilterPrefVisibility,
 } from "~database/preferences";
-import { GenericSelectOptions } from "~types/generics";
+import { GenericSelectOption } from "~types/generics";
 import { RepoSchema } from "~types/schemas";
 import { StyledDataTable } from "./StyledDataTable";
 import { StyledSelect } from "./StyledSelect";
@@ -189,7 +190,9 @@ type StyledToolbarProps = {
 	status: string;
 	topicMatchStrategy: string;
 	itemCount: number;
-	topicOptions: GenericSelectOptions<string>[];
+	topicOptions: GenericSelectOption<string>[];
+	properties: string[];
+	propertyOptions: GenericSelectOption<string>[];
 };
 const StyledToolbar: FC<StyledToolbarProps> = (
 	props,
@@ -202,6 +205,8 @@ const StyledToolbar: FC<StyledToolbarProps> = (
 		topicMatchStrategy,
 		itemCount,
 		topicOptions,
+		propertyOptions,
+		properties,
 	} = props;
 
 	const submit = useSubmit();
@@ -220,6 +225,7 @@ const StyledToolbar: FC<StyledToolbarProps> = (
 			topicMatchStrategy,
 			visibility,
 			status,
+			properties,
 		};
 		if (
 			key !== undefined &&
@@ -254,14 +260,23 @@ const StyledToolbar: FC<StyledToolbarProps> = (
 		const value = event.target.value;
 		handleSubmit("visibility", value);
 	};
-	const handleTopicsChange = (
+	const handleTopicChange = (
 		event: SelectChangeEvent<string[]>,
 	) => {
-		const value = event.target.value;
-		handleSubmit("topics", value.toString());
+		const value = event.target.value.toString();
+		handleSubmit("topics", value);
 	};
-	const handleTopicsReset = () => {
+	const handleTopicClear = () => {
 		handleSubmit("topics", "");
+	};
+	const handlePropertyChange = (
+		event: SelectChangeEvent<string[]>,
+	) => {
+		const value = event.target.value.toString();
+		handleSubmit("properties", value);
+	};
+	const handlePropertyClear = () => {
+		handleSubmit("properties", "");
 	};
 
 	const [filterOpen, setFilterOpen] =
@@ -326,22 +341,40 @@ const StyledToolbar: FC<StyledToolbarProps> = (
 			</Toolbar>
 			<Collapse in={filterOpen}>
 				<List disablePadding>
+					<WrappableListItem text="Properties">
+						<StyledSelectMultiple
+							fullWidth
+							displayEmpty
+							renderValue={() =>
+								`${properties.length} selected`
+							}
+							size="small"
+							value={properties}
+							options={propertyOptions}
+							onChange={handlePropertyChange}
+						/>
+						<IconButton
+							size="small"
+							onClick={handlePropertyClear}
+						>
+							<ClearRounded />
+						</IconButton>
+					</WrappableListItem>
 					<WrappableListItem text="Topics">
 						<StyledSelectMultiple
 							fullWidth
 							displayEmpty
-							subheader="Topics"
 							renderValue={() =>
-								`${itemCount} selected`
+								`${topics.length} selected`
 							}
 							size="small"
 							value={topics}
 							options={topicOptions}
-							onChange={handleTopicsChange}
+							onChange={handleTopicChange}
 						/>
 						<IconButton
 							size="small"
-							onClick={handleTopicsReset}
+							onClick={handleTopicClear}
 						>
 							<ClearRounded />
 						</IconButton>
@@ -392,12 +425,13 @@ type RepoDataTableProps = {
 	disableFilter?: boolean;
 	orderBy?: keyof RepoSchema;
 	repos: RepoSchema[];
-	topicOptions?: GenericSelectOptions<string>[];
+	topicOptions?: GenericSelectOption<string>[];
 	name?: string;
 	topics?: string[];
 	topicMatchStrategy?: string;
 	visibility?: string;
 	status?: string;
+	properties?: string[];
 };
 export const RepoDataTable: React.FC<
 	RepoDataTableProps
@@ -412,10 +446,10 @@ export const RepoDataTable: React.FC<
 		status: loadedStatus,
 		topics: loadedTopics,
 		visibility: loadedVisibility,
+		properties: loadedProperties,
 	} = props;
 
 	const name = loadedName ?? "";
-	const topics = loadedTopics ?? [];
 	const topicMatchStrategy =
 		loadedTopicMatchStrategy ||
 		getRepoFilterPrefTopicMatchStrategy();
@@ -424,7 +458,25 @@ export const RepoDataTable: React.FC<
 		getRepoFilterPrefVisibility();
 	const status =
 		loadedStatus || getRepoFilterPrefStatus();
-	const topicOptions = loadedTopicOptions ?? [];
+
+	const propertyPrefix =
+		getRepoFilterPrefPropertyPrefix();
+
+	const topics: string[] = loadedTopics ?? [];
+	const properties: string[] =
+		loadedProperties ?? [];
+
+	const topicOptions: GenericSelectOption<string>[] =
+		[];
+	const propertyOptions: GenericSelectOption<string>[] =
+		[];
+	for (const item of loadedTopicOptions ?? []) {
+		if (item.value.startsWith(propertyPrefix)) {
+			propertyOptions.push(item);
+			continue;
+		}
+		topicOptions.push(item);
+	}
 
 	return (
 		<Box>
@@ -434,9 +486,11 @@ export const RepoDataTable: React.FC<
 					name={name}
 					status={status}
 					topicMatchStrategy={topicMatchStrategy}
-					topicOptions={topicOptions}
 					topics={topics}
+					properties={properties}
 					visibility={visibility}
+					topicOptions={topicOptions}
+					propertyOptions={propertyOptions}
 				/>
 			)}
 			<StyledDataTable

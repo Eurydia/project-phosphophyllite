@@ -10,12 +10,12 @@ import {
 /////////////////////////////////////////////
 // Repo filter preferences
 
-export const getRepoFilterPrefCustomPrefix =
+export const getRepoFilterPrefPropertyPrefix =
 	() => {
 		const data = localStorage.getItem(
 			REPO_FILTER_PREF_CUSTOM_PREFIX,
 		);
-		if (data !== null) {
+		if (data !== null && data !== "") {
 			return data;
 		}
 		return "phospho-";

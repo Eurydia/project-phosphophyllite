@@ -9,26 +9,29 @@ import {
 	getRepoFilterPrefTopicMatchStrategy,
 	getRepoFilterPrefVisibility,
 } from "~database/preferences";
-import { GenericSelectOptions } from "~types/generics";
+import { GenericSelectOption } from "~types/generics";
 import { RepoSchema } from "~types/schemas";
 
 export type LoaderData = {
 	repos: RepoSchema[];
-	topicOptions: GenericSelectOptions<string>[];
+	topicOptions: GenericSelectOption<string>[];
 	topics: string[];
 	name: string;
 	visibility: string;
 	status: string;
 	topicMatchStrategy: string;
+	properties: string[];
 };
 export const loader: LoaderFunction = async ({
 	request,
 }): Promise<LoaderData> => {
 	document.title = "repositories";
-	const topicOptions: GenericSelectOptions<string>[] =
-		(await getCachedTopics()).map((topic) => {
+	const cachedTopics = await getCachedTopics();
+	const topicOptions: GenericSelectOption<string>[] =
+		cachedTopics.map((topic) => {
 			return { label: topic, value: topic };
 		});
+
 	let repos = await getCachedRepos();
 
 	const searchParams = new URL(request.url)
@@ -37,6 +40,17 @@ export const loader: LoaderFunction = async ({
 	let topics: string[] = [];
 	if (topicsParam !== null) {
 		topics = topicsParam
+			.normalize()
+			.trim()
+			.split(",")
+			.map((topic) => topic.trim())
+			.filter((topic) => topic.length > 0);
+	}
+	const propertyParam =
+		searchParams.get("properties");
+	let properties: string[] = [];
+	if (propertyParam !== null) {
+		properties = propertyParam
 			.normalize()
 			.trim()
 			.split(",")
@@ -61,6 +75,7 @@ export const loader: LoaderFunction = async ({
 		visibility,
 		status,
 		topicMatchStrategy,
+		properties,
 	);
 
 	return {
@@ -71,5 +86,6 @@ export const loader: LoaderFunction = async ({
 		visibility,
 		status,
 		topicMatchStrategy,
+		properties,
 	};
 };
