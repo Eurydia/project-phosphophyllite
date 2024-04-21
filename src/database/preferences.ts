@@ -1,6 +1,7 @@
 import {
 	ISSUE_FILTER_PREF_OWNER_TYPE_KEY,
 	ISSUE_FILTER_PREF_STATE_KEY,
+	REPO_FILTER_PREF_CUSTOM_PREFIX,
 	REPO_FILTER_PREF_STATUS_KEY,
 	REPO_FILTER_PREF_TOPIC_MATCH_STRATEGY_KEY,
 	REPO_FILTER_PREF_VISIBILITY_KEY,
@@ -8,6 +9,17 @@ import {
 
 /////////////////////////////////////////////
 // Repo filter preferences
+
+export const getRepoFilterPrefCustomPrefix =
+	() => {
+		const data = localStorage.getItem(
+			REPO_FILTER_PREF_CUSTOM_PREFIX,
+		);
+		if (data !== null) {
+			return data;
+		}
+		return "phospho-";
+	};
 export const getRepoFilterPrefVisibility =
 	(): string => {
 		const data = localStorage.getItem(
@@ -61,6 +73,15 @@ export const setRepoFilterPrefTopicMatchStrategy =
 			value,
 		);
 	};
+export const setRepoFilterPrefCustomPrefix = (
+	value: string,
+) => {
+	localStorage.setItem(
+		REPO_FILTER_PREF_CUSTOM_PREFIX,
+		value,
+	);
+};
+
 /////////////////////////////////////////////
 // Issues filter preferences
 export const getIssueFilterPrefState =

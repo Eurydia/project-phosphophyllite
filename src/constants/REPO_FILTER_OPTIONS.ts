@@ -1,5 +1,8 @@
 import { GenericSelectOptions } from "~types/generics";
 
+export const REPO_FILTER_PREF_CUSTOM_PREFIX =
+	"repo-filter-pref-custom-prefix";
+
 export const REPO_FILTER_PREF_TOPIC_MATCH_STRATEGY_KEY =
 	"repo-filter-pref-topic-match-strategy";
 export const REPO_FILTER_PREF_VISIBILITY_KEY =
