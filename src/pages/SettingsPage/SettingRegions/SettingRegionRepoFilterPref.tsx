@@ -5,33 +5,46 @@ import {
 } from "@mui/material";
 import { FC, useState } from "react";
 import { StyledSelect } from "~components/StyledSelect";
+import { StyledTextField } from "~components/StyledTextField";
 import {
 	REPO_FILTER_STATUS_OPTIONS,
 	REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS,
 	REPO_FILTER_VISIBILITY_OPTIONS,
 } from "~constants";
 import {
+	getRepoFilterPrefPropertyPrefix,
 	getRepoFilterPrefStatus,
 	getRepoFilterPrefTopicMatchStrategy,
 	getRepoFilterPrefVisibility,
+	setRepoFilterPrefCustomPrefix,
 	setRepoFilterPrefStatus,
 	setRepoFilterPrefTopicMatchStrategy,
 	setRepoFilterPrefVisibility,
 } from "~database/preferences";
 import { WrappableListItem } from "./WrappableListItem";
 
+const DEF_MODE =
+	getRepoFilterPrefTopicMatchStrategy();
+const DEF_VIS = getRepoFilterPrefVisibility();
+const DEF_PREFIX =
+	getRepoFilterPrefPropertyPrefix();
+const DEF_STATUS = getRepoFilterPrefStatus();
 export const SettingRegionRepoFilterPref: FC =
 	() => {
-		const [mode, setMode] = useState(
-			getRepoFilterPrefTopicMatchStrategy(),
-		);
-		const [visibility, setVisibility] = useState(
-			getRepoFilterPrefVisibility(),
-		);
-		const [status, setStatus] = useState(
-			getRepoFilterPrefStatus(),
-		);
+		const [customPrefix, setCustomPrefix] =
+			useState(DEF_PREFIX);
+		const [mode, setMode] = useState(DEF_MODE);
+		const [visibility, setVisibility] =
+			useState(DEF_VIS);
+		const [status, setStatus] =
+			useState(DEF_STATUS);
 
+		const handleCustomPrefixChange = (
+			value: string,
+		) => {
+			setRepoFilterPrefCustomPrefix(value);
+			setCustomPrefix(value);
+		};
 		const handleTopicMatchStrategyChange = (
 			event: SelectChangeEvent<string>,
 		) => {
@@ -66,6 +79,18 @@ export const SettingRegionRepoFilterPref: FC =
 					</ListSubheader>
 				}
 			>
+				<WrappableListItem
+					primary="Prefix"
+					secondary="Topics start with the prefix are treated as special properties."
+				>
+					<StyledTextField
+						fullWidth
+						placeholder="phospho-"
+						size="small"
+						value={customPrefix}
+						onChange={handleCustomPrefixChange}
+					/>
+				</WrappableListItem>
 				<WrappableListItem primary="Match strategy">
 					<StyledSelect
 						fullWidth

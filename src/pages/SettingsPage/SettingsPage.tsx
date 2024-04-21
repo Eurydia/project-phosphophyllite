@@ -20,8 +20,7 @@ export const SettingsPage: FC = () => {
 			}
 		>
 			<Stack
-				paddingTop={2}
-				paddingX={2}
+				padding={2}
 				spacing={1}
 				divider={<Divider variant="middle" />}
 			>

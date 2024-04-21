@@ -11,6 +11,7 @@ export const filterRepos = (
 	visibility: string,
 	status: string,
 	topicFilterMode: string,
+	properties: string[],
 ) => {
 	let items = [...repos];
 
@@ -60,6 +61,15 @@ export const filterRepos = (
 				}
 				return item.topics.includes(topic);
 			}),
+		);
+	}
+	if (properties.length > 0) {
+		items = items.filter((item) =>
+			properties.some(
+				(property) =>
+					item.topics !== undefined &&
+					item.topics.includes(property),
+			),
 		);
 	}
 

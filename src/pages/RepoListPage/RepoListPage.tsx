@@ -15,6 +15,7 @@ export const RepoListPage: FC = () => {
 		visibility,
 		status,
 		topicMatchStrategy,
+		properties,
 	} = useLoaderData() as LoaderData;
 
 	return (
@@ -37,6 +38,7 @@ export const RepoListPage: FC = () => {
 					visibility={visibility}
 					status={status}
 					topicMatchStrategy={topicMatchStrategy}
+					properties={properties}
 				/>
 			</Box>
 		</WithAppBar>

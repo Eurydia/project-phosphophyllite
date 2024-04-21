@@ -8,7 +8,7 @@ import {
 	getIssueFilterPrefOwnerType,
 	getIssueFilterPrefState,
 } from "~database/preferences";
-import { GenericSelectOptions } from "~types/generics";
+import { GenericSelectOption } from "~types/generics";
 import {
 	RepoIssueSchema,
 	RepoSchema,
@@ -20,7 +20,7 @@ export type LoaderData = {
 	title: string;
 	ownerType: string;
 	repoFullNames: string[];
-	repoOptions: GenericSelectOptions<string>[];
+	repoOptions: GenericSelectOption<string>[];
 	state: string;
 };
 export const loader: LoaderFunction = async ({
@@ -73,7 +73,7 @@ export const loader: LoaderFunction = async ({
 		state,
 	);
 
-	const repoOptions: GenericSelectOptions<string>[] =
+	const repoOptions: GenericSelectOption<string>[] =
 		[
 			{
 				label: repo.full_name,

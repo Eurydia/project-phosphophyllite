@@ -6,7 +6,7 @@ export interface SortRule<T> {
 	compareFn: (a: T, b: T) => number;
 }
 
-export type GenericSelectOptions<T> = {
+export type GenericSelectOption<T> = {
 	label: string;
 	value: T;
 };
