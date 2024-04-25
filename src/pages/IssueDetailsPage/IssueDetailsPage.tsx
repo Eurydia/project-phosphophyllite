@@ -4,6 +4,8 @@ import {
 	List,
 	ListItem,
 	ListItemText,
+	Paper,
+	Stack,
 	SxProps,
 	Theme,
 	Typography,
@@ -109,48 +111,59 @@ const IssueComment: FC<IssueCommentProps> = (
 	props,
 ) => {
 	const { index, comment } = props;
+
+	const normalizedCreated = normalizeDateString(
+		comment.created_at,
+	);
+	const createdMsg = `on ${normalizedCreated}`;
+
+	const normalizedupdated = normalizeDateString(
+		comment.updated_at,
+	);
+	const updatedMsg = `updated ${normalizedupdated}`;
+
 	return (
-		<Box>
-			<Typography
-				fontWeight="bold"
-				component="a"
-				href={comment.html_url}
-				sx={{
-					textDecoration: "none",
-				}}
+		<Paper
+			variant="outlined"
+			sx={{ padding: 2 }}
+		>
+			<Stack
+				direction="row"
+				spacing={0.5}
 			>
-				Comment #{index}
-			</Typography>
-			<List
-				dense
-				sx={{
-					display: "flex",
-					flexDirection: "row",
-				}}
-			>
-				<ListItemText
-					primary={normalizeDateString(
-						comment.created_at,
-					)}
-					secondary="Created"
+				<Typography
+					fontWeight="bold"
+					component="a"
+					href={comment.html_url}
 					sx={{
-						flexGrow: 1,
+						textDecoration: "none",
 					}}
-				/>
-				<ListItemText
-					primary={normalizeDateString(
-						comment.updated_at,
-					)}
-					secondary="Last updated"
-				/>
-			</List>
+				>
+					Comment #{index}
+				</Typography>
+				<Typography
+					variant="subtitle1"
+					fontSize="small"
+				>
+					{createdMsg}
+				</Typography>
+				<Typography
+					variant="subtitle1"
+					fontSize="small"
+					sx={{
+						fontStyle: "italic",
+					}}
+				>
+					({updatedMsg})
+				</Typography>
+			</Stack>
 			<Markdown
 				markdownContent={
 					comment.body ?? undefined
 				}
 				emptyText="This comment does not have a body or its body not is cached."
 			/>
-		</Box>
+		</Paper>
 	);
 };
 
