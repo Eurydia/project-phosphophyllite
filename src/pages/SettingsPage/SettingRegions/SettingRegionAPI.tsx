@@ -53,7 +53,10 @@ export const SettingRegionAPI: FC = () => {
 				</ListSubheader>
 			}
 		>
-			<WrappableListItem primary="Personal access token (classic)">
+			<WrappableListItem
+				primary="Personal access token (classic)"
+				secondary="Without repository permission, the private repositories will be invisible."
+			>
 				<TextField
 					fullWidth
 					placeholder="ghp_"
