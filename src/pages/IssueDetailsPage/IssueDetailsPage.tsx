@@ -1,15 +1,9 @@
 import {
-	Box,
 	Container,
-	List,
-	ListItem,
-	ListItemText,
 	Paper,
-	Stack,
 	SxProps,
 	Theme,
 	Typography,
-	capitalize,
 } from "@mui/material";
 import { FC } from "react";
 import { useLoaderData } from "react-router";
@@ -51,17 +45,6 @@ const METADATA_DEFINITIONS: {
 			toTimeStamp(issue.closed_at, "Not closed"),
 		flexGrow: 1,
 	},
-	{
-		label: "State",
-		render: (issue) => capitalize(issue.state),
-		flexGrow: 0,
-	},
-	{
-		label: "Owner type",
-		render: (issue) =>
-			issue.owner_type ?? "Unknown",
-		flexGrow: 0,
-	},
 ];
 
 type IssueMetaDataListProps = {
@@ -71,35 +54,39 @@ const IssueMetaData: FC<
 	IssueMetaDataListProps
 > = (props) => {
 	const { issue } = props;
+
+	const normalizedCreated = normalizeDateString(
+		issue.created_at,
+		"unknown",
+	);
+	const createdMsg = `on ${normalizedCreated}`;
+
+	const normalizedUpdated = normalizeDateString(
+		issue.updated_at,
+	);
+	const updatedMsg = `last updated: ${normalizedUpdated}`;
+
+	const normalizedClosed = normalizeDateString(
+		issue.closed_at,
+		"never",
+	);
+	const closedMsg = `closed: ${normalizedClosed}`;
+
+	let msg = `${createdMsg} (${updatedMsg}, ${closedMsg})`;
 	return (
-		<List
-			dense
-			disablePadding
+		<Typography
+			width="100%"
+			flexDirection="row"
+			flexWrap="wrap"
+			gap={0.5}
+			variant="subtitle1"
+			fontSize="small"
 			sx={{
-				display: "flex",
-				flexDirection: "row",
-				flexWrap: "wrap",
+				fontStyle: "italic",
 			}}
 		>
-			{METADATA_DEFINITIONS.map(
-				({ label, render, flexGrow }) => (
-					<ListItem
-						disableGutters
-						disablePadding
-						key={label}
-						sx={{
-							flexGrow,
-							width: 240,
-						}}
-					>
-						<ListItemText
-							primary={render(issue)}
-							secondary={label}
-						/>
-					</ListItem>
-				),
-			)}
-		</List>
+			{msg}
+		</Typography>
 	);
 };
 
@@ -120,43 +107,37 @@ const IssueComment: FC<IssueCommentProps> = (
 	const normalizedupdated = normalizeDateString(
 		comment.updated_at,
 	);
-	const updatedMsg = `updated ${normalizedupdated}`;
+	const updatedMsg = `last updated: ${normalizedupdated}`;
+
+	const msg = `${createdMsg} (${updatedMsg})}`;
 
 	return (
 		<Paper
 			variant="outlined"
 			sx={{ padding: 2 }}
 		>
-			<Stack
-				direction="row"
-				spacing={0.5}
+			<Typography
+				fontWeight="bold"
+				component="a"
+				href={comment.html_url}
+				sx={{
+					textDecoration: "none",
+				}}
 			>
-				<Typography
-					fontWeight="bold"
-					component="a"
-					href={comment.html_url}
-					sx={{
-						textDecoration: "none",
-					}}
-				>
-					Comment #{index}
-				</Typography>
-				<Typography
-					variant="subtitle1"
-					fontSize="small"
-				>
-					{createdMsg}
-				</Typography>
-				<Typography
-					variant="subtitle1"
-					fontSize="small"
-					sx={{
-						fontStyle: "italic",
-					}}
-				>
-					({updatedMsg})
-				</Typography>
-			</Stack>
+				Comment #{index}
+			</Typography>
+			<Typography
+				width="100%"
+				flexDirection="row"
+				flexWrap="wrap"
+				variant="subtitle1"
+				fontSize="small"
+				sx={{
+					fontStyle: "italic",
+				}}
+			>
+				{msg}
+			</Typography>
 			<Markdown
 				markdownContent={
 					comment.body ?? undefined
@@ -197,7 +178,10 @@ export const IssueDetailsPage: FC = () => {
 					flexDirection: "column",
 				}}
 			>
-				<Box>
+				<Paper
+					variant="outlined"
+					sx={{ padding: 2 }}
+				>
 					<Typography
 						fontWeight="bold"
 						fontSize="x-large"
@@ -216,7 +200,7 @@ export const IssueDetailsPage: FC = () => {
 						}
 						emptyText="This issue does not have a body or its body is not cached."
 					/>
-				</Box>
+				</Paper>
 				{comments.map((comment, index) => (
 					<IssueComment
 						key={`comment-${comment.id}`}
