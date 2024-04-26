@@ -10,42 +10,13 @@ import { useLoaderData } from "react-router";
 import { WithAppBar } from "~views/WithAppBar";
 import { LoaderData } from "./loader";
 
-import { ReactNode } from "react";
 import { Markdown } from "~components/Markdown";
 import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
-import {
-	normalizeDateString,
-	toTimeStamp,
-} from "~core/time";
+import { normalizeDateString } from "~core/time";
 import {
 	RepoIssueCommentSchema,
 	RepoIssueSchema,
 } from "~types/schemas";
-
-const METADATA_DEFINITIONS: {
-	flexGrow: number;
-	label: string;
-	render: (repo: RepoIssueSchema) => ReactNode;
-}[] = [
-	{
-		label: "Last updated",
-		render: (issue) =>
-			toTimeStamp(issue.updated_at, "Never"),
-		flexGrow: 1,
-	},
-	{
-		label: "Created",
-		render: (issue) =>
-			toTimeStamp(issue.created_at, "Unknown"),
-		flexGrow: 1,
-	},
-	{
-		label: "Closed",
-		render: (issue) =>
-			toTimeStamp(issue.closed_at, "Not closed"),
-		flexGrow: 1,
-	},
-];
 
 type IssueMetaDataListProps = {
 	issue: RepoIssueSchema;
