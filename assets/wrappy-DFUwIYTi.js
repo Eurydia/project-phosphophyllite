@@ -1,2 +1,0 @@
-var p,i;function y(){if(i)return p;i=1,p=u;function u(e,o){if(e&&o)return u(e)(o);if(typeof e!="function")throw new TypeError("need wrapper function");return Object.keys(e).forEach(function(r){c[r]=e[r]}),c;function c(){for(var r=new Array(arguments.length),t=0;t<r.length;t++)r[t]=arguments[t];var n=e.apply(this,r),a=r[r.length-1];return typeof n=="function"&&n!==a&&Object.keys(a).forEach(function(f){n[f]=a[f]}),n}}return p}export{y as r};
-//# sourceMappingURL=wrappy-DFUwIYTi.js.map

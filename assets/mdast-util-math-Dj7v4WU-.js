@@ -3,4 +3,3 @@ import{o as c}from"./devlop-0Dp3JUBc.js";import{l as w}from"./longest-streak-CtX
 `,before:r,encode:["$"],...a.current()})),s()}return r+=a.move(`
 `),e&&(r+=a.move(e+`
 `)),r+=a.move(i),u(),r}function l(o,x,n){let t=o.value||"",e=1;for(h||e++;new RegExp("(^|[^$])"+"\\$".repeat(e)+"([^$]|$)").test(t);)e++;const a="$".repeat(e);/[^ \r\n]/.test(t)&&(/^[ \r\n]/.test(t)&&/[ \r\n]$/.test(t)||/^\$|\$$/.test(t))&&(t=" "+t+" ");let i=-1;for(;++i<n.unsafe.length;){const u=n.unsafe[i];if(!u.atBreak)continue;const r=n.compilePattern(u);let s;for(;s=r.exec(t);){let m=s.index;t.codePointAt(m)===10&&t.codePointAt(m-1)===13&&m--,t=t.slice(0,m)+" "+t.slice(s.index+1)}}return a+t+a}function p(){return"$"}}export{g as a,$ as m};
-//# sourceMappingURL=mdast-util-math-Dj7v4WU-.js.map
