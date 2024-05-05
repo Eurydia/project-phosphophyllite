@@ -80,7 +80,7 @@ const IssueComment: FC<IssueCommentProps> = (
 	);
 	const updatedMsg = `last updated: ${normalizedupdated}`;
 
-	const msg = `${createdMsg} (${updatedMsg})}`;
+	const msg = `${createdMsg} (${updatedMsg})`;
 
 	return (
 		<Paper

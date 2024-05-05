@@ -14,14 +14,8 @@ export default defineConfig({
 		splitVendorChunkPlugin(),
 	],
 	build: {
-		sourcemap: true,
-		commonjsOptions: {
-			strictRequires: true,
-		},
-		target: "esnext",
 		rollupOptions: {
 			output: {
-				minifyInternalExports: true,
 				manualChunks: (id) => {
 					if (id.includes("node_module")) {
 						return id
