@@ -1,17 +1,14 @@
 import {
 	Container,
 	Paper,
-	SxProps,
-	Theme,
 	Typography,
 } from "@mui/material";
 import { FC } from "react";
 import { useLoaderData } from "react-router";
-import { WithAppBar } from "~views/WithAppBar";
+import { MainView } from "~views/MainView";
 import { LoaderData } from "./loader";
 
 import { Markdown } from "~components/Markdown";
-import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
 import { normalizeDateString } from "~core/time";
 import {
 	RepoIssueCommentSchema,
@@ -123,23 +120,10 @@ export const IssueDetailsPage: FC = () => {
 	const { issue, comments } =
 		useLoaderData() as LoaderData;
 
-	const path = `~/repositories/${issue.repo_full_name}/issues/${issue.issue_number}`;
-	const breadcrumbsProps: SxProps<Theme> = {
-		sx: {
-			overflow: "auto",
-			flexGrow: { xs: 0, sm: 1 },
-		},
-	};
+	const path = `~/Repositories/${issue.repo_full_name}/Issues/${issue.issue_number}`;
 
 	return (
-		<WithAppBar
-			location={
-				<StyledBreadcrumbs
-					path={path}
-					breadcrumbsProps={breadcrumbsProps}
-				/>
-			}
-		>
+		<MainView location={path}>
 			<Container
 				maxWidth="sm"
 				sx={{
@@ -180,6 +164,6 @@ export const IssueDetailsPage: FC = () => {
 					/>
 				))}
 			</Container>
-		</WithAppBar>
+		</MainView>
 	);
 };

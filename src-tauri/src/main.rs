@@ -11,6 +11,9 @@ fn get_app_id() -> String {
     match fs::read_to_string(path) {
         Ok(content) => return content,
         Err(_) => {
+            println!(
+                "Cannot open file. Obtain private key from app installation https://github.com/settings/apps/<app-name>."
+            );
             return String::default();
         }
     }
@@ -22,6 +25,7 @@ fn get_installation_id() -> String {
     match fs::read_to_string(path) {
         Ok(content) => return content,
         Err(_) => {
+            println!("Cannot open file. Obtain installation id from https://github.com/settings/installations/<installation-id>");
             return String::default();
         }
     }
@@ -33,6 +37,9 @@ fn get_private_key() -> String {
     match fs::read_to_string(path) {
         Ok(content) => return content,
         Err(_) => {
+            println!(
+                "Cannot open file. Obtain private key from app installation https://github.com/settings/apps/<app-name>."
+            );
             return String::default();
         }
     }

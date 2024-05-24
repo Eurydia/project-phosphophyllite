@@ -1,23 +1,13 @@
 import { Divider, Stack } from "@mui/material";
 import { FC } from "react";
-import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
-import { WithAppBar } from "~views/WithAppBar";
+import { MainView } from "~views/MainView";
 import { SettingRegionIssueFilterPref } from "./SettingRegions/SettingRegionIssueFilterPref";
 import { SettingRegionRepoFilterPref } from "./SettingRegions/SettingRegionRepoFilterPref";
 import { SettingRegionSync } from "./SettingRegions/SettingRegionSync";
 
 export const SettingsPage: FC = () => {
 	return (
-		<WithAppBar
-			location={
-				<StyledBreadcrumbs
-					path="~/settings"
-					breadcrumbsProps={{
-						sx: { flexGrow: 1 },
-					}}
-				/>
-			}
-		>
+		<MainView location="~/Settings">
 			<Stack
 				padding={2}
 				spacing={1}
@@ -27,6 +17,6 @@ export const SettingsPage: FC = () => {
 				<SettingRegionIssueFilterPref />
 				<SettingRegionSync />
 			</Stack>
-		</WithAppBar>
+		</MainView>
 	);
 };

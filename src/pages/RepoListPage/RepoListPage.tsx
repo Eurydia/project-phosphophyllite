@@ -2,8 +2,7 @@ import { Box } from "@mui/material";
 import { FC } from "react";
 import { useLoaderData } from "react-router-dom";
 import { RepoDataTable } from "~components/RepoDataTable";
-import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
-import { WithAppBar } from "~views/WithAppBar";
+import { MainView } from "~views/MainView";
 import { LoaderData } from "./loader";
 
 export const RepoListPage: FC = () => {
@@ -19,16 +18,7 @@ export const RepoListPage: FC = () => {
 	} = useLoaderData() as LoaderData;
 
 	return (
-		<WithAppBar
-			location={
-				<StyledBreadcrumbs
-					path="~/repositories"
-					breadcrumbsProps={{
-						sx: { flexGrow: 1 },
-					}}
-				/>
-			}
-		>
+		<MainView location="~/Repositories">
 			<Box padding={2}>
 				<RepoDataTable
 					topicOptions={topicOptions}
@@ -41,6 +31,6 @@ export const RepoListPage: FC = () => {
 					properties={properties}
 				/>
 			</Box>
-		</WithAppBar>
+		</MainView>
 	);
 };

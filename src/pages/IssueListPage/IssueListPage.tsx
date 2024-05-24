@@ -2,8 +2,7 @@ import { Box } from "@mui/material";
 import { FC } from "react";
 import { useLoaderData } from "react-router-dom";
 import { IssueDataTable } from "~components/IssueDataTable";
-import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
-import { WithAppBar } from "~views/WithAppBar";
+import { MainView } from "~views/MainView";
 import { LoaderData } from "./loader";
 
 export const IssueListPage: FC = () => {
@@ -17,16 +16,7 @@ export const IssueListPage: FC = () => {
 	} = useLoaderData() as LoaderData;
 
 	return (
-		<WithAppBar
-			location={
-				<StyledBreadcrumbs
-					path="~/issues"
-					breadcrumbsProps={{
-						sx: { flexGrow: 1 },
-					}}
-				/>
-			}
-		>
+		<MainView location="~/Issues">
 			<Box
 				paddingTop={2}
 				paddingX={2}
@@ -40,6 +30,6 @@ export const IssueListPage: FC = () => {
 					state={state}
 				/>
 			</Box>
-		</WithAppBar>
+		</MainView>
 	);
 };

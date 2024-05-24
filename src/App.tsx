@@ -6,7 +6,7 @@ import { SnackbarProvider } from "notistack";
 import { FC } from "react";
 import {
 	RouterProvider,
-	createHashRouter,
+	createBrowserRouter,
 	redirect,
 } from "react-router-dom";
 import { ErrorBoundry } from "~pages/ErrorBoundary";
@@ -30,10 +30,10 @@ import {
 	RepoListPage,
 	loaderRepoListPage,
 } from "~pages/RepoListPage";
-import { SettingsPage } from "~pages/SettingsPage/SettingsPage";
+import { SettingsPage } from "~pages/SettingsPage";
 import { themeComposed } from "./theme";
 
-const router = createHashRouter(
+const router = createBrowserRouter(
 	[
 		{
 			index: true,
@@ -42,51 +42,44 @@ const router = createHashRouter(
 			errorElement: <ErrorBoundry />,
 		},
 		{
-			path: "/",
-			errorElement: <ErrorBoundry />,
-			children: [
-				{
-					path: "/repositories",
-					element: <RepoListPage />,
-					loader: loaderRepoListPage,
-				},
-				{
-					path: "/repositories/:owner",
-					element: null,
-					loader: ({ params }) =>
-						redirect(
-							`/repositories/?name=${params.owner}`,
-						),
-				},
-				{
-					path: "/repositories/:owner/:repo",
-					element: <RepoDetailsPage tab={0} />,
-					loader: loaderRepoDetailsPage,
-				},
-				{
-					path: "/repositories/:owner/:repo/issues",
-					element: <RepoDetailsPage tab={1} />,
-					loader: loaderRepoDetailsPage,
-				},
-				{
-					path: "/repositories/:owner/:repo/issues/:issueNumber",
-					element: <IssueDetailsPage />,
-					loader: loaderIssueDetailsPage,
-				},
-				{
-					path: "/issues",
-					element: <IssueListPage />,
-					loader: loaderIssueListPage,
-				},
-				{
-					path: "/settings",
-					element: <SettingsPage />,
-				},
-			],
+			path: "/repositories",
+			element: <RepoListPage />,
+			loader: loaderRepoListPage,
+		},
+		{
+			path: "/repositories/:owner",
+			loader: ({ params }) =>
+				redirect(
+					`/repositories/?name=${params.owner}`,
+				),
+		},
+		{
+			path: "/repositories/:owner/:repo",
+			element: <RepoDetailsPage tab={0} />,
+			loader: loaderRepoDetailsPage,
+		},
+		{
+			path: "/repositories/:owner/:repo/issues",
+			element: <RepoDetailsPage tab={1} />,
+			loader: loaderRepoDetailsPage,
+		},
+		{
+			path: "/repositories/:owner/:repo/issues/:issueNumber",
+			element: <IssueDetailsPage />,
+			loader: loaderIssueDetailsPage,
+		},
+		{
+			path: "/issues",
+			element: <IssueListPage />,
+			loader: loaderIssueListPage,
+		},
+		{
+			path: "/settings",
+			element: <SettingsPage />,
 		},
 	],
 	{
-		basename: "/",
+		basename: "/project-phosphophyllite",
 	},
 );
 

@@ -1,11 +1,7 @@
-import {
-	Box,
-	Container,
-	Typography,
-} from "@mui/material";
+import { Typography } from "@mui/material";
 import { FC } from "react";
 import { useRouteError } from "react-router";
-import { WithAppBar } from "~views/WithAppBar";
+import { MainView } from "~views/MainView";
 
 export const ErrorBoundry: FC = () => {
 	const { status, statusText } =
@@ -14,24 +10,20 @@ export const ErrorBoundry: FC = () => {
 			statusText: string;
 		};
 	return (
-		<WithAppBar location={status}>
-			<Container maxWidth="md">
-				<Box padding={4}>
-					<Typography
-						component="h1"
-						variant="h1"
-					>
-						{status}
-					</Typography>
-					<Typography
-						paragraph
-						component="p"
-						variant="body1"
-					>
-						{statusText}
-					</Typography>
-				</Box>
-			</Container>
-		</WithAppBar>
+		<MainView location="">
+			<Typography
+				component="h1"
+				variant="h1"
+			>
+				{status}
+			</Typography>
+			<Typography
+				paragraph
+				component="p"
+				variant="body1"
+			>
+				{statusText}
+			</Typography>
+		</MainView>
 	);
 };

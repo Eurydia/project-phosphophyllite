@@ -1,16 +1,45 @@
 import {
+	Box,
 	Card,
 	CardHeader,
 	Stack,
 	Typography,
 } from "@mui/material";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { useLoaderData } from "react-router";
 import { IssueDataTable } from "~components/IssueDataTable";
 import { RepoDataTable } from "~components/RepoDataTable";
-import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
-import { WithAppBar } from "~views/WithAppBar";
+import { MainView } from "~views/MainView";
 import { LoaderData } from "./loader";
+
+type OverviewCardProps = {
+	title: ReactNode;
+	subheader: ReactNode;
+};
+const OverviewCard: FC<OverviewCardProps> = (
+	props,
+) => {
+	const { title, subheader } = props;
+	return (
+		<Card
+			square
+			variant="outlined"
+			sx={{
+				minWidth: "150px",
+				flexGrow: 1,
+			}}
+		>
+			<CardHeader
+				title={title}
+				subheader={subheader}
+				titleTypographyProps={{
+					color: "secondary",
+					fontWeight: "900",
+				}}
+			/>
+		</Card>
+	);
+};
 
 export const HomePage: FC = () => {
 	const {
@@ -22,96 +51,54 @@ export const HomePage: FC = () => {
 		recentIssues,
 	} = useLoaderData() as LoaderData;
 
+	const openIssuesSubheader =
+		closedIssues > 1
+			? "Closed issues"
+			: "Closed issue";
+	const closedIssuesSubheader =
+		openIssues > 1 ? "Open issues" : "Open issue";
+	const activeReposSubheader =
+		activeRepos > 1
+			? "Active repositories"
+			: "Active repositoriy";
+	const archivedReposSubheader =
+		archivedRepos > 1
+			? "Archived repositories"
+			: "Archived repositoriy";
+
 	return (
-		<WithAppBar
-			location={
-				<StyledBreadcrumbs
-					path="~"
-					breadcrumbsProps={{
-						sx: { flexGrow: 1 },
-					}}
-				/>
-			}
-		>
+		<MainView location="~">
 			<Stack
 				spacing={2}
-				padding={4}
+				padding={2}
 			>
-				<Stack
-					flexDirection="row"
-					flexWrap="wrap"
-					alignItems="center"
-					gap={1}
+				<Box
+					sx={{
+						gap: 1,
+						display: "flex",
+						flexWrap: "wrap",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "center",
+					}}
 				>
-					<Card
-						variant="outlined"
-						sx={{ flexGrow: 1, minWidth: 250 }}
-					>
-						<CardHeader
-							title={activeRepos}
-							subheader={
-								activeRepos > 1
-									? "Active repositories"
-									: "Active repositoriy"
-							}
-							titleTypographyProps={{
-								color: "secondary",
-								fontWeight: "900",
-							}}
-						/>
-					</Card>
-					<Card
-						variant="outlined"
-						sx={{ flexGrow: 1, minWidth: 250 }}
-					>
-						<CardHeader
-							title={archivedRepos}
-							subheader={
-								archivedRepos > 1
-									? "Archived repositories"
-									: "Archived repositoriy"
-							}
-							titleTypographyProps={{
-								color: "secondary",
-								fontWeight: "900",
-							}}
-						/>
-					</Card>
-					<Card
-						variant="outlined"
-						sx={{ flexGrow: 1, minWidth: 250 }}
-					>
-						<CardHeader
-							title={openIssues}
-							subheader={
-								openIssues > 1
-									? "Open issues"
-									: "Open issue"
-							}
-							titleTypographyProps={{
-								color: "secondary",
-								fontWeight: "900",
-							}}
-						/>
-					</Card>
-					<Card
-						variant="outlined"
-						sx={{ flexGrow: 1, minWidth: 250 }}
-					>
-						<CardHeader
-							title={closedIssues}
-							subheader={
-								closedIssues > 1
-									? "Closed issues"
-									: "Closed issue"
-							}
-							titleTypographyProps={{
-								color: "secondary",
-								fontWeight: "900",
-							}}
-						/>
-					</Card>
-				</Stack>
+					<OverviewCard
+						title={activeRepos}
+						subheader={activeReposSubheader}
+					/>
+					<OverviewCard
+						title={archivedRepos}
+						subheader={archivedReposSubheader}
+					/>
+					<OverviewCard
+						title={openIssues}
+						subheader={openIssuesSubheader}
+					/>
+					<OverviewCard
+						title={closedIssues}
+						subheader={closedIssuesSubheader}
+					/>
+				</Box>
 				<Typography
 					fontSize="large"
 					fontWeight="bold"
@@ -135,6 +122,6 @@ export const HomePage: FC = () => {
 					disableFilter
 				/>
 			</Stack>
-		</WithAppBar>
+		</MainView>
 	);
 };

@@ -7,14 +7,28 @@ import {
 	RepoSchema,
 } from "~types/schemas";
 
-console.log(await invoke("get_app_id"));
-const app = new App({
-	appId: await invoke("get_app_id"),
-	privateKey: await invoke("get_private_key"),
-});
-const octokit = await app.getInstallationOctokit(
-	await invoke("get_installation_id"),
-);
+const getOctokit = async () => {
+	const installationId: string = await invoke(
+		"get_installation_id",
+	);
+	const appId: string = await invoke(
+		"get_app_id",
+	);
+	const privateKey: string = await invoke(
+		"get_private_key",
+	);
+
+	const app = new App({
+		appId,
+		privateKey,
+	});
+
+	const octokit =
+		await app.getInstallationOctokit(
+			Number.parseInt(installationId),
+		);
+	return octokit;
+};
 
 export const getRepo = async (
 	fullName: string,
@@ -29,6 +43,8 @@ export const getRepo = async (
 };
 
 export const getRepos = async () => {
+	const octokit = await getOctokit();
+
 	const pages = await octokit.paginate(
 		"GET /user/repos",
 	);
@@ -81,6 +97,7 @@ const getRepoReadMe = async (
 	fullName: string,
 ) => {
 	const [owner, repo] = fullName.split("/");
+	const octokit = await getOctokit();
 	const res = await octokit.request(
 		"GET /repos/{owner}/{repo}/readme",
 		{
@@ -96,6 +113,7 @@ export const getRepoIssues = async (
 	repoId: number,
 ) => {
 	const [owner, repo] = fullName.split("/");
+	const octokit = await getOctokit();
 	const response = await octokit.paginate(
 		"GET /repos/{owner}/{repo}/issues",
 		{
@@ -143,6 +161,7 @@ export const getRepoIssueComment = async (
 	issueId: number,
 ) => {
 	const [owner, repo] = fullName.split("/");
+	const octokit = await getOctokit();
 	const response = await octokit.paginate(
 		"GET /repos/{owner}/{repo}/issues/{issue_number}/comments",
 		{
