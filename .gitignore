@@ -1,3 +1,5 @@
+src-tauri/secrets/*
+
 # Logs
 logs
 *.log

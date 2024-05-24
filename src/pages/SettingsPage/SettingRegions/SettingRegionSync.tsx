@@ -84,7 +84,12 @@ export const SettingRegionSync: FC = () => {
 
 		const { promise, successMsg, key } =
 			SYNC_DETAILS[index];
-		const res = await promise(enqueueError);
+		const res = await promise(enqueueError).catch(
+			() => {
+				return [false];
+			},
+		);
+
 		if (res.every((r) => r)) {
 			enqueueSnackbar({
 				message: `Synced ${successMsg}`,
