@@ -1,24 +1,20 @@
-import { Octokit } from "octokit";
+import { invoke } from "@tauri-apps/api";
+import { App } from "octokit";
+
 import {
 	RepoIssueCommentSchema,
 	RepoIssueSchema,
 	RepoSchema,
 } from "~types/schemas";
 
-const getToken = () => {
-	const token = localStorage.getItem(
-		"personal-access-token",
-	);
-	if (token === null) {
-		return "-1";
-	}
-	return token;
-};
-
-const getOctokit = () => {
-	const token = getToken();
-	return new Octokit({ auth: token });
-};
+console.log(await invoke("get_app_id"));
+const app = new App({
+	appId: await invoke("get_app_id"),
+	privateKey: await invoke("get_private_key"),
+});
+const octokit = await app.getInstallationOctokit(
+	await invoke("get_installation_id"),
+);
 
 export const getRepo = async (
 	fullName: string,
@@ -33,7 +29,6 @@ export const getRepo = async (
 };
 
 export const getRepos = async () => {
-	const octokit = getOctokit();
 	const pages = await octokit.paginate(
 		"GET /user/repos",
 	);
@@ -85,9 +80,8 @@ export const getRepos = async () => {
 const getRepoReadMe = async (
 	fullName: string,
 ) => {
-	const ocktokit = getOctokit();
 	const [owner, repo] = fullName.split("/");
-	const res = await ocktokit.request(
+	const res = await octokit.request(
 		"GET /repos/{owner}/{repo}/readme",
 		{
 			owner,
@@ -101,9 +95,8 @@ export const getRepoIssues = async (
 	fullName: string,
 	repoId: number,
 ) => {
-	const ocktokit = getOctokit();
 	const [owner, repo] = fullName.split("/");
-	const response = await ocktokit.paginate(
+	const response = await octokit.paginate(
 		"GET /repos/{owner}/{repo}/issues",
 		{
 			owner,
@@ -149,9 +142,8 @@ export const getRepoIssueComment = async (
 	issueNumber: number,
 	issueId: number,
 ) => {
-	const ocktokit = getOctokit();
 	const [owner, repo] = fullName.split("/");
-	const response = await ocktokit.paginate(
+	const response = await octokit.paginate(
 		"GET /repos/{owner}/{repo}/issues/{issue_number}/comments",
 		{
 			owner,

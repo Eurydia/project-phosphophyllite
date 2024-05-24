@@ -2,7 +2,6 @@ import { Divider, Stack } from "@mui/material";
 import { FC } from "react";
 import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
 import { WithAppBar } from "~views/WithAppBar";
-import { SettingRegionAPI } from "./SettingRegions/SettingRegionAPI";
 import { SettingRegionIssueFilterPref } from "./SettingRegions/SettingRegionIssueFilterPref";
 import { SettingRegionRepoFilterPref } from "./SettingRegions/SettingRegionRepoFilterPref";
 import { SettingRegionSync } from "./SettingRegions/SettingRegionSync";
@@ -26,7 +25,6 @@ export const SettingsPage: FC = () => {
 			>
 				<SettingRegionRepoFilterPref />
 				<SettingRegionIssueFilterPref />
-				<SettingRegionAPI />
 				<SettingRegionSync />
 			</Stack>
 		</WithAppBar>
