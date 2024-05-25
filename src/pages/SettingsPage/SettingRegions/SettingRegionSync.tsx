@@ -6,66 +6,16 @@ import {
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { FC, useState } from "react";
-import { normalizeDateString } from "~core/time";
-import {
-	syncCachedRepoIssueComments,
-	syncCachedRepoIssues,
-	syncCachedRepos,
-} from "~database/cached";
+import { SYNC_DETAILS } from "~constants";
 import { WrappableListItem } from "./WrappableListItem";
-
-const SYNC_DETAILS: {
-	key: string;
-	successMsg: string;
-	promise: (
-		onFailure: (err: any) => void,
-	) => Promise<boolean[]>;
-}[] = [
-	{
-		key: "last-sync-repos",
-		successMsg: "repsitories",
-		promise: (onFailure) =>
-			syncCachedRepos(onFailure),
-	},
-	{
-		key: "last-sync-issues",
-		successMsg: "issues",
-		promise: (onFailure) =>
-			syncCachedRepoIssues(onFailure),
-	},
-	{
-		key: "last-sync-comments",
-		successMsg: "comments",
-		promise: (onFailure) =>
-			syncCachedRepoIssueComments(onFailure),
-	},
-];
-
-const LAST_SYNC = [
-	normalizeDateString(
-		localStorage.getItem("last-sync-repos"),
-		"Never",
-	),
-	normalizeDateString(
-		localStorage.getItem("last-sync-issues"),
-		"Never",
-	),
-	normalizeDateString(
-		localStorage.getItem("last-sync-comments"),
-		"Never",
-	),
-];
 
 export const SettingRegionSync: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
-
 	const [syncing, setSyncing] = useState([
 		false,
 		false,
 		false,
 	]);
-	const [lastSyncs, setLastSync] =
-		useState(LAST_SYNC);
 
 	const enqueueError = (err: any) => {
 		enqueueSnackbar({
@@ -82,8 +32,7 @@ export const SettingRegionSync: FC = () => {
 			return next;
 		});
 
-		const { promise, successMsg, key } =
-			SYNC_DETAILS[index];
+		const { promise, item } = SYNC_DETAILS[index];
 		const res = await promise(enqueueError).catch(
 			() => {
 				return [false];
@@ -92,18 +41,8 @@ export const SettingRegionSync: FC = () => {
 
 		if (res.every((r) => r)) {
 			enqueueSnackbar({
-				message: `Synced ${successMsg}`,
+				message: `${item} is up to date.`,
 				variant: "success",
-			});
-			const timestamp = new Date(
-				Date.now(),
-			).toISOString();
-			localStorage.setItem(key, timestamp);
-			setLastSync((prev) => {
-				const next = [...prev];
-				next[index] =
-					normalizeDateString(timestamp);
-				return next;
 			});
 		}
 		setSyncing((prev) => {
@@ -125,33 +64,30 @@ export const SettingRegionSync: FC = () => {
 				</ListSubheader>
 			}
 		>
-			{SYNC_DETAILS.map(
-				({ successMsg }, index) => (
-					<WrappableListItem
-						key={`sync-item-${index}`}
-						primary={`Sync ${successMsg}`}
-						secondary={`Last sync: ${lastSyncs[index]}`}
+			{SYNC_DETAILS.map(({ item }, index) => (
+				<WrappableListItem
+					key={item}
+					primary={item}
+				>
+					<Button
+						fullWidth
+						disableElevation
+						disabled={syncing[index]}
+						size="small"
+						variant="contained"
+						onClick={() => handleSync(index)}
 					>
-						<Button
-							fullWidth
-							disableElevation
-							disabled={syncing[index]}
-							size="small"
-							variant="contained"
-							onClick={() => handleSync(index)}
-						>
-							{syncing[index] ? (
-								<CircularProgress
-									disableShrink
-									size={28}
-								/>
-							) : (
-								`Sync ${successMsg}`
-							)}
-						</Button>
-					</WrappableListItem>
-				),
-			)}
+						{syncing[index] ? (
+							<CircularProgress
+								disableShrink
+								size={24}
+							/>
+						) : (
+							`Update ${item}`
+						)}
+					</Button>
+				</WrappableListItem>
+			))}
 		</List>
 	);
 };

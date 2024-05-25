@@ -1,14 +1,11 @@
-import {
-	CssBaseline,
-	ThemeProvider,
-} from "@mui/material";
-import { SnackbarProvider } from "notistack";
-import { FC } from "react";
+import { useSnackbar } from "notistack";
+import { FC, useEffect } from "react";
 import {
 	RouterProvider,
 	createBrowserRouter,
 	redirect,
 } from "react-router-dom";
+import { SYNC_DETAILS } from "~constants";
 import { ErrorBoundry } from "~pages/ErrorBoundary";
 import {
 	Home,
@@ -31,7 +28,6 @@ import {
 	loaderRepoListPage,
 } from "~pages/RepoListPage";
 import { SettingsPage } from "~pages/SettingsPage";
-import { themeComposed } from "./theme";
 
 const router = createBrowserRouter(
 	[
@@ -84,20 +80,36 @@ const router = createBrowserRouter(
 );
 
 export const App: FC = () => {
-	return (
-		<ThemeProvider theme={themeComposed}>
-			<CssBaseline />
-			<SnackbarProvider
-				preventDuplicate
-				maxSnack={3}
-				autoHideDuration={1750}
-				anchorOrigin={{
-					vertical: "bottom",
-					horizontal: "left",
-				}}
-			>
-				<RouterProvider router={router} />
-			</SnackbarProvider>
-		</ThemeProvider>
-	);
+	const { enqueueSnackbar } = useSnackbar();
+
+	const enqueueError = (err: any) => {
+		enqueueSnackbar({
+			message: String(err),
+			variant: "error",
+		});
+		throw err;
+	};
+
+	const handleSync = async (index: number) => {
+		const { promise, item } = SYNC_DETAILS[index];
+		const res = await promise(enqueueError).catch(
+			() => [false],
+		);
+		if (res.every((r) => r)) {
+			enqueueSnackbar({
+				message: `${item} is up to date`,
+				variant: "success",
+			});
+		}
+	};
+	useEffect(() => {
+		const initSync = async () => {
+			await handleSync(0);
+			await handleSync(1);
+			await handleSync(2);
+		};
+		initSync();
+	}, []);
+
+	return <RouterProvider router={router} />;
 };
