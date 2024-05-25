@@ -1,6 +1,5 @@
 import { invoke } from "@tauri-apps/api";
 import { App } from "octokit";
-
 import {
 	RepoIssueCommentSchema,
 	RepoIssueSchema,
@@ -44,53 +43,54 @@ export const getRepo = async (
 
 export const getRepos = async () => {
 	const octokit = await getOctokit();
-
 	const pages = await octokit.paginate(
-		"GET /user/repos",
+		"GET /installation/repositories",
 	);
-	const req = pages.map(
-		async ({
-			name,
-			full_name,
-			topics,
-			created_at,
-			updated_at,
-			description,
+
+	const repos: Record<string, RepoSchema> = {};
+
+	pages.map(
+		({
 			id,
 			html_url,
 			homepage,
 			pushed_at,
+			name,
+			full_name,
+			description,
+			topics,
+			created_at,
+			updated_at,
 			archived: is_archived,
 			private: is_private,
-		}) => ({
-			id,
-			html_url,
-			homepage,
-			pushed_at,
-			name,
-			full_name,
-			description,
-			topics,
-			created_at,
-			updated_at,
-			is_archived,
-			is_private,
-			readme: await getRepoReadMe(
+		}) => {
+			repos[full_name] = {
+				id,
+				html_url,
+				homepage,
+				pushed_at,
+				name,
 				full_name,
-			).catch((err) => {
-				if (err.status === 404) {
-					return undefined;
-				}
-				throw err;
-			}),
-		}),
+				description,
+				topics,
+				created_at,
+				updated_at,
+				is_archived,
+				is_private,
+				readme: "",
+			};
+		},
 	);
-
-	const repos: RepoSchema[] = await Promise.all(
-		req,
+	const reqs = Object.keys(repos).map(
+		async (fullName) => {
+			const readme = await getRepoReadMe(
+				fullName,
+			);
+			repos[fullName].readme = readme;
+		},
 	);
-
-	return repos;
+	Promise.all(reqs);
+	return Object.values(repos);
 };
 
 const getRepoReadMe = async (
