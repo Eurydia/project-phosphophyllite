@@ -14,17 +14,17 @@ export const SYNC_DETAILS: {
 	) => Promise<boolean[]>;
 }[] = [
 	{
-		item: "Repsitories",
+		item: "Repsitory",
 		promise: (onFailure) =>
 			syncCachedRepos(onFailure),
 	},
 	{
-		item: "Issues",
+		item: "Issue",
 		promise: (onFailure) =>
 			syncCachedRepoIssues(onFailure),
 	},
 	{
-		item: "Comments",
+		item: "Comment",
 		promise: (onFailure) =>
 			syncCachedRepoIssueComments(onFailure),
 	},

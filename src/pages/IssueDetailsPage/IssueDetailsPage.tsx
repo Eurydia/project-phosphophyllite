@@ -120,7 +120,7 @@ export const IssueDetailsPage: FC = () => {
 	const { issue, comments } =
 		useLoaderData() as LoaderData;
 
-	const path = `~/Repositories/${issue.repo_full_name}/Issues/${issue.issue_number}`;
+	const path = `~/${issue.repo_full_name}/Issues/${issue.issue_number}`;
 
 	return (
 		<MainView location={path}>

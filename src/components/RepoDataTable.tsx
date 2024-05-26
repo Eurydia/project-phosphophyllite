@@ -234,7 +234,7 @@ const StyledToolbar: FC<StyledToolbarProps> = (
 			query[key] = value;
 		}
 		submit(query, {
-			action: "./",
+			action: "/",
 			method: "get",
 		});
 	};

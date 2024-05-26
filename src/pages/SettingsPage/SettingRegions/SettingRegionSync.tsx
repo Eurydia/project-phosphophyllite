@@ -32,16 +32,16 @@ export const SettingRegionSync: FC = () => {
 			return next;
 		});
 
-		const { promise, item } = SYNC_DETAILS[index];
-		const res = await promise(enqueueError).catch(
-			() => {
-				return [false];
-			},
-		);
-
-		if (res.every((r) => r)) {
+		const { promise, item: item } =
+			SYNC_DETAILS[index];
+		const res = await promise(enqueueError)
+			.then((resp) => resp.every((r) => r))
+			.catch(() => {
+				return false;
+			});
+		if (res) {
 			enqueueSnackbar({
-				message: `${item} is up to date.`,
+				message: `${item} data is up to date.`,
 				variant: "success",
 			});
 		}
@@ -64,30 +64,32 @@ export const SettingRegionSync: FC = () => {
 				</ListSubheader>
 			}
 		>
-			{SYNC_DETAILS.map(({ item }, index) => (
-				<WrappableListItem
-					key={item}
-					primary={item}
-				>
-					<Button
-						fullWidth
-						disableElevation
-						disabled={syncing[index]}
-						size="small"
-						variant="contained"
-						onClick={() => handleSync(index)}
+			{SYNC_DETAILS.map(
+				({ item: item }, index) => (
+					<WrappableListItem
+						key={item}
+						primary={item}
 					>
-						{syncing[index] ? (
-							<CircularProgress
-								disableShrink
-								size={24}
-							/>
-						) : (
-							`Update ${item}`
-						)}
-					</Button>
-				</WrappableListItem>
-			))}
+						<Button
+							fullWidth
+							disableElevation
+							disabled={syncing[index]}
+							size="small"
+							variant="contained"
+							onClick={() => handleSync(index)}
+						>
+							{syncing[index] ? (
+								<CircularProgress
+									disableShrink
+									size={24}
+								/>
+							) : (
+								`Update ${item}`
+							)}
+						</Button>
+					</WrappableListItem>
+				),
+			)}
 		</List>
 	);
 };

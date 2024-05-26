@@ -59,7 +59,7 @@ const COLUMN_DEFINITION: HeadCell[] = [
 		render: (issue) => (
 			<Typography
 				component={Link}
-				to={`/repositories/${issue.repo_full_name}/issues/${issue.issue_number}`}
+				to={`/${issue.repo_full_name}/issues/${issue.issue_number}`}
 			>
 				{issue.title}
 			</Typography>
@@ -71,7 +71,7 @@ const COLUMN_DEFINITION: HeadCell[] = [
 		render: (issue) => (
 			<Typography
 				component={Link}
-				to={`/repositories/${issue.repo_full_name}`}
+				to={`/${issue.repo_full_name}`}
 			>
 				{issue.repo_full_name}
 			</Typography>

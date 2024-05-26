@@ -1,31 +1,18 @@
 import { LoaderFunction } from "react-router";
-import { filterIssues } from "~core/filtering";
-import {
-	getCachedRepo,
-	getCachedRepoIssues,
-} from "~database/cached";
-import {
-	getIssueFilterPrefOwnerType,
-	getIssueFilterPrefState,
-} from "~database/preferences";
-import { GenericSelectOption } from "~types/generics";
-import {
-	RepoIssueSchema,
-	RepoSchema,
-} from "~types/schemas";
+import { getCachedRepo } from "~database/cached";
+import { RepoSchema } from "~types/schemas";
 
 export type LoaderData = {
 	repo: RepoSchema;
-	issues: RepoIssueSchema[];
-	title: string;
-	ownerType: string;
-	repoFullNames: string[];
-	repoOptions: GenericSelectOption<string>[];
-	state: string;
+	// issues: RepoIssueSchema[];
+	// title: string;
+	// ownerType: string;
+	// repoFullNames: string[];
+	// repoOptions: GenericSelectOption<string>[];
+	// state: string;
 };
 export const loader: LoaderFunction = async ({
 	params,
-	request,
 }) => {
 	const owner = params.owner;
 	const repoName = params.repo;
@@ -47,47 +34,15 @@ export const loader: LoaderFunction = async ({
 			statusText: "Repository not found in cache",
 		});
 	}
-	document.title = repo.name;
 
-	const searchParams = new URL(request.url)
-		.searchParams;
-	const title = searchParams.get("title") || "";
-	const ownerType =
-		searchParams.get("ownerType") ||
-		getIssueFilterPrefOwnerType();
-	const state =
-		searchParams.get("state") ||
-		getIssueFilterPrefState();
-
-	let issues = await getCachedRepoIssues(
-		repo.full_name,
-	);
-	const repoFullNames: string[] = [
-		repo.full_name,
-	];
-	issues = filterIssues(
-		issues,
-		title,
-		ownerType,
-		repoFullNames,
-		state,
-	);
-
-	const repoOptions: GenericSelectOption<string>[] =
-		[
-			{
-				label: repo.full_name,
-				value: repo.full_name,
-			},
-		];
 	const loaderData: LoaderData = {
 		repo,
-		issues,
-		title,
-		ownerType,
-		repoFullNames,
-		state,
-		repoOptions,
+		// issues,
+		// title,
+		// ownerType,
+		// repoFullNames,
+		// state,
+		// repoOptions,
 	};
 
 	return loaderData;

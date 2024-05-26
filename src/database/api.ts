@@ -86,6 +86,7 @@ export const getRepos = async () => {
 			const readme = await getRepoReadMe(
 				fullName,
 			);
+			console.log(readme);
 			repos[fullName].readme = readme;
 		},
 	);
@@ -96,16 +97,16 @@ export const getRepos = async () => {
 const getRepoReadMe = async (
 	fullName: string,
 ) => {
-	const [owner, repo] = fullName.split("/");
+	const [owner, repo, ..._] = fullName.split("/");
 	const octokit = await getOctokit();
-	const res = await octokit.request(
-		"GET /repos/{owner}/{repo}/readme",
-		{
+	const content = await octokit
+		.request("GET /repos/{owner}/{repo}/readme", {
 			owner,
 			repo,
-		},
-	);
-	return res.data.content;
+		})
+		.then((res) => res.data.content)
+		.catch(() => undefined);
+	return content;
 };
 
 export const getRepoIssues = async (

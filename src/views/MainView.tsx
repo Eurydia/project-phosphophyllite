@@ -1,8 +1,10 @@
-import { ListRounded } from "@mui/icons-material";
+import {
+	ChevronLeft,
+	ListRounded,
+} from "@mui/icons-material";
 import {
 	AppBar,
 	Box,
-	Divider,
 	Drawer,
 	IconButton,
 	List,
@@ -40,12 +42,6 @@ const NAV_DEFINITION: {
 	},
 	{ label: "Settings", path: "/settings" },
 ];
-
-// const StyledContentBox = styled(Box)(
-// 	({ theme }) => ({
-
-// 	}),
-// );
 
 type MainViewProps = {
 	location: string;
@@ -104,8 +100,11 @@ export const MainView: FC<MainViewProps> = (
 			<AppBar
 				ref={appBarRef}
 				elevation={0}
-				variant="elevation"
+				variant="outlined"
 				sx={{
+					borderTopWidth: "0px",
+					borderRightWidth: "0px",
+					borderLeftWidth: "0px",
 					position: "relative",
 					zIndex: ({ zIndex }) =>
 						zIndex.drawer + 1,
@@ -131,16 +130,19 @@ export const MainView: FC<MainViewProps> = (
 					</IconButton>
 					<Box
 						alignItems="center"
-						justifyContent="center"
+						justifyContent="space-between"
+						display="flex"
+						flexDirection="row"
+						width="100%"
 					>
+						<IconButton>
+							<ChevronLeft />
+						</IconButton>
 						<StyledBreadcrumbs path={location} />
+						<div />
 					</Box>
 					<div />
 				</Toolbar>
-				<Divider
-					flexItem
-					variant="fullWidth"
-				/>
 			</AppBar>
 			<Stack direction="row">
 				<Drawer

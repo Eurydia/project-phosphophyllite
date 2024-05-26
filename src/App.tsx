@@ -1,5 +1,5 @@
 import { useSnackbar } from "notistack";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import {
 	RouterProvider,
 	createBrowserRouter,
@@ -44,19 +44,20 @@ const router = createBrowserRouter(
 		},
 		{
 			path: "/repositories/:owner",
-			loader: ({ params }) =>
-				redirect(
-					`/repositories/?name=${params.owner}`,
-				),
+			loader: ({ params }) => {
+				return redirect(
+					`/repositories?name=${params.owner}`,
+				);
+			},
 		},
 		{
 			path: "/repositories/:owner/:repo",
-			element: <RepoDetailsPage tab={0} />,
+			element: <RepoDetailsPage />,
 			loader: loaderRepoDetailsPage,
 		},
 		{
 			path: "/repositories/:owner/:repo/issues",
-			element: <RepoDetailsPage tab={1} />,
+			element: <RepoIssueListPage />,
 			loader: loaderRepoDetailsPage,
 		},
 		{
@@ -92,24 +93,24 @@ export const App: FC = () => {
 
 	const handleSync = async (index: number) => {
 		const { promise, item } = SYNC_DETAILS[index];
-		const res = await promise(enqueueError).catch(
-			() => [false],
-		);
-		if (res.every((r) => r)) {
+		const res = await promise(enqueueError)
+			.then((resp) => resp.every((r) => r))
+			.catch(() => false);
+		if (res) {
 			enqueueSnackbar({
-				message: `${item} is up to date`,
+				message: `${item} data is up to date`,
 				variant: "success",
 			});
 		}
 	};
-	useEffect(() => {
-		const initSync = async () => {
-			await handleSync(0);
-			await handleSync(1);
-			await handleSync(2);
-		};
-		initSync();
-	}, []);
+	// useEffect(() => {
+	// 	const initSync = async () => {
+	// 		await handleSync(0);
+	// 		await handleSync(1);
+	// 		await handleSync(2);
+	// 	};
+	// 	initSync();
+	// }, []);
 
 	return <RouterProvider router={router} />;
 };

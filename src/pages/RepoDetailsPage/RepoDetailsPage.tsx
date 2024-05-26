@@ -1,5 +1,5 @@
 import {
-	Box,
+	AppBar,
 	Container,
 	Divider,
 	List,
@@ -13,7 +13,6 @@ import { Buffer } from "buffer";
 import { FC, ReactNode } from "react";
 import { useLoaderData } from "react-router";
 import { useSubmit } from "react-router-dom";
-import { IssueDataTable } from "~components/IssueDataTable";
 import { Markdown } from "~components/Markdown";
 import { toTimeStamp } from "~core/time";
 import { RepoSchema } from "~types/schemas";
@@ -51,15 +50,7 @@ export const RepoDetailsPage: FC<
 	RepoDetailsPageProps
 > = (props) => {
 	const { tab } = props;
-	const {
-		repoOptions,
-		repo,
-		issues,
-		title,
-		ownerType,
-		repoFullNames,
-		state,
-	} = useLoaderData() as LoaderData;
+	const { repo } = useLoaderData() as LoaderData;
 
 	const submit = useSubmit();
 	const handleTabChange = (
@@ -81,62 +72,62 @@ export const RepoDetailsPage: FC<
 		).toString();
 	}
 
-	let path = `~/Repositories/${repo.full_name}`;
+	let path = `~/repositories/${repo.full_name}`;
 	if (tab === 1) {
-		path = `${path}/Issues`;
+		path = `/${path}/issues`;
 	}
 
 	return (
 		<MainView location={path}>
-			<Toolbar
-				disableGutters
-				variant="dense"
-			>
-				<Tabs
-					value={tab}
-					onChange={handleTabChange}
+			<AppBar>
+				<Toolbar
+					disableGutters
+					variant="dense"
 				>
-					<Tab
-						value={0}
-						label="Readme"
-					/>
-					<Tab
-						value={1}
-						label="Issues"
-					/>
-				</Tabs>
-			</Toolbar>
-			<Divider />
-			{tab !== 1 ? (
-				<Container
-					maxWidth="sm"
-					sx={{ paddingY: 4 }}
-				>
-					<Markdown
-						emptyText="This repository does not contain a readme."
-						markdownContent={decodedReadme}
-					/>
-					<List
-						dense
-						disablePadding
+					<Tabs
+						value={tab}
+						onChange={handleTabChange}
 					>
-						{REPO_METADATA_DEFINITIONS.map(
-							({ label, render }) => (
-								<ListItem
-									key={label}
-									disableGutters
-								>
-									<ListItemText
-										secondary={render(repo)}
-										primary={label}
-									/>
-								</ListItem>
-							),
-						)}
-					</List>
-				</Container>
-			) : (
-				<Box padding={2}>
+						<Tab
+							value={0}
+							label="Details"
+						/>
+						<Tab
+							value={1}
+							label="Issues"
+						/>
+					</Tabs>
+				</Toolbar>
+			</AppBar>
+			<Divider />
+			<Container
+				maxWidth="sm"
+				sx={{ paddingY: 4 }}
+			>
+				<Markdown
+					emptyText="This repository does not contain a readme."
+					markdownContent={decodedReadme}
+				/>
+				<List
+					dense
+					disablePadding
+				>
+					{REPO_METADATA_DEFINITIONS.map(
+						({ label, render }) => (
+							<ListItem
+								key={label}
+								disableGutters
+							>
+								<ListItemText
+									secondary={render(repo)}
+									primary={label}
+								/>
+							</ListItem>
+						),
+					)}
+				</List>
+			</Container>
+			{/* <Box padding={2}>
 					<IssueDataTable
 						repoOptions={repoOptions}
 						issues={issues}
@@ -145,8 +136,7 @@ export const RepoDetailsPage: FC<
 						repoFullNames={repoFullNames}
 						state={state}
 					/>
-				</Box>
-			)}
+				</Box> */}
 		</MainView>
 	);
 };

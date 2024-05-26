@@ -25,7 +25,7 @@ const OverviewCard: FC<OverviewCardProps> = (
 			square
 			variant="outlined"
 			sx={{
-				minWidth: "150px",
+				minWidth: "175px",
 				flexGrow: 1,
 			}}
 		>
@@ -51,20 +51,22 @@ export const HomePage: FC = () => {
 		recentIssues,
 	} = useLoaderData() as LoaderData;
 
-	const openIssuesSubheader =
-		closedIssues > 1
-			? "Closed issues"
-			: "Closed issue";
 	const closedIssuesSubheader =
-		openIssues > 1 ? "Open issues" : "Open issue";
+		closedIssues === 1
+			? "Closed issue"
+			: "Closed issues";
+	const openIssuesSubheader =
+		openIssues === 1
+			? "Open issue"
+			: "Open issues";
 	const activeReposSubheader =
-		activeRepos > 1
-			? "Active repositories"
-			: "Active repositoriy";
+		activeRepos === 1
+			? "Active repository"
+			: "Active repositories";
 	const archivedReposSubheader =
-		archivedRepos > 1
-			? "Archived repositories"
-			: "Archived repositoriy";
+		archivedRepos === 1
+			? "Archived repository"
+			: "Archived repositories";
 
 	return (
 		<MainView location="~">
@@ -78,8 +80,6 @@ export const HomePage: FC = () => {
 						display: "flex",
 						flexWrap: "wrap",
 						flexDirection: "row",
-						alignItems: "center",
-						justifyContent: "center",
 					}}
 				>
 					<OverviewCard
@@ -100,26 +100,26 @@ export const HomePage: FC = () => {
 					/>
 				</Box>
 				<Typography
-					fontSize="large"
+					fontSize="x-large"
 					fontWeight="bold"
 				>
 					Recent repositories
 				</Typography>
 				<RepoDataTable
+					disableFilter
 					repos={recentRepos}
 					orderBy="pushed_at"
-					disableFilter
 				/>
 				<Typography
-					fontSize="large"
+					fontSize="x-large"
 					fontWeight="bold"
 				>
 					Recent issues
 				</Typography>
 				<IssueDataTable
+					disableFilter
 					issues={recentIssues}
 					orderBy="updated_at"
-					disableFilter
 				/>
 			</Stack>
 		</MainView>
