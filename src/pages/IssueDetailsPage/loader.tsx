@@ -51,7 +51,6 @@ export const loader: LoaderFunction = async ({
 				"Issue does not exist or it is not cached.",
 		});
 	}
-	document.title = issue.title;
 	const loaderData: LoaderData = {
 		issue,
 		comments: await getCachedIssueComments(

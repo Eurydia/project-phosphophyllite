@@ -1,0 +1,1 @@
+export { RepoDataTable } from "./RepoDataTable";

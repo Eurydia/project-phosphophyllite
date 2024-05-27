@@ -1,3 +1,8 @@
+import {
+	RepoIssueSchema,
+	RepoSchema,
+} from "~types/schemas";
+
 export const orderByString = (
 	a: string | null | undefined,
 	b: string | null | undefined,
@@ -55,4 +60,88 @@ export const orderByNumber = (
 	// 	return -1;
 	// }
 	return b! - a!;
+};
+
+export const getIssueOrderingFn = (
+	property: keyof RepoIssueSchema,
+) => {
+	let orderFn:
+		| ((
+				a: RepoIssueSchema,
+				b: RepoIssueSchema,
+		  ) => number)
+		| undefined;
+	switch (property) {
+		case "issue_number":
+			orderFn = (a, b) => {
+				return orderByNumber(
+					a[property] as
+						| number
+						| undefined
+						| null,
+					b[property] as
+						| number
+						| undefined
+						| null,
+				);
+			};
+			break;
+		case "title":
+		case "repo_full_name":
+		case "owner_type":
+		case "state":
+		case "created_at":
+		case "updated_at":
+			orderFn = (a, b) => {
+				return orderByString(
+					a[property] as
+						| string
+						| undefined
+						| null,
+					b[property] as
+						| string
+						| undefined
+						| null,
+				);
+			};
+	}
+	return orderFn;
+};
+
+export const getRepoOrderingFn = (
+	property: keyof RepoSchema,
+):
+	| ((a: RepoSchema, b: RepoSchema) => number)
+	| undefined => {
+	switch (property) {
+		case "is_archived":
+		case "is_private":
+			return (a, b) =>
+				orderByBoolean(
+					a[property] as
+						| boolean
+						| undefined
+						| null,
+					b[property] as
+						| boolean
+						| undefined
+						| null,
+				);
+		case "full_name":
+		case "pushed_at":
+		case "created_at":
+		case "updated_at":
+			return (a, b) =>
+				orderByString(
+					a[property] as
+						| string
+						| undefined
+						| null,
+					b[property] as
+						| string
+						| undefined
+						| null,
+				);
+	}
+	return undefined;
 };
