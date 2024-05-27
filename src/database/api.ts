@@ -77,20 +77,19 @@ export const getRepos = async () => {
 				updated_at,
 				is_archived,
 				is_private,
-				readme: "",
+				readme: undefined,
 			};
 		},
 	);
-	const reqs = Object.keys(repos).map(
+	const readmeReqs = Object.keys(repos).map(
 		async (fullName) => {
 			const readme = await getRepoReadMe(
 				fullName,
 			);
-			console.log(readme);
 			repos[fullName].readme = readme;
 		},
 	);
-	Promise.all(reqs);
+	await Promise.all(readmeReqs);
 	return Object.values(repos);
 };
 

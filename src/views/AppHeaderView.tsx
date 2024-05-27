@@ -1,7 +1,6 @@
-import { SettingsRounded } from "@mui/icons-material";
 import {
 	Box,
-	IconButton,
+	Divider,
 	Toolbar,
 } from "@mui/material";
 import {
@@ -17,11 +16,12 @@ import { StyledAppBar } from "~components/StyledAppBar";
 
 type MainViewProps = {
 	children: ReactNode;
+	nav: ReactNode;
 };
-export const MainView: FC<MainViewProps> = (
+export const AppHeaderView: FC<MainViewProps> = (
 	props,
 ) => {
-	const { children } = props;
+	const { children, nav } = props;
 
 	const submit = useSubmit();
 	const appBarRef = useRef<HTMLDivElement | null>(
@@ -42,36 +42,37 @@ export const MainView: FC<MainViewProps> = (
 		setContentHeight(`calc(100svh - ${height})`);
 	}, [appBarRef]);
 
-	const toSettings = () => {
-		submit(
-			{},
-			{ action: "/Settings", method: "get" },
-		);
-	};
-
 	return (
 		<Box>
 			<StyledAppBar
+				elevation={0}
 				ref={appBarRef}
-				variant="outlined"
 			>
 				<Toolbar
 					disableGutters
 					variant="dense"
 				>
 					<AppHeader />
-					<IconButton
-						color="inherit"
-						size="small"
-						onClick={toSettings}
-					>
-						<SettingsRounded fontSize="small" />
-					</IconButton>
 				</Toolbar>
+				<Divider
+					flexItem
+					variant="fullWidth"
+				/>
+				<Toolbar
+					disableGutters
+					variant="dense"
+				>
+					{nav}
+				</Toolbar>
+				<Divider
+					flexItem
+					variant="fullWidth"
+				/>
 			</StyledAppBar>
 			<Box
-				height={contentHeight}
 				width="100%"
+				overflow="auto"
+				height={contentHeight}
 			>
 				{children}
 			</Box>

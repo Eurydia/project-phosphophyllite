@@ -4,17 +4,12 @@ import {
 	openDB,
 } from "idb";
 import {
-	CollectionSchema,
 	RepoIssueCommentSchema,
 	RepoIssueSchema,
 	RepoSchema,
 } from "~types/schemas";
 
 interface Database extends DBSchema {
-	collections: {
-		key: string;
-		value: CollectionSchema;
-	};
 	repos: {
 		key: string;
 		value: RepoSchema;
@@ -85,13 +80,6 @@ const db1 = (db: IDBPDatabase<Database>) => {
 	);
 };
 
-const db2 = (db: IDBPDatabase<Database>) => {
-	db.createObjectStore("collections", {
-		keyPath: "name",
-		autoIncrement: false,
-	});
-};
-
 export const dbPromise = openDB<Database>(
 	"primary",
 	2,
@@ -99,9 +87,6 @@ export const dbPromise = openDB<Database>(
 		upgrade(db, oldVersion) {
 			if (oldVersion < 1) {
 				db1(db);
-			}
-			if (oldVersion < 2) {
-				db2(db);
 			}
 		},
 	},

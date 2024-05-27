@@ -1,22 +1,20 @@
 import {
-	ClearRounded,
 	ExpandLessRounded,
 	ExpandMoreRounded,
 	FilterListRounded,
 } from "@mui/icons-material";
 import {
+	Box,
 	Collapse,
-	IconButton,
 	List,
-	SelectChangeEvent,
 	Stack,
 	Toolbar,
 	Typography,
 } from "@mui/material";
 import { FC, useState } from "react";
-import { useSubmit } from "react-router-dom";
-import { Fragment } from "react/jsx-runtime";
+import { Form } from "react-router-dom";
 import { AdaptiveListItem } from "~components/AdaptiveListItem";
+import { StyledIconButton } from "~components/StyledIconButton";
 import { StyledSelect } from "~components/StyledSelect";
 import { StyledSelectMultiple } from "~components/StyledSelectMultiple";
 import { StyledTextField } from "~components/StyledTextField";
@@ -41,61 +39,10 @@ export const StyledToolbar: FC<
 		ownerType,
 		repoFullNames,
 		state,
-		title: loadedTitle,
+		title,
 		itemCount,
 		repoOptions,
 	} = props;
-
-	const submit = useSubmit();
-	const [title, setTitle] = useState(loadedTitle);
-	const handleSubmit = (
-		key: string | undefined = undefined,
-		value: string | undefined = undefined,
-	) => {
-		const query: Record<
-			string,
-			string | string[]
-		> = {
-			title,
-			state,
-			ownerType,
-			repoFullNames,
-		};
-		if (
-			key !== undefined &&
-			value !== undefined
-		) {
-			query[key] = value;
-		}
-		submit(query, {
-			action: "./",
-			method: "get",
-		});
-	};
-	const handleOwnerTypeChange = (
-		event: SelectChangeEvent<string>,
-	) => {
-		const value = event.target.value;
-		handleSubmit("ownerType", value);
-	};
-	const handleStateChange = (
-		event: SelectChangeEvent<string>,
-	) => {
-		const value = event.target.value;
-		handleSubmit("state", value);
-	};
-	const handleRepoFullNamesChange = (
-		event: SelectChangeEvent<string[]>,
-	) => {
-		const value = event.target.value;
-		handleSubmit(
-			"repoFullNames",
-			value.toString(),
-		);
-	};
-	const handleRepoFullNamesReset = () => {
-		handleSubmit("repoFullNames", "");
-	};
 
 	const [filterOpen, setFilterOpen] =
 		useState(false);
@@ -103,12 +50,14 @@ export const StyledToolbar: FC<
 		setFilterOpen(!filterOpen);
 	};
 
-	let itemCountMsg = `Showing ${itemCount}`;
-	if (itemCount === 1) {
-		itemCountMsg = `${itemCountMsg} issue`;
-	} else {
-		itemCountMsg = `${itemCountMsg} issues`;
-	}
+	const renderRepoSelectValue = () => {
+		return `${repoFullNames.length} selected`;
+	};
+
+	const itemCountMsg =
+		itemCount === 1
+			? `Showing ${itemCount} issue`
+			: `Showing ${itemCount} issues`;
 
 	let expandIcon = filterOpen ? (
 		<ExpandLessRounded />
@@ -117,91 +66,70 @@ export const StyledToolbar: FC<
 	);
 
 	return (
-		<Fragment>
+		<Form>
 			<Toolbar
 				disableGutters
 				variant="dense"
-				sx={{
-					flexDirection: "row",
-					width: "100%",
-					flexWrap: "wrap",
-					gap: 1,
-					alignItems: "center",
-					justifyContent: "space-between",
-				}}
 			>
-				<Stack
+				<Box
+					gap={2}
+					width="100%"
+					display="flex"
+					flexWrap="wrap"
+					flexDirection="row"
 					alignItems="center"
-					direction="row"
 				>
-					<StyledTextField
-						autoComplete="off"
-						placeholder="Search issue"
-						size="small"
-						value={title}
-						onChange={setTitle}
-						onEnter={handleSubmit}
-					/>
-					<IconButton
-						size="small"
-						onClick={() => handleSubmit()}
+					<Stack
+						flexGrow={1}
+						direction="row"
+						alignItems="center"
 					>
-						<FilterListRounded />
-					</IconButton>
-					<IconButton
-						size="small"
-						onClick={toggleFilter}
-					>
-						{expandIcon}
-					</IconButton>
-				</Stack>
-				<Typography>{itemCountMsg}</Typography>
+						<StyledTextField
+							name="title"
+							placeholder="Search issue"
+							defaultValue={title}
+						/>
+						<StyledIconButton submit>
+							<FilterListRounded />
+						</StyledIconButton>
+						<StyledIconButton
+							onClick={toggleFilter}
+						>
+							{expandIcon}
+						</StyledIconButton>
+					</Stack>
+					<Typography>{itemCountMsg}</Typography>
+				</Box>
 			</Toolbar>
 			<Collapse in={filterOpen}>
 				<List disablePadding>
 					<AdaptiveListItem text="Repositories">
 						<StyledSelectMultiple
-							fullWidth
-							displayEmpty
-							renderValue={() =>
-								`${repoFullNames.length} selected`
-							}
-							size="small"
-							value={repoFullNames}
+							name="repoFullNames"
 							options={repoOptions}
-							onChange={handleRepoFullNamesChange}
+							autoComplete="off"
+							defaultValue={repoFullNames}
+							renderValue={renderRepoSelectValue}
 						/>
-						<IconButton
-							size="small"
-							onClick={handleRepoFullNamesReset}
-						>
-							<ClearRounded />
-						</IconButton>
 					</AdaptiveListItem>
 					<AdaptiveListItem text="State">
 						<StyledSelect
-							fullWidth
-							displayEmpty
-							size="small"
-							value={state}
+							name="state"
+							defaultValue={state}
 							options={ISSUE_FILTER_STATE_OPTIONS}
-							onChange={handleStateChange}
 						/>
 					</AdaptiveListItem>
 					<AdaptiveListItem text="Owner type">
 						<StyledSelect
-							fullWidth
-							displayEmpty
-							size="small"
-							value={ownerType}
+							name="ownerType"
+							defaultValue={ownerType}
 							options={
 								ISSUE_FILTER_OWNER_TYPE_OPTIONS
 							}
-							onChange={handleOwnerTypeChange}
 						/>
 					</AdaptiveListItem>
 				</List>
 			</Collapse>
-		</Fragment>
+		</Form>
 	);
 };

@@ -6,10 +6,11 @@ import {
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { FC, useState } from "react";
+import { AdaptiveListItem } from "~components/AdaptiveListItem";
 import { SYNC_DETAILS } from "~constants";
-import { WrappableListItem } from "./WrappableListItem";
+import { SettingNavView } from "~views/SettingsNavView";
 
-export const SettingRegionSync: FC = () => {
+export const SettingPage: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
 	const [syncing, setSyncing] = useState([
 		false,
@@ -32,8 +33,7 @@ export const SettingRegionSync: FC = () => {
 			return next;
 		});
 
-		const { promise, item: item } =
-			SYNC_DETAILS[index];
+		const { promise, item } = SYNC_DETAILS[index];
 		const res = await promise(enqueueError)
 			.then((resp) => resp.every((r) => r))
 			.catch(() => {
@@ -51,24 +51,36 @@ export const SettingRegionSync: FC = () => {
 			return next;
 		});
 	};
+	const renderButtonContent = (index: number) => {
+		if (syncing[index]) {
+			return (
+				<CircularProgress
+					disableShrink
+					size={24}
+				/>
+			);
+		}
+		const { item } = SYNC_DETAILS[index];
+		return `Update ${item}`;
+	};
 
 	return (
-		<List
-			disablePadding
-			subheader={
-				<ListSubheader
-					disableGutters
-					disableSticky
-				>
-					Synchronization
-				</ListSubheader>
-			}
-		>
-			{SYNC_DETAILS.map(
-				({ item: item }, index) => (
-					<WrappableListItem
+		<SettingNavView tab={0}>
+			<List
+				disablePadding
+				subheader={
+					<ListSubheader
+						disableGutters
+						disableSticky
+					>
+						Synchronization
+					</ListSubheader>
+				}
+			>
+				{SYNC_DETAILS.map(({ item }, index) => (
+					<AdaptiveListItem
 						key={item}
-						primary={item}
+						text={item}
 					>
 						<Button
 							fullWidth
@@ -77,19 +89,13 @@ export const SettingRegionSync: FC = () => {
 							size="small"
 							variant="contained"
 							onClick={() => handleSync(index)}
-						>
-							{syncing[index] ? (
-								<CircularProgress
-									disableShrink
-									size={24}
-								/>
-							) : (
-								`Update ${item}`
+							children={renderButtonContent(
+								index,
 							)}
-						</Button>
-					</WrappableListItem>
-				),
-			)}
-		</List>
+						/>
+					</AdaptiveListItem>
+				))}
+			</List>
+		</SettingNavView>
 	);
 };

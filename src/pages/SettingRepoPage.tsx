@@ -4,13 +4,6 @@ import {
 	SelectChangeEvent,
 } from "@mui/material";
 import { FC, useState } from "react";
-import { StyledSelect } from "~components/StyledSelect";
-import { StyledTextField } from "~components/StyledTextField";
-import {
-	REPO_FILTER_STATUS_OPTIONS,
-	REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS,
-	REPO_FILTER_VISIBILITY_OPTIONS,
-} from "~constants";
 import {
 	getRepoFilterPrefPropertyPrefix,
 	getRepoFilterPrefStatus,
@@ -21,7 +14,6 @@ import {
 	setRepoFilterPrefTopicMatchStrategy,
 	setRepoFilterPrefVisibility,
 } from "~database/preferences";
-import { WrappableListItem } from "./WrappableListItem";
 
 const DEF_MODE =
 	getRepoFilterPrefTopicMatchStrategy();
@@ -79,7 +71,7 @@ export const SettingRegionRepoFilterPref: FC =
 					</ListSubheader>
 				}
 			>
-				<WrappableListItem
+				{/* <WrappableListItem
 					primary="Prefix"
 					secondary="Topics start with the prefix are treated as special properties."
 				>
@@ -126,7 +118,7 @@ export const SettingRegionRepoFilterPref: FC =
 						options={REPO_FILTER_STATUS_OPTIONS}
 						onChange={handleStatusChange}
 					/>
-				</WrappableListItem>
+				</WrappableListItem> */}
 			</List>
 		);
 	};

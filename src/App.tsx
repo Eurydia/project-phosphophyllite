@@ -29,7 +29,6 @@ import {
 	RepoListPage,
 	loaderRepoListPage,
 } from "~pages/RepoListPage";
-import { SettingsPage } from "~pages/SettingsPage";
 
 const router = createBrowserRouter(
 	[
@@ -72,11 +71,18 @@ const router = createBrowserRouter(
 			element: <IssueDetailsPage />,
 			loader: loaderIssueDetailsPage,
 		},
-
-		{
-			path: "/settings",
-			element: <SettingsPage />,
-		},
+		// {
+		// 	path: "/settings",
+		// 	element: <SettingPage />,
+		// },
+		// {
+		// 	path: "/settings/repo",
+		// 	element: <SettingsPage />,
+		// },
+		// {
+		// 	path: "/settings/issue",
+		// 	element: <SettingsPage />,
+		// },
 	],
 	{
 		basename: "/project-phosphophyllite",

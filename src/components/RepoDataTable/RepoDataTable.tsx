@@ -145,6 +145,7 @@ export const RepoDataTable: React.FC<
 					propertyOptions={propertyOptions}
 				/>
 			)}
+			<Typography></Typography>
 			<StyledDataTable
 				items={repos}
 				orderingFn={getRepoOrderingFn}

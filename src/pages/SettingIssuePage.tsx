@@ -4,18 +4,12 @@ import {
 	SelectChangeEvent,
 } from "@mui/material";
 import { FC, useState } from "react";
-import { StyledSelect } from "~components/StyledSelect";
-import {
-	ISSUE_FILTER_OWNER_TYPE_OPTIONS,
-	ISSUE_FILTER_STATE_OPTIONS,
-} from "~constants";
 import {
 	getIssueFilterPrefOwnerType,
 	getIssueFilterPrefState,
 	setIssueFilterPrefOwnerType,
 	setIssueFilterPrefState,
 } from "~database/preferences";
-import { WrappableListItem } from "./WrappableListItem";
 
 export const SettingRegionIssueFilterPref: FC =
 	() => {
@@ -53,7 +47,7 @@ export const SettingRegionIssueFilterPref: FC =
 					</ListSubheader>
 				}
 			>
-				<WrappableListItem primary="Owner type">
+				{/* <WrappableListItem primary="Owner type">
 					<StyledSelect
 						fullWidth
 						displayEmpty
@@ -74,7 +68,7 @@ export const SettingRegionIssueFilterPref: FC =
 						options={ISSUE_FILTER_STATE_OPTIONS}
 						onChange={handleStateChange}
 					/>
-				</WrappableListItem>
+				</WrappableListItem> */}
 			</List>
 		);
 	};

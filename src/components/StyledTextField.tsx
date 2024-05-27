@@ -45,6 +45,8 @@ export const StyledTextField: FC<
 	return (
 		<TextField
 			{...rest}
+			fullWidth
+			size="small"
 			onKeyUp={handleKeyUp}
 			onChange={handleChange}
 		/>

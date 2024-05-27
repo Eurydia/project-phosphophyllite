@@ -16,26 +16,27 @@ export const StyledBreadcrumbs: FC<
 	const { palette } = useTheme();
 
 	const paths = path.normalize().split("/");
-	const _paths = paths
-		.filter((path) => path.trim().length > 0)
-		.map((path, index) => {
-			const targetPath =
-				"/" + paths.slice(1, index + 1).join("/");
-			return (
-				<Typography
-					key={targetPath}
-					component={Link}
-					to={targetPath}
-					sx={{
-						textDecoration: "none",
-						whiteSpace: "nowrap",
-						color: palette.text.secondary,
-					}}
-				>
-					{path}
-				</Typography>
-			);
-		});
+	const _paths = paths.filter(
+		(path) => path.trim().length > 0,
+	);
+	const crumbs = _paths.map((path, index) => {
+		const targetPath =
+			"/" + paths.slice(1, index + 1).join("/");
+		return (
+			<Typography
+				key={targetPath}
+				component={Link}
+				to={targetPath}
+				sx={{
+					textDecoration: "none",
+					whiteSpace: "nowrap",
+					color: palette.text.secondary,
+				}}
+			>
+				{path}
+			</Typography>
+		);
+	});
 
-	return <Breadcrumbs>{_paths}</Breadcrumbs>;
+	return <Breadcrumbs>{crumbs}</Breadcrumbs>;
 };

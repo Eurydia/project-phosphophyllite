@@ -5,7 +5,6 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import { useLoaderData } from "react-router";
-import { MainView } from "~views/MainView";
 import { LoaderData } from "./loader";
 
 import { Markdown } from "~components/Markdown";
@@ -14,6 +13,7 @@ import {
 	RepoIssueCommentSchema,
 	RepoIssueSchema,
 } from "~types/schemas";
+import { RepoDetailsNavView } from "~views/RepoDetailsNavView";
 
 type IssueMetaDataListProps = {
 	issue: RepoIssueSchema;
@@ -112,7 +112,7 @@ export const IssueDetailsPage: FC = () => {
 		useLoaderData() as LoaderData;
 
 	return (
-		<MainView>
+		<RepoDetailsNavView tab={1}>
 			<Container maxWidth="sm">
 				<Paper
 					variant="outlined"
@@ -142,6 +142,6 @@ export const IssueDetailsPage: FC = () => {
 					/>
 				))}
 			</Container>
-		</MainView>
+		</RepoDetailsNavView>
 	);
 };

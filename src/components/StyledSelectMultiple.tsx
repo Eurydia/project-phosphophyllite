@@ -1,7 +1,9 @@
+import { ArrowDropDownRounded } from "@mui/icons-material";
 import {
 	MenuItem,
 	Select,
 	SelectProps,
+	useTheme,
 } from "@mui/material";
 import { FC } from "react";
 import { GenericSelectOption } from "~types/generics";
@@ -17,6 +19,7 @@ export const StyledSelectMultiple: FC<
 > = (props) => {
 	const { options: loadedOptions, ...rest } =
 		props;
+	const { palette } = useTheme();
 
 	let options: GenericSelectOption<string>[] = [
 		{ label: "No option", value: "No option" },
@@ -29,16 +32,29 @@ export const StyledSelectMultiple: FC<
 		options = loadedOptions;
 		disableOptions = false;
 	}
+
+	const icon = () => {
+		return (
+			<ArrowDropDownRounded
+				fontSize="large"
+				htmlColor={palette.text.primary}
+			/>
+		);
+	};
 	return (
 		<Select
 			{...rest}
 			multiple
+			fullWidth
+			displayEmpty
+			size="small"
+			IconComponent={icon}
 		>
 			{options.map(({ value, label }, index) => (
 				<MenuItem
 					disableRipple
 					disabled={disableOptions}
-					key={`${value}-${index}`}
+					key={`option-${index}`}
 					value={value}
 				>
 					{label}
