@@ -25,7 +25,6 @@ export type LoaderData = {
 export const loader: LoaderFunction = async ({
 	request,
 }): Promise<LoaderData> => {
-	document.title = "repositories";
 	const cachedTopics = await getCachedTopics();
 	const topicOptions: GenericSelectOption<string>[] =
 		cachedTopics.map((topic) => {

@@ -1,0 +1,1 @@
+export { IssueDataTable } from "./IssueDataTable";

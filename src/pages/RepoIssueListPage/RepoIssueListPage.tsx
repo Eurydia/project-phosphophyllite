@@ -2,40 +2,39 @@ import { Box, Tab, Tabs } from "@mui/material";
 import { FC } from "react";
 import {
 	useLoaderData,
-	useSubmit,
-} from "react-router-dom";
+	useLocation,
+} from "react-router";
+import { useSubmit } from "react-router-dom";
 import { IssueDataTable } from "~components/IssueDataTable";
 import { MainView } from "~views/MainView";
 import { TabNavView } from "~views/TabNavView";
 import { LoaderData } from "./loader";
 
-export const IssueListPage: FC = () => {
+export const RepoIssueListPage: FC = () => {
 	const {
-		issues,
 		repoOptions,
+		issues,
 		title,
 		ownerType,
 		repoFullNames,
 		state,
 	} = useLoaderData() as LoaderData;
 
+	const { pathname } = useLocation();
 	const submit = useSubmit();
+
 	const handleTabChange = (
 		_: React.SyntheticEvent<Element, Event>,
 		value: number,
 	) => {
-		if (value === 2) {
+		if (value === 1) {
 			return;
 		}
-		const target =
-			value === 0 ? "/" : "/Repositories";
-		submit(
-			{},
-			{
-				action: target,
-				method: "get",
-			},
-		);
+		const paths = pathname
+			.split("/")
+			.slice(0, -1);
+		const target = paths.join("/");
+		submit({}, { action: target, method: "get" });
 	};
 
 	return (
@@ -43,22 +42,15 @@ export const IssueListPage: FC = () => {
 			<TabNavView
 				nav={
 					<Tabs
-						value={2}
+						value={1}
 						onChange={handleTabChange}
 					>
 						<Tab
-							disableRipple
 							value={0}
-							label="Overview"
+							label="Details"
 						/>
 						<Tab
-							disableRipple
 							value={1}
-							label="Repositories"
-						/>
-						<Tab
-							disableRipple
-							value={2}
 							label="Issues"
 						/>
 					</Tabs>
@@ -66,8 +58,8 @@ export const IssueListPage: FC = () => {
 			>
 				<Box padding={2}>
 					<IssueDataTable
-						issues={issues}
 						repoOptions={repoOptions}
+						issues={issues}
 						title={title}
 						ownerType={ownerType}
 						repoFullNames={repoFullNames}

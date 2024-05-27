@@ -49,9 +49,6 @@ const IssueMetaData: FC<
 			gap={0.5}
 			variant="subtitle1"
 			fontSize="small"
-			sx={{
-				fontStyle: "italic",
-			}}
 		>
 			{msg}
 		</Typography>
@@ -88,9 +85,6 @@ const IssueComment: FC<IssueCommentProps> = (
 				fontWeight="bold"
 				component="a"
 				href={comment.html_url}
-				sx={{
-					textDecoration: "none",
-				}}
 			>
 				Comment #{index}
 			</Typography>
@@ -100,17 +94,14 @@ const IssueComment: FC<IssueCommentProps> = (
 				flexWrap="wrap"
 				variant="subtitle1"
 				fontSize="small"
-				sx={{
-					fontStyle: "italic",
-				}}
 			>
 				{msg}
 			</Typography>
 			<Markdown
+				emptyText="This comment does not have a body or its body not is cached."
 				markdownContent={
 					comment.body ?? undefined
 				}
-				emptyText="This comment does not have a body or its body not is cached."
 			/>
 		</Paper>
 	);
@@ -120,19 +111,9 @@ export const IssueDetailsPage: FC = () => {
 	const { issue, comments } =
 		useLoaderData() as LoaderData;
 
-	const path = `~/${issue.repo_full_name}/Issues/${issue.issue_number}`;
-
 	return (
-		<MainView location={path}>
-			<Container
-				maxWidth="sm"
-				sx={{
-					display: "flex",
-					paddingY: 4,
-					gap: 2,
-					flexDirection: "column",
-				}}
-			>
+		<MainView>
+			<Container maxWidth="sm">
 				<Paper
 					variant="outlined"
 					sx={{ padding: 2 }}
@@ -142,9 +123,6 @@ export const IssueDetailsPage: FC = () => {
 						fontSize="x-large"
 						component="a"
 						href={issue.html_url}
-						sx={{
-							textDecoration: "none",
-						}}
 					>
 						{issue.title}
 					</Typography>

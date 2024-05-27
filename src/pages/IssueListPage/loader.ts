@@ -19,7 +19,6 @@ export type LoaderData = {
 export const loader: LoaderFunction = async ({
 	request,
 }): Promise<LoaderData> => {
-	document.title = "issues";
 	let issues = await getCachedIssues();
 
 	const uniqueRepoOptions = new Set(

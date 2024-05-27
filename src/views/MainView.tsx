@@ -1,17 +1,7 @@
+import { SettingsRounded } from "@mui/icons-material";
 import {
-	ChevronLeft,
-	ListRounded,
-} from "@mui/icons-material";
-import {
-	AppBar,
 	Box,
-	Drawer,
 	IconButton,
-	List,
-	ListItem,
-	ListItemButton,
-	ListItemText,
-	Stack,
 	Toolbar,
 } from "@mui/material";
 import {
@@ -22,50 +12,23 @@ import {
 	useState,
 } from "react";
 import { useSubmit } from "react-router-dom";
-import { StyledBreadcrumbs } from "~components/StyledBreadcrumbs";
-
-const NAV_DEFINITION: {
-	label: string;
-	path: string;
-}[] = [
-	{
-		label: "~",
-		path: "//",
-	},
-	{
-		label: "Repositories",
-		path: "/repositories",
-	},
-	{
-		label: "Issues",
-		path: "/issues",
-	},
-	{ label: "Settings", path: "/settings" },
-];
+import { AppHeader } from "~components/AppHeader";
+import { StyledAppBar } from "~components/StyledAppBar";
 
 type MainViewProps = {
-	location: string;
 	children: ReactNode;
-	// seconadaryAction?: ReactNode;
 };
 export const MainView: FC<MainViewProps> = (
 	props,
 ) => {
-	const { location, children } = props;
+	const { children } = props;
 
 	const submit = useSubmit();
 	const appBarRef = useRef<HTMLDivElement | null>(
 		null,
 	);
-	const [appBarHeight, setAppBarHeight] =
-		useState("0px");
 	const [contentHeight, setContentHeight] =
 		useState("0vh");
-	const [navOpen, setNavOpen] = useState(false);
-	const toggleNav = () => {
-		setNavOpen(!navOpen);
-	};
-
 	useEffect(() => {
 		if (
 			appBarRef === null ||
@@ -76,125 +39,42 @@ export const MainView: FC<MainViewProps> = (
 		const height =
 			appBarRef.current.getBoundingClientRect()
 				.height + "px";
-		setAppBarHeight(height);
 		setContentHeight(`calc(100svh - ${height})`);
 	}, [appBarRef]);
 
-	const navigatePath = (path: string) => {
-		submit({}, { action: path, method: "get" });
+	const toSettings = () => {
+		submit(
+			{},
+			{ action: "/Settings", method: "get" },
+		);
 	};
-	const drawerWidth = "250px";
-	const contentPadding = navOpen
-		? drawerWidth
-		: "0px";
 
 	return (
-		<Box
-			sx={{
-				height: "100vh",
-				width: "100vw",
-				display: "flex",
-				flexDirection: "column",
-			}}
-		>
-			<AppBar
+		<Box>
+			<StyledAppBar
 				ref={appBarRef}
-				elevation={0}
 				variant="outlined"
-				sx={{
-					borderTopWidth: "0px",
-					borderRightWidth: "0px",
-					borderLeftWidth: "0px",
-					position: "relative",
-					zIndex: ({ zIndex }) =>
-						zIndex.drawer + 1,
-				}}
 			>
 				<Toolbar
 					disableGutters
 					variant="dense"
-					sx={{
-						width: "100%",
-						display: "flex",
-						flexWrap: "nowrap",
-						flexDirection: "row",
-						alignItems: "center",
-						justifyContent: "space-between",
-					}}
 				>
+					<AppHeader />
 					<IconButton
-						disableRipple
-						onClick={toggleNav}
+						color="inherit"
+						size="small"
+						onClick={toSettings}
 					>
-						<ListRounded />
+						<SettingsRounded fontSize="small" />
 					</IconButton>
-					<Box
-						alignItems="center"
-						justifyContent="space-between"
-						display="flex"
-						flexDirection="row"
-						width="100%"
-					>
-						<IconButton>
-							<ChevronLeft />
-						</IconButton>
-						<StyledBreadcrumbs path={location} />
-						<div />
-					</Box>
-					<div />
 				</Toolbar>
-			</AppBar>
-			<Stack direction="row">
-				<Drawer
-					open={navOpen}
-					variant="persistent"
-					PaperProps={{
-						elevation: 0,
-						variant: "outlined",
-						sx: {
-							paddingTop: appBarHeight,
-							width: drawerWidth,
-						},
-					}}
-				>
-					<List
-						dense
-						disablePadding
-					>
-						{NAV_DEFINITION.map(
-							({ label, path }) => (
-								<ListItem
-									key={label}
-									disableGutters
-									disablePadding
-								>
-									<ListItemButton
-										onClick={() =>
-											navigatePath(path)
-										}
-									>
-										<ListItemText>
-											{label}
-										</ListItemText>
-									</ListItemButton>
-								</ListItem>
-							),
-						)}
-					</List>
-				</Drawer>
-				<Box
-					height={contentHeight}
-					paddingLeft={contentPadding}
-					overflow="auto"
-					width="100%"
-					sx={{
-						transition: ({ transitions }) =>
-							`padding-left 0.3s ${transitions.easing.easeInOut}`,
-					}}
-				>
-					{children}
-				</Box>
-			</Stack>
+			</StyledAppBar>
+			<Box
+				height={contentHeight}
+				width="100%"
+			>
+				{children}
+			</Box>
 		</Box>
 	);
 };

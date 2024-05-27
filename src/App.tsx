@@ -1,11 +1,9 @@
-import { useSnackbar } from "notistack";
 import { FC } from "react";
 import {
 	RouterProvider,
 	createBrowserRouter,
 	redirect,
 } from "react-router-dom";
-import { SYNC_DETAILS } from "~constants";
 import { ErrorBoundry } from "~pages/ErrorBoundary";
 import {
 	Home,
@@ -24,6 +22,10 @@ import {
 	loaderRepoDetailsPage,
 } from "~pages/RepoDetailsPage";
 import {
+	RepoIssueListPage,
+	loaderRepoIssueListPage,
+} from "~pages/RepoIssueListPage";
+import {
 	RepoListPage,
 	loaderRepoListPage,
 } from "~pages/RepoListPage";
@@ -32,7 +34,7 @@ import { SettingsPage } from "~pages/SettingsPage";
 const router = createBrowserRouter(
 	[
 		{
-			index: true,
+			path: "/",
 			element: <Home />,
 			loader: loaderHome,
 			errorElement: <ErrorBoundry />,
@@ -43,10 +45,15 @@ const router = createBrowserRouter(
 			loader: loaderRepoListPage,
 		},
 		{
+			path: "/issues",
+			element: <IssueListPage />,
+			loader: loaderIssueListPage,
+		},
+		{
 			path: "/repositories/:owner",
 			loader: ({ params }) => {
 				return redirect(
-					`/repositories?name=${params.owner}`,
+					`/Repositories?name=${params.owner}`,
 				);
 			},
 		},
@@ -58,18 +65,14 @@ const router = createBrowserRouter(
 		{
 			path: "/repositories/:owner/:repo/issues",
 			element: <RepoIssueListPage />,
-			loader: loaderRepoDetailsPage,
+			loader: loaderRepoIssueListPage,
 		},
 		{
 			path: "/repositories/:owner/:repo/issues/:issueNumber",
 			element: <IssueDetailsPage />,
 			loader: loaderIssueDetailsPage,
 		},
-		{
-			path: "/issues",
-			element: <IssueListPage />,
-			loader: loaderIssueListPage,
-		},
+
 		{
 			path: "/settings",
 			element: <SettingsPage />,
@@ -81,28 +84,28 @@ const router = createBrowserRouter(
 );
 
 export const App: FC = () => {
-	const { enqueueSnackbar } = useSnackbar();
+	// const { enqueueSnackbar } = useSnackbar();
 
-	const enqueueError = (err: any) => {
-		enqueueSnackbar({
-			message: String(err),
-			variant: "error",
-		});
-		throw err;
-	};
+	// const enqueueError = (err: any) => {
+	// 	enqueueSnackbar({
+	// 		message: String(err),
+	// 		variant: "error",
+	// 	});
+	// 	throw err;
+	// };
 
-	const handleSync = async (index: number) => {
-		const { promise, item } = SYNC_DETAILS[index];
-		const res = await promise(enqueueError)
-			.then((resp) => resp.every((r) => r))
-			.catch(() => false);
-		if (res) {
-			enqueueSnackbar({
-				message: `${item} data is up to date`,
-				variant: "success",
-			});
-		}
-	};
+	// const handleSync = async (index: number) => {
+	// 	const { promise, item } = SYNC_DETAILS[index];
+	// 	const res = await promise(enqueueError)
+	// 		.then((resp) => resp.every((r) => r))
+	// 		.catch(() => false);
+	// 	if (res) {
+	// 		enqueueSnackbar({
+	// 			message: `${item} data is up to date`,
+	// 			variant: "success",
+	// 		});
+	// 	}
+	// };
 	// useEffect(() => {
 	// 	const initSync = async () => {
 	// 		await handleSync(0);
