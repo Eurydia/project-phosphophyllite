@@ -1,135 +1,98 @@
+import { FilterListRounded } from "@mui/icons-material";
+import { useIssueQuery } from "hooks/useIssueQuery";
+import { useIssueQueryOptions } from "hooks/useIssueQueryOptions";
+import { FC, Fragment } from "react";
 import {
-	ExpandLessRounded,
-	ExpandMoreRounded,
-	FilterListRounded,
-} from "@mui/icons-material";
-import {
-	Box,
-	Collapse,
-	List,
-	Stack,
-	Toolbar,
-	Typography,
-} from "@mui/material";
-import { FC, useState } from "react";
-import { Form } from "react-router-dom";
-import { AdaptiveListItem } from "~components/AdaptiveListItem";
+	Form,
+	useSubmit,
+} from "react-router-dom";
 import { StyledIconButton } from "~components/StyledIconButton";
+import { StyledSearchItem } from "~components/StyledSearchItem";
 import { StyledSelect } from "~components/StyledSelect";
 import { StyledSelectMultiple } from "~components/StyledSelectMultiple";
+import { StyledTableToolbar } from "~components/StyledTableToolbar";
 import { StyledTextField } from "~components/StyledTextField";
-import {
-	ISSUE_FILTER_OWNER_TYPE_OPTIONS,
-	ISSUE_FILTER_STATE_OPTIONS,
-} from "~constants";
-import { GenericSelectOption } from "~types/generics";
+import { SelectOption } from "~types/generics";
+import { IssueQuery } from "~types/query";
 
 type StyledToolbarProps = {
-	title: string;
-	repoFullNames: string[];
-	ownerType: string;
-	state: string;
-	itemCount: number;
-	repoOptions: GenericSelectOption<string>[];
+	query: IssueQuery;
+	repoOptions: SelectOption<string>[];
 };
 export const StyledToolbar: FC<
 	StyledToolbarProps
 > = (props) => {
+	const { query: initQuery, repoOptions } = props;
+
+	const { ownerTypeOptions, stateOptions } =
+		useIssueQueryOptions();
+
+	const {
+		query,
+		setOwnerType,
+		setRepoFullNames,
+		setState,
+		setTitle,
+	} = useIssueQuery(initQuery);
+
+	const submit = useSubmit();
+	const handleSubmit = () => {
+		submit(query, { action: ".", method: "get" });
+	};
+
 	const {
 		ownerType,
 		repoFullNames,
 		state,
 		title,
-		itemCount,
-		repoOptions,
-	} = props;
-
-	const [filterOpen, setFilterOpen] =
-		useState(false);
-	const toggleFilter = () => {
-		setFilterOpen(!filterOpen);
-	};
+	} = query;
 
 	const renderRepoSelectValue = () => {
 		return `${repoFullNames.length} selected`;
 	};
 
-	const itemCountMsg =
-		itemCount === 1
-			? `Showing ${itemCount} issue`
-			: `Showing ${itemCount} issues`;
-
-	let expandIcon = filterOpen ? (
-		<ExpandLessRounded />
-	) : (
-		<ExpandMoreRounded />
-	);
-
 	return (
-		<Form>
-			<Toolbar
-				disableGutters
-				variant="dense"
-			>
-				<Box
-					gap={2}
-					width="100%"
-					display="flex"
-					flexWrap="wrap"
-					flexDirection="row"
-					alignItems="center"
-				>
-					<Stack
-						flexGrow={1}
-						direction="row"
-						alignItems="center"
-					>
+		<Form onSubmit={handleSubmit}>
+			<StyledTableToolbar
+				toolbar={
+					<Fragment>
 						<StyledTextField
 							name="title"
+							autoComplete="off"
+							autoCorrect="off"
 							placeholder="Search issue"
-							defaultValue={title}
+							value={title}
+							onChange={setTitle}
 						/>
 						<StyledIconButton submit>
 							<FilterListRounded />
 						</StyledIconButton>
-						<StyledIconButton
-							onClick={toggleFilter}
-						>
-							{expandIcon}
-						</StyledIconButton>
-					</Stack>
-					<Typography>{itemCountMsg}</Typography>
-				</Box>
-			</Toolbar>
-			<Collapse in={filterOpen}>
-				<List disablePadding>
-					<AdaptiveListItem text="Repositories">
-						<StyledSelectMultiple
-							name="repoFullNames"
-							options={repoOptions}
-							autoComplete="off"
-							defaultValue={repoFullNames}
-							renderValue={renderRepoSelectValue}
-						/>
-					</AdaptiveListItem>
-					<AdaptiveListItem text="State">
-						<StyledSelect
-							name="state"
-							defaultValue={state}
-							options={ISSUE_FILTER_STATE_OPTIONS}
-						/>
-					</AdaptiveListItem>
-					<AdaptiveListItem text="Owner type">
-						<StyledSelect
-							name="ownerType"
-							defaultValue={ownerType}
-							options={
-								ISSUE_FILTER_OWNER_TYPE_OPTIONS
-							}
-						/>
-					</AdaptiveListItem>
-				</List>
-			</Collapse>
+					</Fragment>
+				}
+			>
+				<StyledSearchItem text="Repositories">
+					<StyledSelectMultiple
+						value={repoFullNames}
+						options={repoOptions}
+						onChange={setRepoFullNames}
+						renderValue={renderRepoSelectValue}
+					/>
+				</StyledSearchItem>
+				<StyledSearchItem text="State">
+					<StyledSelect
+						value={state}
+						options={stateOptions}
+						onChange={setState}
+					/>
+				</StyledSearchItem>
+				<StyledSearchItem text="Owner type">
+					<StyledSelect
+						value={ownerType}
+						options={ownerTypeOptions}
+						onChange={setOwnerType}
+					/>
+				</StyledSearchItem>
+			</StyledTableToolbar>
 		</Form>
 	);
 };

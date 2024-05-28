@@ -4,7 +4,7 @@ import { parseMarkdown } from "~core/markdown";
 
 type MarkdownProps = {
 	markdownContent: string | undefined | null;
-	emptyText: string | undefined;
+	emptyText?: string | undefined;
 };
 export const Markdown: FC<MarkdownProps> = (
 	props,
@@ -33,12 +33,9 @@ export const Markdown: FC<MarkdownProps> = (
 		<Typography
 			ref={contentRef}
 			width="100%"
-			sx={{
-				overflow: "auto",
-				fontFamily: "IBM Plex Serif",
-				wordBreak: "break-word",
-				wordWrap: "break-word",
-			}}
+			fontFamily="IBM Plex Serif"
+			whiteSpace="wrap"
+			sx={{ wordBreak: "break-word" }}
 		>
 			{emptyText}
 		</Typography>

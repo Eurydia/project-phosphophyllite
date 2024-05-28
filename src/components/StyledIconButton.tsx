@@ -15,7 +15,7 @@ export const StyledIconButton: FC<
 	const buttonType = submit ? "submit" : "button";
 	return (
 		<IconButton
-			disableRipple
+			disableTouchRipple
 			size="small"
 			type={buttonType}
 			color="inherit"

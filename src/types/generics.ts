@@ -6,12 +6,12 @@ export interface SortRule<T> {
 	compareFn: (a: T, b: T) => number;
 }
 
-export type GenericSelectOption<T> = {
+export type SelectOption<T> = {
 	label: string;
 	value: T;
 };
 
-export type GenericDataCell<T> = {
+export type ColumnHeader<T> = {
 	id: keyof T;
 	label: string;
 	render: (item: T) => ReactNode;

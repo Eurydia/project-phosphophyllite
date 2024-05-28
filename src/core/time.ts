@@ -28,7 +28,7 @@ export const normalizeDateString = (
 	}
 
 	return moment(dateString).format(
-		"MMMM Do YYYY",
+		"MMMM Do, YYYY",
 	);
 };
 

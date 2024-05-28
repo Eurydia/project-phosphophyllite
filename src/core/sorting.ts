@@ -1,9 +1,9 @@
 import {
-	RepoIssueSchema,
+	IssueSchema,
 	RepoSchema,
 } from "~types/schemas";
 
-export const orderByString = (
+export const sortByString = (
 	a: string | null | undefined,
 	b: string | null | undefined,
 ): number => {
@@ -25,7 +25,7 @@ export const orderByString = (
 	return b!.localeCompare(a!);
 };
 
-export const orderByBoolean = (
+export const sortByBoolean = (
 	a: boolean | null | undefined,
 	b: boolean | null | undefined,
 ) => {
@@ -41,7 +41,7 @@ export const orderByBoolean = (
 	// return 1;
 };
 
-export const orderByNumber = (
+export const sortByNumber = (
 	a: number | null | undefined,
 	b: number | null | undefined,
 ) => {
@@ -63,18 +63,15 @@ export const orderByNumber = (
 };
 
 export const getIssueOrderingFn = (
-	property: keyof RepoIssueSchema,
+	property: keyof IssueSchema,
 ) => {
 	let orderFn:
-		| ((
-				a: RepoIssueSchema,
-				b: RepoIssueSchema,
-		  ) => number)
+		| ((a: IssueSchema, b: IssueSchema) => number)
 		| undefined;
 	switch (property) {
 		case "issue_number":
 			orderFn = (a, b) => {
-				return orderByNumber(
+				return sortByNumber(
 					a[property] as
 						| number
 						| undefined
@@ -93,7 +90,7 @@ export const getIssueOrderingFn = (
 		case "created_at":
 		case "updated_at":
 			orderFn = (a, b) => {
-				return orderByString(
+				return sortByString(
 					a[property] as
 						| string
 						| undefined
@@ -117,7 +114,7 @@ export const getRepoOrderingFn = (
 		case "is_archived":
 		case "is_private":
 			return (a, b) =>
-				orderByBoolean(
+				sortByBoolean(
 					a[property] as
 						| boolean
 						| undefined
@@ -132,7 +129,7 @@ export const getRepoOrderingFn = (
 		case "created_at":
 		case "updated_at":
 			return (a, b) =>
-				orderByString(
+				sortByString(
 					a[property] as
 						| string
 						| undefined

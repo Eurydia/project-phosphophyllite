@@ -1,16 +1,16 @@
 import { LoaderFunction } from "react-router";
 import {
-	getCachedIssueComments,
-	getCachedRepoIssue,
+	getCachedComments,
+	getCachedIssues,
 } from "~database/cached";
 import {
-	RepoIssueCommentSchema,
-	RepoIssueSchema,
+	CommentSchema,
+	IssueSchema,
 } from "~types/schemas";
 
 export type LoaderData = {
-	issue: RepoIssueSchema;
-	comments: RepoIssueCommentSchema[];
+	issue: IssueSchema;
+	comments: CommentSchema[];
 };
 export const loader: LoaderFunction = async ({
 	params,
@@ -28,11 +28,9 @@ export const loader: LoaderFunction = async ({
 			statusText: "Bad requeset",
 		});
 	}
-	if (
-		!Number.isSafeInteger(
-			Number.parseInt(issueNumber),
-		)
-	) {
+	const _issueNumber =
+		Number.parseInt(issueNumber);
+	if (!Number.isSafeInteger(_issueNumber)) {
 		throw new Response("", {
 			status: 400,
 			statusText: "Bad requeset",
@@ -40,10 +38,9 @@ export const loader: LoaderFunction = async ({
 	}
 
 	const fullName = `${owner}/${repoName}`;
-	const issue = await getCachedRepoIssue(
-		fullName,
-		Number.parseInt(issueNumber),
-	);
+	const issue = (
+		await getCachedIssues(fullName, _issueNumber)
+	)[0];
 	if (issue === undefined) {
 		throw new Response("Not found", {
 			status: 404,
@@ -51,12 +48,12 @@ export const loader: LoaderFunction = async ({
 				"Issue does not exist or it is not cached.",
 		});
 	}
+	const comments = await getCachedComments(
+		issue.id,
+	);
 	const loaderData: LoaderData = {
 		issue,
-		comments: await getCachedIssueComments(
-			issue.id,
-		),
+		comments,
 	};
-
 	return loaderData;
 };

@@ -1,10 +1,26 @@
 import {
 	Breadcrumbs,
 	Typography,
-	useTheme,
 } from "@mui/material";
 import { FC } from "react";
 import { Link } from "react-router-dom";
+
+type CrumbProps = {
+	label: string;
+	path: string;
+};
+const Crumb: FC<CrumbProps> = (props) => {
+	const { label, path } = props;
+	return (
+		<Typography
+			to={path}
+			component={Link}
+			whiteSpace="nowrap"
+		>
+			{label}
+		</Typography>
+	);
+};
 
 type StyledBreadcrumbs = {
 	path: string;
@@ -13,7 +29,6 @@ export const StyledBreadcrumbs: FC<
 	StyledBreadcrumbs
 > = (props) => {
 	const { path } = props;
-	const { palette } = useTheme();
 
 	const paths = path.normalize().split("/");
 	const _paths = paths.filter(
@@ -23,20 +38,12 @@ export const StyledBreadcrumbs: FC<
 		const targetPath =
 			"/" + paths.slice(1, index + 1).join("/");
 		return (
-			<Typography
+			<Crumb
 				key={targetPath}
-				component={Link}
-				to={targetPath}
-				sx={{
-					textDecoration: "none",
-					whiteSpace: "nowrap",
-					color: palette.text.secondary,
-				}}
-			>
-				{path}
-			</Typography>
+				path={targetPath}
+				label={path}
+			/>
 		);
 	});
-
 	return <Breadcrumbs>{crumbs}</Breadcrumbs>;
 };

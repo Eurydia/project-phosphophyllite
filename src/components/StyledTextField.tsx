@@ -2,36 +2,19 @@ import {
 	TextField,
 	TextFieldProps,
 } from "@mui/material";
-import {
-	ChangeEvent,
-	FC,
-	KeyboardEvent,
-} from "react";
+import { ChangeEvent, FC } from "react";
 
 type StyledTextFieldProps = Omit<
 	TextFieldProps,
 	"onChange"
 > & {
-	onEnter?: () => void;
 	onChange?: (v: string) => void;
 };
 export const StyledTextField: FC<
 	StyledTextFieldProps
 > = (props) => {
-	const { onEnter, onChange, ...rest } = props;
+	const { onChange, ...rest } = props;
 
-	const handleKeyUp = (
-		e: KeyboardEvent<HTMLDivElement>,
-	) => {
-		if (
-			e.key === "Enter" &&
-			onEnter !== undefined
-		) {
-			console.log("entered");
-			onEnter();
-			return;
-		}
-	};
 	const handleChange = (
 		e: ChangeEvent<
 			HTMLInputElement | HTMLTextAreaElement
@@ -47,7 +30,6 @@ export const StyledTextField: FC<
 			{...rest}
 			fullWidth
 			size="small"
-			onKeyUp={handleKeyUp}
 			onChange={handleChange}
 		/>
 	);

@@ -1,111 +1,114 @@
 import { matchSorter } from "match-sorter";
 import {
-	RepoIssueSchema,
+	IssueQuery,
+	RepoQuery,
+} from "~types/query";
+import {
+	IssueSchema,
 	RepoSchema,
 } from "~types/schemas";
 
 export const filterRepos = (
 	repos: RepoSchema[],
-	name: string,
-	topics: string[],
-	visibility: string,
-	status: string,
-	topicFilterMode: string,
-	properties: string[],
+	query: RepoQuery,
 ) => {
-	let items = [...repos];
+	const {
+		name,
+		topics,
+		visibility,
+		status,
+		topicMatchStrategy,
+	} = query;
+	const filterFns: ((
+		item: RepoSchema,
+	) => boolean)[] = [];
 
-	if (visibility === "Private") {
-		items = items.filter(
-			(item) => item.is_private,
-		);
+	switch (visibility) {
+		case "Private":
+			filterFns.push((item) => item.is_private);
+			break;
+		case "Public":
+			filterFns.push((item) => !item.is_private);
+			break;
 	}
-	if (visibility === "Public") {
-		items = items.filter(
-			(item) => !item.is_private,
-		);
-	}
-
-	if (status === "Archived") {
-		items = items.filter(
-			(item) => item.is_archived,
-		);
-	}
-	if (status === "Active") {
-		items = items.filter(
-			(item) => !item.is_archived,
-		);
-	}
-
-	if (
-		topics.length > 0 &&
-		topicFilterMode === "Match all"
-	) {
-		items = items.filter((item) =>
-			topics.every((topic) => {
-				if (item.topics === undefined) {
-					return false;
-				}
-				return item.topics.includes(topic);
-			}),
-		);
-	}
-	if (
-		topics.length > 0 &&
-		topicFilterMode === "Match any"
-	) {
-		items = items.filter((item) =>
-			topics.some((topic) => {
-				if (item.topics === undefined) {
-					return false;
-				}
-				return item.topics.includes(topic);
-			}),
-		);
-	}
-	if (properties.length > 0) {
-		items = items.filter((item) =>
-			properties.some(
-				(property) =>
-					item.topics !== undefined &&
-					item.topics.includes(property),
-			),
-		);
+	switch (status) {
+		case "Active":
+			filterFns.push((item) => !item.is_archived);
+			break;
+		case "Archived":
+			filterFns.push((item) => item.is_archived);
+			break;
 	}
 
-	items = matchSorter(items, name, {
+	if (topics.length > 0) {
+		switch (topicMatchStrategy) {
+			case "Match all":
+				filterFns.push(
+					(item) =>
+						item.topics !== undefined &&
+						topics.every((topic) =>
+							item.topics!.includes(topic),
+						),
+				);
+				break;
+			case "Match any":
+				filterFns.push(
+					(item) =>
+						item.topics !== undefined &&
+						topics.some((topic) =>
+							item.topics!.includes(topic),
+						),
+				);
+				break;
+		}
+	}
+	const items = repos.filter((repo) =>
+		filterFns.every((fn) => fn(repo)),
+	);
+	const filteredItems = matchSorter(items, name, {
 		keys: ["full_name"],
 	});
-	return items;
+	return filteredItems;
 };
 
 export const filterIssues = (
-	issues: RepoIssueSchema[],
-	title: string,
-	ownerType: string,
-	repoFullNames: string[],
-	state: string,
+	issues: IssueSchema[],
+	query: IssueQuery,
 ) => {
-	let items = [...issues];
+	const {
+		title,
+		ownerType,
+		repoFullNames,
+		state,
+	} = query;
+	const filterFns: ((
+		item: IssueSchema,
+	) => boolean)[] = [];
 
 	if (ownerType !== "All") {
-		items = items.filter(
+		filterFns.push(
 			(item) => item.owner_type === ownerType,
 		);
 	}
 	if (repoFullNames.length > 0) {
-		items = items.filter((item) =>
+		filterFns.push((item) =>
 			repoFullNames.includes(item.repo_full_name),
 		);
 	}
 	if (state !== "All") {
-		items = items.filter(
+		filterFns.push(
 			(item) => item.state === state,
 		);
 	}
-
-	items = matchSorter(items, title, {
-		keys: ["title"],
-	});
-	return items;
+	const items = issues.filter((item) =>
+		filterFns.every((fn) => fn(item)),
+	);
+	const filteredItems = matchSorter(
+		items,
+		title,
+		{
+			keys: ["title"],
+		},
+	);
+	return filteredItems;
 };

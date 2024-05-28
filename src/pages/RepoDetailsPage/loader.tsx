@@ -20,7 +20,7 @@ export const loader: LoaderFunction = async ({
 		});
 	}
 	const fullName = `${owner}/${repoName}`;
-	let repo = await getCachedRepo(fullName);
+	const repo = await getCachedRepo(fullName);
 	if (repo === undefined) {
 		throw new Response("Not found", {
 			status: 404,

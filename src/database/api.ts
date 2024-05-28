@@ -1,8 +1,8 @@
 import { invoke } from "@tauri-apps/api";
 import { App } from "octokit";
 import {
-	RepoIssueCommentSchema,
-	RepoIssueSchema,
+	CommentSchema,
+	IssueSchema,
 	RepoSchema,
 } from "~types/schemas";
 
@@ -48,7 +48,6 @@ export const getRepos = async () => {
 	);
 
 	const repos: Record<string, RepoSchema> = {};
-
 	pages.map(
 		({
 			id,
@@ -122,7 +121,7 @@ export const getRepoIssues = async (
 			state: "all",
 		},
 	);
-	const issues: RepoIssueSchema[] = response.map(
+	const issues: IssueSchema[] = response.map(
 		({
 			id,
 			html_url,
@@ -170,22 +169,21 @@ export const getRepoIssueComment = async (
 			issue_number: issueNumber,
 		},
 	);
-	const comments: RepoIssueCommentSchema[] =
-		response.map(
-			({
-				id,
-				html_url,
-				created_at,
-				updated_at,
-				body,
-			}) => ({
-				issue_id: issueId,
-				html_url,
-				id,
-				created_at,
-				updated_at,
-				body,
-			}),
-		);
+	const comments: CommentSchema[] = response.map(
+		({
+			id,
+			html_url,
+			created_at,
+			updated_at,
+			body,
+		}) => ({
+			issue_id: issueId,
+			html_url,
+			id,
+			created_at,
+			updated_at,
+			body,
+		}),
+	);
 	return comments;
 };

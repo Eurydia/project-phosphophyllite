@@ -17,7 +17,7 @@ export type RepoSchema = {
 	is_archived: boolean;
 };
 
-export type RepoIssueSchema = {
+export type IssueSchema = {
 	// custom property not present on API
 	repo_id: number; // owner repo id
 	repo_full_name: string;
@@ -36,7 +36,7 @@ export type RepoIssueSchema = {
 	owner_type: string | null;
 };
 
-export type RepoIssueCommentSchema = {
+export type CommentSchema = {
 	// custom property not present on API
 	issue_id: number; // owner issue id
 

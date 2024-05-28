@@ -5,24 +5,15 @@ import { RepoDetailsNavView } from "~views/RepoDetailsNavView";
 import { LoaderData } from "./loader";
 
 export const RepoIssueListPage: FC = () => {
-	const {
-		repoOptions,
-		issues,
-		title,
-		ownerType,
-		repoFullNames,
-		state,
-	} = useLoaderData() as LoaderData;
+	const { repoOptions, issues, query } =
+		useLoaderData() as LoaderData;
 
 	return (
 		<RepoDetailsNavView tab={1}>
 			<IssueDataTable
 				repoOptions={repoOptions}
 				issues={issues}
-				title={title}
-				ownerType={ownerType}
-				repoFullNames={repoFullNames}
-				state={state}
+				query={query}
 			/>
 		</RepoDetailsNavView>
 	);

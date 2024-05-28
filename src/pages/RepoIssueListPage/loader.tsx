@@ -1,23 +1,18 @@
 import { LoaderFunction } from "react-router";
 import { filterIssues } from "~core/filtering";
+import { extractIssueQuery } from "~core/query";
 import {
+	getCachedIssues,
 	getCachedRepo,
-	getCachedRepoIssues,
 } from "~database/cached";
-import {
-	getIssueFilterPrefOwnerType,
-	getIssueFilterPrefState,
-} from "~database/preferences";
-import { GenericSelectOption } from "~types/generics";
-import { RepoIssueSchema } from "~types/schemas";
+import { SelectOption } from "~types/generics";
+import { IssueQuery } from "~types/query";
+import { IssueSchema } from "~types/schemas";
 
 export type LoaderData = {
-	issues: RepoIssueSchema[];
-	title: string;
-	ownerType: string;
-	repoFullNames: string[];
-	repoOptions: GenericSelectOption<string>[];
-	state: string;
+	issues: IssueSchema[];
+	query: IssueQuery;
+	repoOptions: SelectOption<string>[];
 };
 export const loader: LoaderFunction = async ({
 	params,
@@ -42,45 +37,27 @@ export const loader: LoaderFunction = async ({
 			statusText: "Repository not found in cache",
 		});
 	}
-	const searchParams = new URL(request.url)
-		.searchParams;
-	const title = searchParams.get("title") || "";
-	const ownerType =
-		searchParams.get("ownerType") ||
-		getIssueFilterPrefOwnerType();
-	const state =
-		searchParams.get("state") ||
-		getIssueFilterPrefState();
+	const { searchParams } = new URL(request.url);
+	const query = extractIssueQuery(searchParams);
 
-	let issues = await getCachedRepoIssues(
+	const cachedIssues = await getCachedIssues(
 		repo.full_name,
 	);
-	const repoFullNames: string[] = [
-		repo.full_name,
+	const issues = filterIssues(
+		cachedIssues,
+		query,
+	);
+	const repoOptions: SelectOption<string>[] = [
+		{
+			label: repo.full_name,
+			value: repo.full_name,
+		},
 	];
-	issues = filterIssues(
-		issues,
-		title,
-		ownerType,
-		repoFullNames,
-		state,
-	);
-
-	const repoOptions: GenericSelectOption<string>[] =
-		[
-			{
-				label: repo.full_name,
-				value: repo.full_name,
-			},
-		];
 
 	const loaderData: LoaderData = {
 		issues,
-		ownerType,
-		repoFullNames,
 		repoOptions,
-		state,
-		title,
+		query,
 	};
 	return loaderData;
 };

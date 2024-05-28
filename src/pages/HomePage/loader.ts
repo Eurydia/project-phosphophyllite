@@ -22,11 +22,11 @@ export const loaderHome: LoaderFunction =
 		const activeRepos = repos.filter(
 			({ is_archived }) => !is_archived,
 		).length;
-		const archivedRepos =
-			repos.length - activeRepos;
 		const openIssues = issues.filter(
 			({ state }) => state === "open",
 		).length;
+		const archivedRepos =
+			repos.length - activeRepos;
 		const closedIssues =
 			issues.length - openIssues;
 

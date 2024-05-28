@@ -1,7 +1,8 @@
 import { dbPromise } from "~database/migration";
+import { SelectOption } from "~types/generics";
 import {
-	RepoIssueCommentSchema,
-	RepoIssueSchema,
+	CommentSchema,
+	IssueSchema,
 	RepoSchema,
 } from "~types/schemas";
 import {
@@ -17,65 +18,37 @@ export const getCachedRepos = async () => {
 export const getCachedRepo = async (
 	fullName: string,
 ) => {
-	return (await dbPromise).getFromIndex(
+	const db = await dbPromise;
+	const repo = await db.getFromIndex(
 		"repos",
 		"by-full_name",
 		fullName,
 	);
+	return repo;
 };
 
-export const getCachedTopics = async () => {
-	const repos = await getCachedRepos();
-	const uniqueTopics = new Set<string>();
-	for (const repo of repos) {
-		if (repo.topics === undefined) {
-			continue;
-		}
-		for (const topic of repo.topics) {
-			uniqueTopics.add(topic);
-		}
-	}
-	const topics = [...uniqueTopics];
-	topics.sort();
-	return topics;
-};
-
-export const getCachedIssues = async () => {
-	return dbPromise.then((db) =>
-		db.getAll("issues"),
-	);
-};
-
-export const getCachedRepoIssues = async (
-	repoFullName: string,
+export const getCachedIssues = async (
+	fullName: string | undefined = undefined,
+	issueNumber: number | undefined = undefined,
 ) => {
-	const repo = await getCachedRepo(repoFullName);
-	if (repo === undefined) {
-		return [];
-	}
-	return (await dbPromise).getAllFromIndex(
-		"issues",
-		"by-repo_id",
-		repo.id,
+	const cachedIssues = await dbPromise.then(
+		(db) => db.getAll("issues"),
 	);
+	let issues = [...cachedIssues];
+	if (fullName !== undefined) {
+		issues = issues.filter(
+			(item) => item.repo_full_name === fullName,
+		);
+	}
+	if (issueNumber !== undefined) {
+		issues = issues.filter(
+			(item) => item.issue_number === issueNumber,
+		);
+	}
+	return issues;
 };
 
-export const getCachedRepoIssue = async (
-	repoFullName: string,
-	issueNumber: number,
-) => {
-	const issues = await getCachedRepoIssues(
-		repoFullName,
-	);
-	for (const issue of issues) {
-		if (issue.issue_number === issueNumber) {
-			return issue;
-		}
-	}
-	return undefined;
-};
-
-export const getCachedIssueComments = async (
+export const getCachedComments = async (
 	issueId: number,
 ) => {
 	return (await dbPromise).getAllFromIndex(
@@ -97,7 +70,7 @@ const updateCachedRepos = async (
 };
 
 const updateCachedRepoIssues = async (
-	issues: RepoIssueSchema[],
+	issues: IssueSchema[],
 ) => {
 	const db = await dbPromise;
 	const req = issues.map((issue) =>
@@ -108,7 +81,7 @@ const updateCachedRepoIssues = async (
 };
 
 const updateCachedRepoIssueComments = async (
-	issueComments: RepoIssueCommentSchema[],
+	issueComments: CommentSchema[],
 ) => {
 	const db = await dbPromise;
 	return await Promise.all(
@@ -178,39 +151,41 @@ export const syncCachedRepoIssueComments = async (
 	);
 };
 
-export const getCollections = async () => {
-	const db = await dbPromise;
-	return await db.getAll("collections");
-};
-export const getCollection = async (
-	name: string,
-) => {
-	const db = await dbPromise;
-	return await db.get("collections", name);
-};
-
-export const addCollection = async (
-	name: string,
-	description: string,
-	repos: string[],
-) => {
-	const db = await dbPromise;
-	return db.add("collections", {
-		name,
-		description,
-		repos,
-	});
+export const getRepoOptions = async () => {
+	const repos = await getCachedRepos();
+	const repoNames = repos
+		.map((repo) => repo.full_name)
+		.sort();
+	const options: SelectOption<string>[] =
+		repoNames.map((name) => ({
+			label: name,
+			value: name,
+		}));
+	return options;
 };
 
-export const updateCollection = async (
-	name: string,
-	description: string,
-	repos: string[],
-) => {
-	const db = await dbPromise;
-	return db.put("collections", {
-		name,
-		description,
-		repos,
-	});
+const getCachedTopics = async () => {
+	const repos = await getCachedRepos();
+	const cachedTopics = new Set<string>();
+	for (const repo of repos) {
+		if (repo.topics === undefined) {
+			continue;
+		}
+		for (const topic of repo.topics) {
+			cachedTopics.add(topic);
+		}
+	}
+	const topics = [...cachedTopics];
+	topics.sort();
+	return topics;
+};
+
+export const getTopicOptions = async () => {
+	const topics = await getCachedTopics();
+	const topicOptions: SelectOption<string>[] =
+		topics.map((topic) => ({
+			label: topic,
+			value: topic,
+		}));
+	return topicOptions;
 };

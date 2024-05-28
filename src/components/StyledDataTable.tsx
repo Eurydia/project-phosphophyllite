@@ -12,13 +12,13 @@ import {
 	useMemo,
 	useState,
 } from "react";
-import { GenericDataCell } from "~types/generics";
+import { ColumnHeader } from "~types/generics";
 
 type StyledTableHeadProps<T> = {
 	order: "asc" | "desc";
 	orderBy: keyof T;
 	onRequestSort: (value: keyof T) => void;
-	columnDefinition: GenericDataCell<T>[];
+	columnDefinition: ColumnHeader<T>[];
 };
 const StyledTableHead = <T,>(
 	props: StyledTableHeadProps<T>,
@@ -66,7 +66,7 @@ const StyledTableHead = <T,>(
 
 type StyledTableRowProps<T> = {
 	item: T;
-	columnDefinition: GenericDataCell<T>[];
+	columnDefinition: ColumnHeader<T>[];
 };
 const StyledTableRow = <T,>(
 	props: StyledTableRowProps<T>,
@@ -88,7 +88,7 @@ const StyledTableRow = <T,>(
 
 type StyledDataTableProps<T> = {
 	items: T[];
-	columnDefinition: GenericDataCell<T>[];
+	columnDefinition: ColumnHeader<T>[];
 	defaultOrderBy: keyof T;
 	orderingFn: (
 		property: keyof T,
@@ -101,20 +101,21 @@ export const StyledDataTable = <T,>(
 		orderingFn,
 		items,
 		columnDefinition,
-		defaultOrderBy: orderBy,
+		defaultOrderBy,
 	} = props;
 
 	const [order, setOrder] = useState<
 		"asc" | "desc"
 	>("desc");
-	const [orderBy_, setOrderBy] =
-		useState(orderBy);
+	const [orderBy, setOrderBy] = useState(
+		defaultOrderBy,
+	);
 
 	const handleRequestSort = (
 		property: keyof T,
 	) => {
 		const isAsc =
-			orderBy_ === property && order === "asc";
+			orderBy === property && order === "asc";
 		setOrder(isAsc ? "desc" : "asc");
 		setOrderBy(property);
 	};
@@ -122,7 +123,7 @@ export const StyledDataTable = <T,>(
 	const items_ = useMemo(() => {
 		const orderFn:
 			| ((a: T, b: T) => number)
-			| undefined = orderingFn(orderBy_);
+			| undefined = orderingFn(orderBy);
 
 		if (orderFn === undefined) {
 			return items;
@@ -133,7 +134,7 @@ export const StyledDataTable = <T,>(
 			orderedItems_.reverse();
 		}
 		return orderedItems_;
-	}, [order, orderBy_, items]);
+	}, [order, orderBy, items]);
 
 	return (
 		<TableContainer>
@@ -142,7 +143,7 @@ export const StyledDataTable = <T,>(
 					columnDefinition={columnDefinition}
 					onRequestSort={handleRequestSort}
 					order={order}
-					orderBy={orderBy_}
+					orderBy={orderBy}
 				/>
 				<TableBody>
 					{items_.map((item, index) => (

@@ -1,78 +1,37 @@
 import { LoaderFunction } from "react-router-dom";
 import { filterIssues } from "~core/filtering";
-import { getCachedIssues } from "~database/index";
+import { extractIssueQuery } from "~core/query";
 import {
-	getIssueFilterPrefOwnerType,
-	getIssueFilterPrefState,
-} from "~database/preferences";
-import { GenericSelectOption } from "~types/generics";
-import { RepoIssueSchema } from "~types/schemas";
+	getCachedIssues,
+	getRepoOptions,
+} from "~database/index";
+import { SelectOption } from "~types/generics";
+import { IssueQuery } from "~types/query";
+import { IssueSchema } from "~types/schemas";
 
 export type LoaderData = {
-	issues: RepoIssueSchema[];
-	repoOptions: GenericSelectOption<string>[];
-	title: string;
-	ownerType: string;
-	repoFullNames: string[];
-	state: string;
+	issues: IssueSchema[];
+	repoOptions: SelectOption<string>[];
+	query: IssueQuery;
 };
 export const loader: LoaderFunction = async ({
 	request,
-}): Promise<LoaderData> => {
-	let issues = await getCachedIssues();
+}) => {
+	const cachedIssues = await getCachedIssues();
+	const repoOptions = await getRepoOptions();
 
-	const uniqueRepoOptions = new Set(
-		issues
-			.map(({ repo_full_name }) => repo_full_name)
-			.filter((value) => value.length > 0),
-	);
-	const options = [...uniqueRepoOptions];
-	options.sort();
-	const repoOptions: GenericSelectOption<string>[] =
-		options.map((value) => ({
-			label: value,
-			value,
-		}));
+	const { searchParams } = new URL(request.url);
+	const query = extractIssueQuery(searchParams);
 
-	const searchParams = new URL(request.url)
-		.searchParams;
-
-	const repoFullNamesParam = searchParams.get(
-		"repoFullNames",
-	);
-	let repoFullNames: string[] = [];
-	if (repoFullNamesParam !== null) {
-		repoFullNames = repoFullNamesParam
-			.normalize()
-			.trim()
-			.split(",")
-			.map((item) => item.trim())
-			.filter((item) => item.length > 0);
-	}
-
-	const title = searchParams.get("title") || "";
-
-	const ownerType =
-		searchParams.get("ownerType") ||
-		getIssueFilterPrefOwnerType();
-	const state =
-		searchParams.get("state") ||
-		getIssueFilterPrefState();
-
-	issues = filterIssues(
-		issues,
-		title,
-		ownerType,
-		repoFullNames,
-		state,
+	const issues = filterIssues(
+		cachedIssues,
+		query,
 	);
 
-	return {
+	const loaderData: LoaderData = {
 		issues,
 		repoOptions,
-		title,
-		ownerType,
-		repoFullNames,
-		state,
+		query,
 	};
+	return loaderData;
 };

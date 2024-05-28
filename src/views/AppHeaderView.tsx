@@ -1,4 +1,5 @@
 import {
+	AppBar,
 	Box,
 	Divider,
 	Toolbar,
@@ -10,9 +11,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { useSubmit } from "react-router-dom";
 import { AppHeader } from "~components/AppHeader";
-import { StyledAppBar } from "~components/StyledAppBar";
 
 type MainViewProps = {
 	children: ReactNode;
@@ -23,7 +22,7 @@ export const AppHeaderView: FC<MainViewProps> = (
 ) => {
 	const { children, nav } = props;
 
-	const submit = useSubmit();
+	// const submit = useSubmit();
 	const appBarRef = useRef<HTMLDivElement | null>(
 		null,
 	);
@@ -44,9 +43,10 @@ export const AppHeaderView: FC<MainViewProps> = (
 
 	return (
 		<Box>
-			<StyledAppBar
+			<AppBar
 				elevation={0}
 				ref={appBarRef}
+				position="relative"
 			>
 				<Toolbar
 					disableGutters
@@ -68,7 +68,7 @@ export const AppHeaderView: FC<MainViewProps> = (
 					flexItem
 					variant="fullWidth"
 				/>
-			</StyledAppBar>
+			</AppBar>
 			<Box
 				width="100%"
 				overflow="auto"

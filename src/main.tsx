@@ -11,8 +11,8 @@ import { CssBaseline } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { themeComposed } from "theme";
-import { App } from "./App.tsx";
+import { App } from "./App";
+import { themeComposed } from "./theme";
 
 ReactDOM.createRoot(
 	document.getElementById("root")!,

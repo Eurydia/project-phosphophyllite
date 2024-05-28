@@ -1,161 +1,119 @@
+import { FilterListRounded } from "@mui/icons-material";
+import { Stack } from "@mui/material";
+import { useRepoQuery } from "hooks/useRepoQuery";
+import { useRepoQueryOptions } from "hooks/useRepoQueryOptions";
+import { FC, Fragment } from "react";
 import {
-	ExpandLessRounded,
-	ExpandMoreRounded,
-	FilterListRounded,
-} from "@mui/icons-material";
-import {
-	Box,
-	Collapse,
-	List,
-	Stack,
-	Toolbar,
-	Typography,
-} from "@mui/material";
-import { FC, useState } from "react";
-import { Form } from "react-router-dom";
-import { AdaptiveListItem } from "~components/AdaptiveListItem";
+	Form,
+	useSubmit,
+} from "react-router-dom";
 import { StyledIconButton } from "~components/StyledIconButton";
+import { StyledSearchItem } from "~components/StyledSearchItem";
 import { StyledSelect } from "~components/StyledSelect";
 import { StyledSelectMultiple } from "~components/StyledSelectMultiple";
+import { StyledTableToolbar } from "~components/StyledTableToolbar";
 import { StyledTextField } from "~components/StyledTextField";
-import {
-	REPO_FILTER_STATUS_OPTIONS,
-	REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS,
-	REPO_FILTER_VISIBILITY_OPTIONS,
-} from "~constants";
-import { GenericSelectOption } from "~types/generics";
+import { SelectOption } from "~types/generics";
+import { RepoQuery } from "~types/query";
 
 type StyledToolbarProps = {
 	itemCount: number;
-	name: string;
-	topics: string[];
-	visibility: string;
-	status: string;
-	topicMatchStrategy: string;
-	topicOptions: GenericSelectOption<string>[];
-	properties: string[];
-	propertyOptions: GenericSelectOption<string>[];
+	query: RepoQuery;
+	topicOptions: SelectOption<string>[];
 };
 export const StyledToolbar: FC<
 	StyledToolbarProps
 > = (props) => {
-	const {
-		itemCount,
-		name,
-		status,
-		topics,
-		visibility,
-		topicMatchStrategy,
-		topicOptions,
-		propertyOptions,
-		properties,
-	} = props;
+	const { query: initQuery, topicOptions } =
+		props;
 
-	const [filterOpen, setFilterOpen] =
-		useState(false);
-	const toggleFilter = () => {
-		setFilterOpen(!filterOpen);
+	const {
+		statusOptions,
+		topicMatchStrategyOptions,
+		visibilityOptions,
+	} = useRepoQueryOptions();
+
+	const {
+		query,
+		setName,
+		setStatus,
+		setTopicMatchStrategy,
+		setTopics,
+		setVisibility,
+	} = useRepoQuery(initQuery);
+
+	const submit = useSubmit();
+	const handleSubmit = () => {
+		submit(query, { action: ".", method: "get" });
 	};
 
-	const renderPropepertySelectValue = () =>
-		`${properties.length} selected`;
+	const {
+		name,
+		status,
+		topicMatchStrategy,
+		topics,
+		visibility,
+	} = query;
+
 	const renderTopicSelectValue = () =>
 		`${topics.length} selected`;
-	const expandIcon = filterOpen ? (
-		<ExpandLessRounded />
-	) : (
-		<ExpandMoreRounded />
-	);
-	const itemCountMsg =
-		itemCount === 1
-			? `Showing ${itemCount} repository`
-			: `Showing ${itemCount} repositories`;
 
 	return (
-		<Form>
-			<Toolbar
-				disableGutters
-				variant="dense"
-			>
-				<Box
-					gap={2}
-					width="100%"
-					display="flex"
-					flexWrap="wrap"
-					flexDirection="row"
-					alignItems="center"
-				>
-					<Stack
-						flexGrow={1}
-						direction="row"
-						alignItems="center"
-					>
+		<Form onSubmit={handleSubmit}>
+			<StyledTableToolbar
+				toolbar={
+					<Fragment>
 						<StyledTextField
-							name="name"
 							type="text"
+							name="name"
 							autoComplete="off"
+							autoCorrect="off"
 							placeholder="Search repository"
-							defaultValue={name}
+							value={name}
+							onChange={setName}
 						/>
 						<StyledIconButton submit>
 							<FilterListRounded />
 						</StyledIconButton>
-						<StyledIconButton
-							onClick={toggleFilter}
-						>
-							{expandIcon}
-						</StyledIconButton>
-					</Stack>
-					<Typography>{itemCountMsg}</Typography>
-				</Box>
-			</Toolbar>
-			<Collapse in={filterOpen}>
-				<List disablePadding>
-					<AdaptiveListItem text="Properties">
-						<StyledSelectMultiple
-							name="properties"
-							defaultValue={properties}
-							options={propertyOptions}
-							renderValue={
-								renderPropepertySelectValue
-							}
-						/>
-					</AdaptiveListItem>
-					<AdaptiveListItem text="Topics">
+					</Fragment>
+				}
+			>
+				<Stack spacing={2}>
+					<StyledSearchItem text="Topics">
 						<StyledSelectMultiple
 							name="topics"
-							defaultValue={topics}
+							value={topics}
 							options={topicOptions}
+							onChange={setTopics}
 							renderValue={renderTopicSelectValue}
 						/>
-					</AdaptiveListItem>
-					<AdaptiveListItem text="Topic match strategy">
+					</StyledSearchItem>
+					<StyledSearchItem text="Topic match strategy">
 						<StyledSelect
 							name="topicMatchStrategy"
-							defaultValue={topicMatchStrategy}
-							options={
-								REPO_FILTER_TOPIC_MATCH_STRATEGY_OPTIONS
-							}
+							value={topicMatchStrategy}
+							onChange={setTopicMatchStrategy}
+							options={topicMatchStrategyOptions}
 						/>
-					</AdaptiveListItem>
-					<AdaptiveListItem text="Visibility">
+					</StyledSearchItem>
+					<StyledSearchItem text="Visibility">
 						<StyledSelect
 							name="visibility"
-							defaultValue={visibility}
-							options={
-								REPO_FILTER_VISIBILITY_OPTIONS
-							}
+							value={visibility}
+							onChange={setVisibility}
+							options={visibilityOptions}
 						/>
-					</AdaptiveListItem>
-					<AdaptiveListItem text="Status">
+					</StyledSearchItem>
+					<StyledSearchItem text="Status">
 						<StyledSelect
 							name="status"
-							defaultValue={status}
-							options={REPO_FILTER_STATUS_OPTIONS}
+							value={status}
+							onChange={setStatus}
+							options={statusOptions}
 						/>
-					</AdaptiveListItem>
-				</List>
-			</Collapse>
+					</StyledSearchItem>
+				</Stack>
+			</StyledTableToolbar>
 		</Form>
 	);
 };

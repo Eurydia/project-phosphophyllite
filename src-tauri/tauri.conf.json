@@ -12,7 +12,9 @@
   },
   "tauri": {
     "allowlist": {
-      "all": false
+      "fs": {
+        "scope": ["./resources/*"]
+      }
     },
     "bundle": {
       "active": true,
@@ -38,8 +40,8 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": [],
-      "shortDescription": "",
+      "resources": ["./resources/*"],
+      "shortDescription": "A GitHub issue aggregator powered by Tauri and Octokit.",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,

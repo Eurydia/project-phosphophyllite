@@ -1,32 +1,25 @@
 import {
 	ISSUE_FILTER_PREF_OWNER_TYPE_KEY,
 	ISSUE_FILTER_PREF_STATE_KEY,
-	REPO_FILTER_PREF_CUSTOM_PREFIX,
 	REPO_FILTER_PREF_STATUS_KEY,
 	REPO_FILTER_PREF_TOPIC_MATCH_STRATEGY_KEY,
 	REPO_FILTER_PREF_VISIBILITY_KEY,
 } from "~constants";
+import {
+	IssueQuery,
+	RepoQuery,
+} from "~types/query";
 
 /////////////////////////////////////////////
 // Repo filter preferences
 
-export const getRepoFilterPrefPropertyPrefix =
-	() => {
-		const data = localStorage.getItem(
-			REPO_FILTER_PREF_CUSTOM_PREFIX,
-		);
-		if (data !== null && data !== "") {
-			return data;
-		}
-		return "phospho-";
-	};
 export const getRepoFilterPrefVisibility =
-	(): string => {
+	(): RepoQuery["visibility"] => {
 		const data = localStorage.getItem(
 			REPO_FILTER_PREF_VISIBILITY_KEY,
 		);
 		if (data !== null) {
-			return data;
+			return data as RepoQuery["visibility"];
 		}
 		return "All";
 	};
@@ -38,13 +31,13 @@ export const setRepoFilterPrefVisibility = (
 		value,
 	);
 };
-export const getRepoFilterPrefStatus =
-	(): string => {
+export const getRepoQueryStatus =
+	(): RepoQuery["status"] => {
 		const data = localStorage.getItem(
 			REPO_FILTER_PREF_STATUS_KEY,
 		);
 		if (data !== null) {
-			return data;
+			return data as RepoQuery["status"];
 		}
 		return "All";
 	};
@@ -57,12 +50,12 @@ export const setRepoFilterPrefStatus = (
 	);
 };
 export const getRepoFilterPrefTopicMatchStrategy =
-	() => {
+	(): RepoQuery["topicMatchStrategy"] => {
 		const data = localStorage.getItem(
 			REPO_FILTER_PREF_TOPIC_MATCH_STRATEGY_KEY,
 		);
 		if (data !== null) {
-			return data;
+			return data as RepoQuery["topicMatchStrategy"];
 		}
 		return "Match all";
 	};
@@ -73,24 +66,16 @@ export const setRepoFilterPrefTopicMatchStrategy =
 			value,
 		);
 	};
-export const setRepoFilterPrefCustomPrefix = (
-	value: string,
-) => {
-	localStorage.setItem(
-		REPO_FILTER_PREF_CUSTOM_PREFIX,
-		value,
-	);
-};
 
 /////////////////////////////////////////////
 // Issues filter preferences
 export const getIssueFilterPrefState =
-	(): string => {
+	(): IssueQuery["state"] => {
 		const data = localStorage.getItem(
 			ISSUE_FILTER_PREF_STATE_KEY,
 		);
 		if (data !== null) {
-			return data;
+			return data as IssueQuery["state"];
 		}
 		return "All";
 	};
@@ -103,12 +88,12 @@ export const setIssueFilterPrefState = (
 	);
 };
 export const getIssueFilterPrefOwnerType =
-	(): string => {
+	(): IssueQuery["ownerType"] => {
 		const data = localStorage.getItem(
 			"issue-filter-pref-owner-type",
 		);
 		if (data !== null) {
-			return data;
+			return data as IssueQuery["ownerType"];
 		}
 		return "User";
 	};

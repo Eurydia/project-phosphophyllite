@@ -1,38 +1,32 @@
-import { ArrowDropDownRounded } from "@mui/icons-material";
+import {
+	ArrowDropDownRounded,
+	ClearRounded,
+} from "@mui/icons-material";
 import {
 	MenuItem,
 	Select,
+	SelectChangeEvent,
 	SelectProps,
+	Stack,
 	useTheme,
 } from "@mui/material";
 import { FC } from "react";
-import { GenericSelectOption } from "~types/generics";
+import { SelectOption } from "~types/generics";
+import { StyledIconButton } from "./StyledIconButton";
 
 type StyledSelectMultipleProps = Omit<
 	SelectProps<string[]>,
-	"multiple"
+	"multiple" | "onChange"
 > & {
-	options?: GenericSelectOption<string>[];
+	options?: SelectOption<string>[];
+	onChange: (items: string[]) => void;
 };
 export const StyledSelectMultiple: FC<
 	StyledSelectMultipleProps
 > = (props) => {
-	const { options: loadedOptions, ...rest } =
-		props;
+	const { options, onChange, ...rest } = props;
 	const { palette } = useTheme();
-
-	let options: GenericSelectOption<string>[] = [
-		{ label: "No option", value: "No option" },
-	];
-	let disableOptions = true;
-	if (
-		loadedOptions !== undefined &&
-		loadedOptions.length > 0
-	) {
-		options = loadedOptions;
-		disableOptions = false;
-	}
-
+	const opt = options ?? [];
 	const icon = () => {
 		return (
 			<ArrowDropDownRounded
@@ -41,25 +35,51 @@ export const StyledSelectMultiple: FC<
 			/>
 		);
 	};
+	const handleChange = (
+		event: SelectChangeEvent<string[]>,
+	) => {
+		const values = event.target.value
+			.toString()
+			.split(",");
+		onChange(values);
+	};
+	const handleClear = () => {
+		onChange([]);
+	};
+	const disableClear =
+		rest.disabled || opt.length === 0;
+
 	return (
-		<Select
-			{...rest}
-			multiple
-			fullWidth
-			displayEmpty
-			size="small"
-			IconComponent={icon}
+		<Stack
+			width="100%"
+			direction="row"
+			alignItems="center"
 		>
-			{options.map(({ value, label }, index) => (
-				<MenuItem
-					disableRipple
-					disabled={disableOptions}
-					key={`option-${index}`}
-					value={value}
-				>
-					{label}
-				</MenuItem>
-			))}
-		</Select>
+			<Select
+				{...rest}
+				multiple
+				fullWidth
+				displayEmpty
+				size="small"
+				IconComponent={icon}
+				onChange={handleChange}
+			>
+				{opt.map(({ value, label }, index) => (
+					<MenuItem
+						key={`item-${index}`}
+						disableRipple
+						value={value}
+					>
+						{label}
+					</MenuItem>
+				))}
+			</Select>
+			<StyledIconButton
+				disabled={disableClear}
+				onClick={handleClear}
+			>
+				<ClearRounded />
+			</StyledIconButton>
+		</Stack>
 	);
 };
