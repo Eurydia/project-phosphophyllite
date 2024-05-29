@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { FC, useEffect, useRef } from "react";
-import { parseMarkdown } from "~core/markdown";
+import { parseMarkdown } from "~core/text";
 
 type MarkdownProps = {
 	markdownContent: string | undefined | null;

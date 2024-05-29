@@ -1,17 +1,6 @@
 import moment from "moment";
 
-export const timeSince = (
-	dateString: string | undefined | null,
-	fallback: string = "-",
-) => {
-	if (
-		dateString === undefined ||
-		dateString === null ||
-		dateString === ""
-	) {
-		return fallback;
-	}
-
+export const timeSince = (dateString: string) => {
 	return moment(dateString).fromNow();
 };
 
@@ -30,20 +19,4 @@ export const normalizeDateString = (
 	return moment(dateString).format(
 		"MMMM Do, YYYY",
 	);
-};
-
-export const toTimeStamp = (
-	dateString: string | null | undefined,
-	fallback: string,
-) => {
-	if (
-		dateString === undefined ||
-		dateString === null ||
-		dateString === ""
-	) {
-		return fallback;
-	}
-	const timeAt = normalizeDateString(dateString);
-	const delta = timeSince(dateString);
-	return `${timeAt} (${delta})`;
 };

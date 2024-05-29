@@ -1,8 +1,8 @@
 {
-		"start_url": "https://eurydia.github.io/project-phosphophyllite/",
-    "name": "Phosphophyllite",
-    "short_name": "Phosphophyllite",
-    "icons": [
+	"start_url": "/",
+	"name": "Phosphophyllite",
+	"short_name": "Phosphophyllite",
+	"icons": [
 		{
 			"src": "favicon-16x16.png",
 			"sizes": "16x16",
@@ -25,7 +25,7 @@
 			"purpose": "maskable"
 		}
 	],
-    "theme_color": "#1B1D2D",
-    "background_color": "#1B1D2D",
-    "display": "standalone"
+	"theme_color": "#1B1D2D",
+	"background_color": "#1B1D2D",
+	"display": "standalone"
 }

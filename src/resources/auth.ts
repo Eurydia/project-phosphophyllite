@@ -4,7 +4,7 @@ import {
 	CommentSchema,
 	IssueSchema,
 	RepoSchema,
-} from "~types/schemas";
+} from "~types/schema";
 
 const getOctokit = async () => {
 	const installationId: string = await invoke(
@@ -29,25 +29,13 @@ const getOctokit = async () => {
 	return octokit;
 };
 
-export const getRepo = async (
-	fullName: string,
-) => {
-	const repos = await getRepos();
-	for (const repo of repos) {
-		if (repo.full_name === fullName) {
-			return repo;
-		}
-	}
-	return undefined;
-};
-
 export const getRepos = async () => {
 	const octokit = await getOctokit();
 	const pages = await octokit.paginate(
 		"GET /installation/repositories",
 	);
-
 	const repos: Record<string, RepoSchema> = {};
+
 	pages.map(
 		({
 			id,
@@ -107,11 +95,11 @@ const getRepoReadMe = async (
 	return content;
 };
 
-export const getRepoIssues = async (
+export const getIssues = async (
 	fullName: string,
 	repoId: number,
 ) => {
-	const [owner, repo] = fullName.split("/");
+	const [owner, repo, ..._] = fullName.split("/");
 	const octokit = await getOctokit();
 	const response = await octokit.paginate(
 		"GET /repos/{owner}/{repo}/issues",
@@ -154,12 +142,12 @@ export const getRepoIssues = async (
 	return issues;
 };
 
-export const getRepoIssueComment = async (
+export const getComments = async (
 	fullName: string,
 	issueNumber: number,
 	issueId: number,
 ) => {
-	const [owner, repo] = fullName.split("/");
+	const [owner, repo, ..._] = fullName.split("/");
 	const octokit = await getOctokit();
 	const response = await octokit.paginate(
 		"GET /repos/{owner}/{repo}/issues/{issue_number}/comments",

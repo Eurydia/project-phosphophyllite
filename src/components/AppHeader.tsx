@@ -1,6 +1,7 @@
 import {
 	ChevronLeftRounded,
 	ChevronRightRounded,
+	SettingsRounded,
 } from "@mui/icons-material";
 import { Box, Stack } from "@mui/material";
 import { FC } from "react";
@@ -8,10 +9,12 @@ import {
 	useLocation,
 	useNavigate,
 } from "react-router";
+import { useSubmit } from "react-router-dom";
 import { StyledBreadcrumbs } from "./StyledBreadcrumbs";
 import { StyledIconButton } from "./StyledIconButton";
 
 export const AppHeader: FC = () => {
+	const submit = useSubmit();
 	const navigator = useNavigate();
 	const { pathname } = useLocation();
 
@@ -20,6 +23,12 @@ export const AppHeader: FC = () => {
 	};
 	const goForward = () => {
 		navigator(1);
+	};
+	const goSettings = () => {
+		submit(
+			{},
+			{ action: "/Settings", method: "get" },
+		);
 	};
 
 	const appState = window.history.state as {
@@ -56,7 +65,9 @@ export const AppHeader: FC = () => {
 			<Box overflow="hidden">
 				<StyledBreadcrumbs path={appPath} />
 			</Box>
-			<div />
+			<StyledIconButton onClick={goSettings}>
+				<SettingsRounded />
+			</StyledIconButton>
 		</Stack>
 	);
 };

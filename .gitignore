@@ -1,4 +1,4 @@
-src-tauri/secrets/*
+**/secrets/*
 
 # Logs
 logs

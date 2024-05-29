@@ -2,8 +2,8 @@ import { Typography } from "@mui/material";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { normalizeDateString } from "~core/time";
-import { ColumnHeader } from "~types/generics";
-import { RepoSchema } from "~types/schemas";
+import { ColumnHeader } from "~types/generic";
+import { RepoSchema } from "~types/schema";
 
 export const useRepoColumnHeaders = () => {
 	const columns = useRef<

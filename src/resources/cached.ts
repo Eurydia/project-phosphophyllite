@@ -1,15 +1,10 @@
-import { dbPromise } from "~database/migration";
-import { SelectOption } from "~types/generics";
+import { SelectOption } from "~types/generic";
 import {
-	CommentSchema,
-	IssueSchema,
-	RepoSchema,
-} from "~types/schemas";
-import {
-	getRepoIssueComment,
-	getRepoIssues,
+	getComments,
+	getIssues,
 	getRepos,
-} from "./api";
+} from "./auth";
+import { dbPromise } from "./migration";
 
 export const getCachedRepos = async () => {
 	return (await dbPromise).getAll("repos");
@@ -58,97 +53,45 @@ export const getCachedComments = async (
 	);
 };
 
-const updateCachedRepos = async (
-	repos: RepoSchema[],
-) => {
+export const updateCachedRepos = async () => {
+	const repos = await getRepos();
 	const db = await dbPromise;
-	const req = repos.map((repo) =>
+	const txReqs = repos.map((repo) =>
 		db.put("repos", repo),
 	);
-	const res = await Promise.all(req);
-	return res;
+	await Promise.all(txReqs);
 };
-
-const updateCachedRepoIssues = async (
-	issues: IssueSchema[],
-) => {
-	const db = await dbPromise;
-	const req = issues.map((issue) =>
-		db.put("issues", issue),
+export const updateCachedIssues = async () => {
+	const cachedRepos = await getCachedRepos();
+	const issueReqs = cachedRepos.map((repo) =>
+		getIssues(repo.full_name, repo.id),
 	);
-	const res = await Promise.all(req);
-	return res;
+	const issues = await Promise.all(issueReqs);
+	const db = await dbPromise;
+	const txReqs = issues
+		.flat()
+		.map((issue) => db.put("issues", issue));
+	await Promise.all(txReqs);
 };
 
-const updateCachedRepoIssueComments = async (
-	issueComments: CommentSchema[],
-) => {
-	const db = await dbPromise;
-	return await Promise.all(
-		issueComments.map((comment) =>
-			db.put("issueComments", comment),
+export const updateCachedComments = async () => {
+	const cachedIssues = await getCachedIssues();
+	const commentReqs = cachedIssues.map((issue) =>
+		getComments(
+			issue.repo_full_name,
+			issue.issue_number,
+			issue.id,
 		),
 	);
-};
+	const comments = await Promise.all(commentReqs);
 
-export const syncCachedRepos = async (
-	onFailure: (err: any) => void,
-) => {
-	return await getRepos().then(
-		(res) => {
-			updateCachedRepos(res);
-			return [true];
-		},
-		(err) => {
-			onFailure(err);
-			return [false];
-		},
-	);
-};
-export const syncCachedRepoIssues = async (
-	onFailure: (err: any) => void,
-) => {
-	const cachedRepos = await getCachedRepos();
-	return await Promise.all(
-		cachedRepos.map(async (repo) => {
-			return await getRepoIssues(
-				repo.full_name,
-				repo.id,
-			).then(
-				(res) => {
-					updateCachedRepoIssues(res);
-					return true;
-				},
-				(err) => {
-					onFailure(err);
-					return false;
-				},
-			);
-		}),
-	);
-};
-export const syncCachedRepoIssueComments = async (
-	onFailure: (err: any) => void,
-) => {
-	const cachedIssues = await getCachedIssues();
-	return await Promise.all(
-		cachedIssues.map(async (issue) => {
-			return await getRepoIssueComment(
-				issue.repo_full_name,
-				issue.issue_number,
-				issue.id,
-			).then(
-				(res) => {
-					updateCachedRepoIssueComments(res);
-					return true;
-				},
-				(err) => {
-					onFailure(err);
-					return false;
-				},
-			);
-		}),
-	);
+	const db = await dbPromise;
+	const txReqs = comments
+		.flat()
+		.map((comment) =>
+			db.put("issueComments", comment),
+		);
+	await Promise.all(txReqs);
 };
 
 export const getRepoOptions = async () => {

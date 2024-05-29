@@ -2,7 +2,7 @@ import { LoaderFunction } from "react-router-dom";
 import {
 	getCachedIssues,
 	getCachedRepos,
-} from "~database/cached";
+} from "resources/cached";
 
 export type LoaderData = {
 	activeRepos: number;
@@ -12,23 +12,22 @@ export type LoaderData = {
 };
 export const loaderHome: LoaderFunction =
 	async (): Promise<LoaderData> => {
-		const repos = await getCachedRepos();
-		const issues = (
-			await getCachedIssues()
-		).filter(
+		const cachedRepos = await getCachedRepos();
+		const cachedIssues = await getCachedIssues();
+		const humanIssues = cachedIssues.filter(
 			({ owner_type }) => owner_type === "User",
 		);
 
-		const activeRepos = repos.filter(
+		const activeRepos = cachedRepos.filter(
 			({ is_archived }) => !is_archived,
 		).length;
-		const openIssues = issues.filter(
+		const openIssues = humanIssues.filter(
 			({ state }) => state === "open",
 		).length;
 		const archivedRepos =
-			repos.length - activeRepos;
+			cachedRepos.length - activeRepos;
 		const closedIssues =
-			issues.length - openIssues;
+			humanIssues.length - openIssues;
 
 		const loaderData: LoaderData = {
 			activeRepos,

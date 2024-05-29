@@ -1,13 +1,13 @@
 import { LoaderFunction } from "react-router";
-import { filterIssues } from "~core/filtering";
-import { extractIssueQuery } from "~core/query";
 import {
 	getCachedIssues,
 	getCachedRepo,
-} from "~database/cached";
-import { SelectOption } from "~types/generics";
+} from "resources/cached";
+import { filterIssues } from "~core/filtering";
+import { extractIssueQuery } from "~core/query";
+import { SelectOption } from "~types/generic";
 import { IssueQuery } from "~types/query";
-import { IssueSchema } from "~types/schemas";
+import { IssueSchema } from "~types/schema";
 
 export type LoaderData = {
 	issues: IssueSchema[];
@@ -38,7 +38,9 @@ export const loader: LoaderFunction = async ({
 		});
 	}
 	const { searchParams } = new URL(request.url);
-	const query = extractIssueQuery(searchParams);
+	const query = await extractIssueQuery(
+		searchParams,
+	);
 
 	const cachedIssues = await getCachedIssues(
 		repo.full_name,
@@ -53,7 +55,6 @@ export const loader: LoaderFunction = async ({
 			value: repo.full_name,
 		},
 	];
-
 	const loaderData: LoaderData = {
 		issues,
 		repoOptions,

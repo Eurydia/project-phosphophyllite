@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { SelectOption } from "~types/generics";
+import { SelectOption } from "~types/generic";
 
 export const useRepoQueryOptions = () => {
 	const topicMatchStrategyOptions = useRef<

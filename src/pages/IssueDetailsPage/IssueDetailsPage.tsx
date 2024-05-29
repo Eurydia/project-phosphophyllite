@@ -6,7 +6,7 @@ import {
 	commentToMetadata,
 	issueToMetadata,
 } from "~core/text";
-import { CommentSchema } from "~types/schemas";
+import { CommentSchema } from "~types/schema";
 import { RepoDetailsNavView } from "~views/RepoDetailsNavView";
 import { LoaderData } from "./loader";
 

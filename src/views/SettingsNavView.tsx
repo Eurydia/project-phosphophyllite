@@ -1,17 +1,24 @@
-import { Box, Tab, Tabs } from "@mui/material";
+import {
+	Box,
+	Divider,
+	Stack,
+	Tab,
+	Tabs,
+} from "@mui/material";
 import { FC, ReactNode } from "react";
 import { useSubmit } from "react-router-dom";
 import { AppHeaderView } from "./AppHeaderView";
 
-type HomeNavViewProps = {
+type SettingNavViewProps = {
 	children: ReactNode;
 	tab: number;
 };
 export const SettingNavView: FC<
-	HomeNavViewProps
+	SettingNavViewProps
 > = (props) => {
 	const { children, tab } = props;
 	const submit = useSubmit();
+
 	const handleTabChange = (
 		_: React.SyntheticEvent<Element, Event>,
 		value: number,
@@ -19,10 +26,10 @@ export const SettingNavView: FC<
 		let target = "/Settings";
 		switch (value) {
 			case 1:
-				target = "/Settings/Repositories";
+				target = "/Settings/Repository";
 				break;
 			case 2:
-				target = "/Settings/Issues";
+				target = "/Settings/Issue";
 				break;
 		}
 		submit(
@@ -42,24 +49,36 @@ export const SettingNavView: FC<
 					onChange={handleTabChange}
 				>
 					<Tab
-						disableRipple
+						disableTouchRipple
 						value={0}
 						label="Synchronization"
 					/>
 					<Tab
 						disableRipple
 						value={1}
-						label="Repository filter"
+						label="Repository"
 					/>
 					<Tab
 						disableRipple
 						value={2}
-						label="Issue filter"
+						label="Issue"
 					/>
 				</Tabs>
 			}
 		>
-			<Box padding={2}>{children}</Box>
+			<Box padding={2}>
+				<Stack
+					spacing={2}
+					divider={
+						<Divider
+							flexItem
+							variant="middle"
+						/>
+					}
+				>
+					{children}
+				</Stack>
+			</Box>
 		</AppHeaderView>
 	);
 };

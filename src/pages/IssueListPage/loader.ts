@@ -1,13 +1,13 @@
 import { LoaderFunction } from "react-router-dom";
-import { filterIssues } from "~core/filtering";
-import { extractIssueQuery } from "~core/query";
 import {
 	getCachedIssues,
 	getRepoOptions,
-} from "~database/index";
-import { SelectOption } from "~types/generics";
+} from "resources/cached";
+import { filterIssues } from "~core/filtering";
+import { extractIssueQuery } from "~core/query";
+import { SelectOption } from "~types/generic";
 import { IssueQuery } from "~types/query";
-import { IssueSchema } from "~types/schemas";
+import { IssueSchema } from "~types/schema";
 
 export type LoaderData = {
 	issues: IssueSchema[];
@@ -19,15 +19,14 @@ export const loader: LoaderFunction = async ({
 }) => {
 	const cachedIssues = await getCachedIssues();
 	const repoOptions = await getRepoOptions();
-
 	const { searchParams } = new URL(request.url);
-	const query = extractIssueQuery(searchParams);
-
+	const query = await extractIssueQuery(
+		searchParams,
+	);
 	const issues = filterIssues(
 		cachedIssues,
 		query,
 	);
-
 	const loaderData: LoaderData = {
 		issues,
 		repoOptions,

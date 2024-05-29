@@ -12,7 +12,7 @@ import { StyledSelect } from "~components/StyledSelect";
 import { StyledSelectMultiple } from "~components/StyledSelectMultiple";
 import { StyledTableToolbar } from "~components/StyledTableToolbar";
 import { StyledTextField } from "~components/StyledTextField";
-import { SelectOption } from "~types/generics";
+import { SelectOption } from "~types/generic";
 import { IssueQuery } from "~types/query";
 
 type StyledToolbarProps = {

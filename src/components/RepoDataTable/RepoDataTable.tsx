@@ -1,9 +1,9 @@
 import { Stack, Typography } from "@mui/material";
 import { useRepoColumnHeaders } from "hooks/useRepoColumnHeaders";
-import { getRepoOrderingFn } from "~core/sorting";
-import { SelectOption } from "~types/generics";
+import { getRepoSortFn } from "~core/sorting";
+import { SelectOption } from "~types/generic";
 import { RepoQuery } from "~types/query";
-import { RepoSchema } from "~types/schemas";
+import { RepoSchema } from "~types/schema";
 import { StyledDataTable } from "../StyledDataTable";
 import { StyledToolbar } from "./StyledToolbar";
 
@@ -36,7 +36,7 @@ export const RepoDataTable: React.FC<
 			<Typography>{itemCountMsg}</Typography>
 			<StyledDataTable
 				items={repos}
-				orderingFn={getRepoOrderingFn}
+				orderingFn={getRepoSortFn}
 				defaultOrderBy={defaultOrderBy}
 				columnDefinition={columnHeaders}
 			/>

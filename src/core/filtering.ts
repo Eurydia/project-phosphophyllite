@@ -6,7 +6,7 @@ import {
 import {
 	IssueSchema,
 	RepoSchema,
-} from "~types/schemas";
+} from "~types/schema";
 
 export const filterRepos = (
 	repos: RepoSchema[],

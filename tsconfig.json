@@ -7,12 +7,8 @@
 			"~pages/*": ["./pages/*"],
 			"~views/*": ["./views/*"],
 			"~database/*": ["./database/*"],
-			"~database": ["./database"],
 			"~types/*": ["./types/*"],
-			"~assets/*": ["./assets/*"],
-			"~constants": ["./constants"],
-			"~core/*": ["./core/*"],
-			"~stores/*": ["./store"]
+			"~core/*": ["./core/*"]
 		},
 		"target": "ES2020",
 		"useDefineForClassFields": true,

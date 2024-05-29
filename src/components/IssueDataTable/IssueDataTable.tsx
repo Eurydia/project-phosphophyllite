@@ -1,9 +1,9 @@
 import { Stack, Typography } from "@mui/material";
 import { useIssueColumnHeaders } from "hooks/useIssueColumnHeaders";
-import { getIssueOrderingFn } from "~core/sorting";
-import { SelectOption } from "~types/generics";
+import { getIssueSortFn } from "~core/sorting";
+import { SelectOption } from "~types/generic";
 import { IssueQuery } from "~types/query";
-import { IssueSchema } from "~types/schemas";
+import { IssueSchema } from "~types/schema";
 import { StyledDataTable } from "../StyledDataTable";
 import { StyledToolbar } from "./StyledToolbar";
 
@@ -38,7 +38,7 @@ export const IssueDataTable: React.FC<
 				items={issues}
 				columnDefinition={columnHeaders}
 				defaultOrderBy={defaultOrderBy}
-				orderingFn={getIssueOrderingFn}
+				orderingFn={getIssueSortFn}
 			/>
 		</Stack>
 	);

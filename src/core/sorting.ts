@@ -1,27 +1,17 @@
 import {
 	IssueSchema,
 	RepoSchema,
-} from "~types/schemas";
+} from "~types/schema";
 
 export const sortByString = (
 	a: string | null | undefined,
 	b: string | null | undefined,
 ): number => {
-	// moves nullish values to the end
 	const _a = !!a ? 1 : 0;
 	const _b = !!b ? 1 : 0;
 	if (_a + _b !== 2) {
 		return _b - _a;
 	}
-	// if (!_a && _b) {
-	// 	return 1;
-	// }
-	// if (!_a && !_b) {
-	// 	return 0;
-	// }
-	// if (_a && !_b) {
-	// 	return -1;
-	// }
 	return b!.localeCompare(a!);
 };
 
@@ -32,15 +22,7 @@ export const sortByBoolean = (
 	const _a = !!a ? 1 : 0;
 	const _b = !!b ? 1 : 0;
 	return _b - _a;
-	// if (_a === _b) {
-	// 	return 0;
-	// }
-	// if (_a && !_b) {
-	// 	return -1;
-	// }
-	// return 1;
 };
-
 export const sortByNumber = (
 	a: number | null | undefined,
 	b: number | null | undefined,
@@ -50,19 +32,10 @@ export const sortByNumber = (
 	if (_a + _b < 2) {
 		return _b - _a;
 	}
-	// if (!_a && _b) {
-	// 	return 1;
-	// }
-	// if (!_a && !_b) {
-	// 	return 0;
-	// }
-	// if (_a && !_b) {
-	// 	return -1;
-	// }
 	return b! - a!;
 };
 
-export const getIssueOrderingFn = (
+export const getIssueSortFn = (
 	property: keyof IssueSchema,
 ) => {
 	let orderFn:
@@ -105,7 +78,7 @@ export const getIssueOrderingFn = (
 	return orderFn;
 };
 
-export const getRepoOrderingFn = (
+export const getRepoSortFn = (
 	property: keyof RepoSchema,
 ):
 	| ((a: RepoSchema, b: RepoSchema) => number)

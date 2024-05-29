@@ -12,7 +12,7 @@ import {
 	useMemo,
 	useState,
 } from "react";
-import { ColumnHeader } from "~types/generics";
+import { ColumnHeader } from "~types/generic";
 
 type StyledTableHeadProps<T> = {
 	order: "asc" | "desc";

@@ -7,7 +7,7 @@ import {
 	CommentSchema,
 	IssueSchema,
 	RepoSchema,
-} from "~types/schemas";
+} from "~types/schema";
 
 interface Database extends DBSchema {
 	repos: {
@@ -82,7 +82,7 @@ const db1 = (db: IDBPDatabase<Database>) => {
 
 export const dbPromise = openDB<Database>(
 	"primary",
-	2,
+	1,
 	{
 		upgrade(db, oldVersion) {
 			if (oldVersion < 1) {

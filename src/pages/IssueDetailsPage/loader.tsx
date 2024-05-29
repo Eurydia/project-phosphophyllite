@@ -2,11 +2,11 @@ import { LoaderFunction } from "react-router";
 import {
 	getCachedComments,
 	getCachedIssues,
-} from "~database/cached";
+} from "resources/cached";
 import {
 	CommentSchema,
 	IssueSchema,
-} from "~types/schemas";
+} from "~types/schema";
 
 export type LoaderData = {
 	issue: IssueSchema;

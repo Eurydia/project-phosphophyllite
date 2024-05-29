@@ -11,7 +11,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import { FC } from "react";
-import { SelectOption } from "~types/generics";
+import { SelectOption } from "~types/generic";
 import { StyledIconButton } from "./StyledIconButton";
 
 type StyledSelectMultipleProps = Omit<

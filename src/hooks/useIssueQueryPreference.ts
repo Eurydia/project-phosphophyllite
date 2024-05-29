@@ -1,27 +1,56 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-	ISSUE_FILTER_PREF_OWNER_TYPE_KEY,
-	ISSUE_FILTER_PREF_STATE_KEY,
-} from "~constants";
+	getIssueQueryPreference,
+	setIssueQueryPreference,
+} from "resources/settings";
+import { IssueQueryPref } from "~types/query";
 
 export const useIssueQueryPreference = () => {
-	const [state] = useState((): string => {
-		const data = localStorage.getItem(
-			ISSUE_FILTER_PREF_STATE_KEY,
-		);
-		if (data !== null) {
-			return data;
+	const [pref, setPref] = useState<
+		IssueQueryPref | undefined
+	>();
+
+	useEffect(() => {
+		(async () => {
+			const cPref =
+				await getIssueQueryPreference();
+			setPref(cPref);
+		})();
+	}, []);
+
+	useEffect(() => {
+		if (pref === undefined) {
+			return;
 		}
-		return "All";
-	});
-	const [ownerType] = useState((): string => {
-		const data = localStorage.getItem(
-			ISSUE_FILTER_PREF_OWNER_TYPE_KEY,
-		);
-		if (data !== null) {
-			return data;
-		}
-		return "User";
-	});
-	return { ownerType, state };
+		setIssueQueryPreference(pref);
+	}, [pref]);
+
+	const setState = (value: string) => {
+		setPref((prev) => {
+			if (prev === undefined) {
+				return;
+			}
+			const next = { ...prev };
+			next["state"] =
+				value as IssueQueryPref["state"];
+			return next;
+		});
+	};
+
+	const setOwnerType = (value: string) => {
+		setPref((prev) => {
+			if (prev === undefined) {
+				return;
+			}
+			const next = { ...prev };
+			next["ownerType"] =
+				value as IssueQueryPref["ownerType"];
+			return next;
+		});
+	};
+	return {
+		pref,
+		setState,
+		setOwnerType,
+	};
 };

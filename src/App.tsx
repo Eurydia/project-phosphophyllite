@@ -1,14 +1,13 @@
-import { FC } from "react";
+import { useSync } from "hooks/useSync";
+import { FC, useEffect } from "react";
 import {
 	RouterProvider,
-	createBrowserRouter,
 	redirect,
-} from "react-router-dom";
+} from "react-router";
+import { createBrowserRouter } from "react-router-dom";
 import { ErrorBoundry } from "~pages/ErrorBoundary";
-import {
-	Home,
-	loaderHome,
-} from "~pages/HomePage";
+import { loaderHome } from "~pages/HomePage";
+import { HomePage } from "~pages/HomePage/HomePage";
 import {
 	IssueDetailsPage,
 	loaderIssueDetailsPage,
@@ -29,97 +28,90 @@ import {
 	RepoListPage,
 	loaderRepoListPage,
 } from "~pages/RepoListPage";
+import { SettingsIssuePage } from "~pages/SettingsIssuePage";
+import { SettingsPage } from "~pages/SettingsPage";
+import { SettingsRepoPage } from "~pages/SettingsRepoPage";
 
-const router = createBrowserRouter(
-	[
-		{
-			path: "/",
-			element: <Home />,
-			loader: loaderHome,
-			errorElement: <ErrorBoundry />,
-		},
-		{
-			path: "/repositories",
-			element: <RepoListPage />,
-			loader: loaderRepoListPage,
-		},
-		{
-			path: "/issues",
-			element: <IssueListPage />,
-			loader: loaderIssueListPage,
-		},
-		{
-			path: "/repositories/:owner",
-			loader: ({ params }) => {
-				return redirect(
-					`/Repositories?name=${params.owner}`,
-				);
-			},
-		},
-		{
-			path: "/repositories/:owner/:repo",
-			element: <RepoDetailsPage />,
-			loader: loaderRepoDetailsPage,
-		},
-		{
-			path: "/repositories/:owner/:repo/issues",
-			element: <RepoIssueListPage />,
-			loader: loaderRepoIssueListPage,
-		},
-		{
-			path: "/repositories/:owner/:repo/issues/:issueNumber",
-			element: <IssueDetailsPage />,
-			loader: loaderIssueDetailsPage,
-		},
-		// {
-		// 	path: "/settings",
-		// 	element: <SettingPage />,
-		// },
-		// {
-		// 	path: "/settings/repo",
-		// 	element: <SettingsPage />,
-		// },
-		// {
-		// 	path: "/settings/issue",
-		// 	element: <SettingsPage />,
-		// },
-	],
+const router = createBrowserRouter([
 	{
-		basename: "/project-phosphophyllite",
+		path: "/",
+		element: <HomePage />,
+		loader: loaderHome,
+		errorElement: <ErrorBoundry />,
 	},
-);
+	{
+		path: "/repositories",
+		element: <RepoListPage />,
+		loader: loaderRepoListPage,
+		errorElement: <ErrorBoundry />,
+	},
+	{
+		path: "/issues",
+		element: <IssueListPage />,
+		loader: loaderIssueListPage,
+		errorElement: <ErrorBoundry />,
+	},
+	{
+		errorElement: <ErrorBoundry />,
+		path: "/repositories/:owner",
+		loader: ({ params }) => {
+			return redirect(
+				`/Repositories?name=${params.owner}`,
+			);
+		},
+	},
+	{
+		errorElement: <ErrorBoundry />,
+		path: "/repositories/:owner/:repo",
+		element: <RepoDetailsPage />,
+		loader: loaderRepoDetailsPage,
+	},
+	{
+		errorElement: <ErrorBoundry />,
+		path: "/repositories/:owner/:repo/issues",
+		element: <RepoIssueListPage />,
+		loader: loaderRepoIssueListPage,
+	},
+	{
+		errorElement: <ErrorBoundry />,
+		path: "/repositories/:owner/:repo/issues/:issueNumber",
+		element: <IssueDetailsPage />,
+		loader: loaderIssueDetailsPage,
+	},
+	{
+		path: "/settings",
+		element: <SettingsPage />,
+	},
+	{
+		path: "/settings/repository",
+		element: <SettingsRepoPage />,
+	},
+	{
+		path: "/settings/issue",
+		element: <SettingsIssuePage />,
+	},
+]);
 
 export const App: FC = () => {
-	// const { enqueueSnackbar } = useSnackbar();
-
-	// const enqueueError = (err: any) => {
-	// 	enqueueSnackbar({
-	// 		message: String(err),
-	// 		variant: "error",
-	// 	});
-	// 	throw err;
-	// };
-
-	// const handleSync = async (index: number) => {
-	// 	const { promise, item } = SYNC_DETAILS[index];
-	// 	const res = await promise(enqueueError)
-	// 		.then((resp) => resp.every((r) => r))
-	// 		.catch(() => false);
-	// 	if (res) {
-	// 		enqueueSnackbar({
-	// 			message: `${item} data is up to date`,
-	// 			variant: "success",
-	// 		});
-	// 	}
-	// };
-	// useEffect(() => {
-	// 	const initSync = async () => {
-	// 		await handleSync(0);
-	// 		await handleSync(1);
-	// 		await handleSync(2);
-	// 	};
-	// 	initSync();
-	// }, []);
-
+	const { lastSync, syncFn } = useSync();
+	useEffect(() => {
+		const initSync = async () => {
+			const reqs = lastSync.map(
+				async (dStr, index) => {
+					const marker = new Date(dStr).getTime();
+					const delta = Date.now() - marker;
+					if (
+						Number.isNaN(delta) ||
+						delta / 1000 < 86400
+					) {
+						return;
+					}
+					await syncFn[index]();
+				},
+			);
+			await Promise.all(reqs);
+		};
+		initSync();
+	}, []);
 	return <RouterProvider router={router} />;
 };
