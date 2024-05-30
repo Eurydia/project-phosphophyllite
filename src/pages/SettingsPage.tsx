@@ -6,16 +6,11 @@ import {
 import { useSync } from "hooks/useSync";
 import { FC } from "react";
 import { StyledSearchItem } from "~components/StyledSearchItem";
-import { timeSince } from "~core/time";
 import { SettingNavView } from "~views/SettingsNavView";
 
 export const SettingsPage: FC = () => {
-	const {
-		lastSync,
-		itemText,
-		syncStates,
-		syncFn,
-	} = useSync();
+	const { itemText, syncStates, syncFn } =
+		useSync();
 
 	const renderButtonContent = (index: number) => {
 		if (syncStates[index]) {
@@ -31,10 +26,7 @@ export const SettingsPage: FC = () => {
 
 	const renderedItems = itemText.map(
 		(text, index) => {
-			const normUpdated = timeSince(
-				lastSync[index],
-			);
-			const msg = `Update ${text} (Last updated: ${normUpdated})`;
+			const msg = `Update ${text}`;
 			return (
 				<StyledSearchItem
 					key={text}

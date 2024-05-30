@@ -1,5 +1,4 @@
-import { useSync } from "hooks/useSync";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import {
 	RouterProvider,
 	redirect,
@@ -93,25 +92,5 @@ const router = createBrowserRouter([
 ]);
 
 export const App: FC = () => {
-	const { lastSync, syncFn } = useSync();
-	useEffect(() => {
-		const initSync = async () => {
-			const reqs = lastSync.map(
-				async (dStr, index) => {
-					const marker = new Date(dStr).getTime();
-					const delta = Date.now() - marker;
-					if (
-						Number.isNaN(delta) ||
-						delta / 1000 < 86400
-					) {
-						return;
-					}
-					await syncFn[index]();
-				},
-			);
-			await Promise.all(reqs);
-		};
-		initSync();
-	}, []);
 	return <RouterProvider router={router} />;
 };

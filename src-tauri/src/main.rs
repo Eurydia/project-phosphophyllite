@@ -13,8 +13,6 @@ fn main() {
             settings::set_repo_query_preferences,
             settings::get_issue_query_preferences,
             settings::set_issue_query_preferences,
-            settings::set_sync_data,
-            settings::get_sync_data,
             secrets::get_app_id,
             secrets::get_private_key,
             secrets::get_installation_id

@@ -3,8 +3,11 @@ import {
 	getCachedIssues,
 	getCachedRepos,
 } from "resources/cached";
+import { sortByString } from "~core/sorting";
+import { IssueSchema } from "~types/schema";
 
 export type LoaderData = {
+	recentIssues: IssueSchema[];
 	activeRepos: number;
 	archivedRepos: number;
 	openIssues: number;
@@ -29,7 +32,14 @@ export const loaderHome: LoaderFunction =
 		const closedIssues =
 			humanIssues.length - openIssues;
 
+		const recentIssues = cachedIssues
+			.sort((a, b) =>
+				sortByString(a.updated_at, b.updated_at),
+			)
+			.slice(0, 5);
+
 		const loaderData: LoaderData = {
+			recentIssues,
 			activeRepos,
 			archivedRepos,
 			openIssues,

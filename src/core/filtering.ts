@@ -87,7 +87,9 @@ export const filterIssues = (
 
 	if (ownerType !== "All") {
 		filterFns.push(
-			(item) => item.owner_type === ownerType,
+			(item) =>
+				item.owner_type !== null &&
+				item.owner_type === ownerType,
 		);
 	}
 	if (repoFullNames.length > 0) {
@@ -97,7 +99,8 @@ export const filterIssues = (
 	}
 	if (state !== "All") {
 		filterFns.push(
-			(item) => item.state === state,
+			(item) =>
+				item.state === state.toLowerCase(),
 		);
 	}
 	const items = issues.filter((item) =>

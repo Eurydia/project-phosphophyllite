@@ -1,15 +1,10 @@
 import { useSnackbar } from "notistack";
+import { useState } from "react";
 import {
-	useEffect,
-	useRef,
-	useState,
-} from "react";
-import { updateCachedRepos } from "resources/cached";
-import {
-	getSyncData,
-	setSyncData,
-} from "resources/settings";
-import { SyncData } from "~types/query";
+	updateCachedComments,
+	updateCachedIssues,
+	updateCachedRepos,
+} from "resources/cached";
 
 export const useSync = () => {
 	const { enqueueSnackbar } = useSnackbar();
@@ -19,87 +14,44 @@ export const useSync = () => {
 		false,
 	]);
 
-	const [_lastSync, setLastSync] = useState<
-		SyncData | undefined
-	>(undefined);
-
-	useEffect(() => {
-		(async () => {
-			const data = await getSyncData();
-			setLastSync(data);
-		})();
-	}, []);
-
-	useEffect(() => {
-		if (_lastSync === undefined) {
-			return;
-		}
-		(async () => {
-			setSyncData(_lastSync);
-		})();
-	}, [_lastSync]);
-
-	const enqueueError = (err: any) => {
-		enqueueSnackbar({
-			message: String(err),
-			variant: "error",
-		});
-		throw err;
+	const handleUpdateRepos = async () => {
+		await handleUpdate(
+			0,
+			"Repository",
+			updateCachedRepos,
+		);
 	};
-
-	const updateRepos = async () => {
-		await handleSync(0, "Repository");
-		setLastSync((prev) => {
-			if (prev === undefined) {
-				return;
-			}
-			const next = { ...prev };
-			next["repoLastSync"] = new Date(
-				Date.now(),
-			).toISOString();
-			return next;
-		});
+	const handleUpdateIssues = async () => {
+		await handleUpdate(
+			1,
+			"Issue",
+			updateCachedIssues,
+		);
 	};
-	const updateIssues = async () => {
-		await handleSync(1, "Issue");
-		setLastSync((prev) => {
-			if (prev === undefined) {
-				return;
-			}
-			const next = { ...prev };
-			next["issueLastSync"] = new Date(
-				Date.now(),
-			).toISOString();
-			return next;
-		});
+	const handleUpdateComments = async () => {
+		await handleUpdate(
+			2,
+			"Comment",
+			updateCachedComments,
+		);
 	};
-	const updateComments = async () => {
-		await handleSync(2, "Comment");
-		setLastSync((prev) => {
-			if (prev === undefined) {
-				return;
-			}
-			const next = { ...prev };
-			next["commentLastSync"] = new Date(
-				Date.now(),
-			).toISOString();
-			return next;
-		});
-	};
-
-	const handleSync = async (
+	const handleUpdate = async (
 		index: number,
 		item: string,
+		callback: () => Promise<void>,
 	) => {
 		setSyncStates((prev) => {
 			const next = [...prev];
 			next[index] = true;
 			return next;
 		});
-		const status = await updateCachedRepos()
+		const status = await callback()
 			.then(() => true)
 			.catch((err) => {
-				enqueueError(err);
+				enqueueSnackbar({
+					message: String(err),
+					variant: "error",
+				});
 				return false;
 			})
 			.finally(() => {
@@ -109,7 +61,6 @@ export const useSync = () => {
 					return next;
 				});
 			});
-
 		if (!status) {
 			return;
 		}
@@ -119,31 +70,21 @@ export const useSync = () => {
 		});
 	};
 
-	const syncFn = useRef([
-		updateRepos,
-		updateIssues,
-		updateComments,
-	]);
+	const syncFn = [
+		handleUpdateRepos,
+		handleUpdateIssues,
+		handleUpdateComments,
+	];
 
-	const itemText = useRef<string[]>([
+	const itemText = [
 		"repositories",
 		"issues",
 		"comments",
-	]);
-
-	let lastSync = ["Never", "Never", "Never"];
-	if (_lastSync !== undefined) {
-		lastSync = [
-			_lastSync["repoLastSync"],
-			_lastSync["issueLastSync"],
-			_lastSync["commentLastSync"],
-		];
-	}
+	];
 
 	return {
-		lastSync,
-		itemText: itemText.current,
+		itemText,
 		syncStates,
-		syncFn: syncFn.current,
+		syncFn,
 	};
 };

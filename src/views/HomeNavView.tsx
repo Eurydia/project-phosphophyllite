@@ -1,4 +1,4 @@
-import { Box, Tab, Tabs } from "@mui/material";
+import { Stack, Tab, Tabs } from "@mui/material";
 import { FC, ReactNode } from "react";
 import { useSubmit } from "react-router-dom";
 import { AppHeaderView } from "./AppHeaderView";
@@ -59,7 +59,12 @@ export const HomeNavView: FC<HomeNavViewProps> = (
 				</Tabs>
 			}
 		>
-			<Box padding={2}>{children}</Box>
+			<Stack
+				spacing={2}
+				padding={2}
+			>
+				{children}
+			</Stack>
 		</AppHeaderView>
 	);
 };

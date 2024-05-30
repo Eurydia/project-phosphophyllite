@@ -1,3 +1,4 @@
+import { Buffer } from "buffer";
 import rehypeDocument from "rehype-document";
 import rehypeKatex from "rehype-katex";
 import rehypeSanitize from "rehype-sanitize";
@@ -13,6 +14,17 @@ import {
 	RepoSchema,
 } from "~types/schema";
 import { normalizeDateString } from "./time";
+
+export const decodeBase64 = (content: string) => {
+	if (content === "") {
+		return "";
+	}
+	const decoded = Buffer.from(
+		content,
+		"base64",
+	).toString();
+	return decoded;
+};
 
 export const commentToMetadata = (
 	comment: CommentSchema,

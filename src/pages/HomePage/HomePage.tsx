@@ -34,7 +34,10 @@ const OverviewCard: FC<OverviewCardProps> = (
 			variant="outlined"
 			sx={{ flexGrow: 1 }}
 		>
-			<CardActionArea onClick={handleClick}>
+			<CardActionArea
+				disableTouchRipple
+				onClick={handleClick}
+			>
 				<CardHeader
 					title={title}
 					subheader={subheader}
@@ -50,6 +53,7 @@ const OverviewCard: FC<OverviewCardProps> = (
 
 export const HomePage: FC = () => {
 	const {
+		recentIssues,
 		activeRepos,
 		archivedRepos,
 		closedIssues,
@@ -76,9 +80,10 @@ export const HomePage: FC = () => {
 	return (
 		<HomeNavView tab={0}>
 			<Stack
+				useFlexGap
+				spacing={2}
 				direction="row"
 				flexWrap="wrap"
-				gap={2}
 			>
 				<OverviewCard
 					query="status=Active"

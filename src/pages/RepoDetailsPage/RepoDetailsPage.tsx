@@ -3,11 +3,13 @@ import {
 	Divider,
 	Typography,
 } from "@mui/material";
-import { Buffer } from "buffer";
 import { FC } from "react";
 import { useLoaderData } from "react-router";
 import { Markdown } from "~components/Markdown";
-import { repoToMetadata } from "~core/text";
+import {
+	decodeBase64,
+	repoToMetadata,
+} from "~core/text";
 import { RepoDetailsNavView } from "~views/RepoDetailsNavView";
 import { LoaderData } from "./loader";
 
@@ -16,10 +18,7 @@ export const RepoDetailsPage: FC = () => {
 
 	let decodedReadme: string | undefined;
 	if (repo.readme !== undefined) {
-		decodedReadme = Buffer.from(
-			repo.readme,
-			"base64",
-		).toString();
+		decodedReadme = decodeBase64(repo.readme);
 	}
 	const metadata = repoToMetadata(repo);
 

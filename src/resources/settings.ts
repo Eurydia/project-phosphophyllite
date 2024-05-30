@@ -2,7 +2,6 @@ import { invoke } from "@tauri-apps/api";
 import {
 	IssueQueryPref,
 	RepoQueryPref,
-	SyncData,
 } from "~types/query";
 
 export const getRepoQueryPreference =
@@ -37,17 +36,4 @@ export const setIssueQueryPreference = async (
 		"set_issue_query_preferences",
 		pref,
 	);
-};
-
-export const getSyncData = async () => {
-	const pref = (await invoke(
-		"get_sync_data",
-	)) as SyncData;
-	return pref;
-};
-
-export const setSyncData = async (
-	data: SyncData,
-) => {
-	await invoke("set_sync_data", data);
 };

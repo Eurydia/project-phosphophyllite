@@ -18,9 +18,3 @@ export type IssueQueryPref = {
 	ownerType: "All" | "Bot" | "User";
 	state: "All" | "Open" | "Closed";
 };
-
-export type SyncData = {
-	repoLastSync: string;
-	issueLastSync: string;
-	commentLastSync: string;
-};
