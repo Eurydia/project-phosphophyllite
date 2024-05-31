@@ -30,10 +30,10 @@ export const commentToMetadata = (
 	comment: CommentSchema,
 ): string => {
 	const normCreated = normalizeDateString(
-		comment.created_at,
+		comment.createdAt,
 	);
 	const normUpdated = normalizeDateString(
-		comment.updated_at,
+		comment.updatedAt,
 	);
 	const updatedMsg = `Last updated: ${normUpdated}`;
 	const createdMsg = `Created: ${normCreated}`;
@@ -48,15 +48,15 @@ export const issueToMetadata = (
 	issue: IssueSchema,
 ): string => {
 	const normCreated = normalizeDateString(
-		issue.created_at,
+		issue.createdAt,
 		"Unknown",
 	);
 	const normClosed = normalizeDateString(
-		issue.closed_at,
+		issue.closedAt,
 		"Never",
 	);
 	const normUpdated = normalizeDateString(
-		issue.updated_at,
+		issue.updatedAt,
 	);
 	const createdMsg = `Created: ${normCreated}`;
 	const closedMsg = `Closed: ${normClosed}`;
@@ -74,24 +74,24 @@ export const repoToMetadata = (
 	repo: RepoSchema,
 ): string => {
 	const normCreated = normalizeDateString(
-		repo.created_at,
+		repo.createdAt,
 		"Unknown",
 	);
 	const normUpdated = normalizeDateString(
-		repo.updated_at,
+		repo.updatedAt,
 		"Never",
 	);
 	const normPushed = normalizeDateString(
-		repo.pushed_at,
+		repo.pushedAt,
 		"Never",
 	);
 	const desc =
 		repo.description ??
 		"This repository does not have a description";
-	const status = repo.is_archived
+	const status = repo.status
 		? "Archived"
 		: "Active";
-	const visibility = repo.is_private
+	const visibility = repo.visibility
 		? "Private"
 		: "Public";
 	const statusMsg = `Status: ${status}`;

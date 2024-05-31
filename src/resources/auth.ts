@@ -40,7 +40,6 @@ export const getRepos = async () => {
 		({
 			id,
 			html_url,
-			homepage,
 			pushed_at,
 			name,
 			full_name,
@@ -48,22 +47,25 @@ export const getRepos = async () => {
 			topics,
 			created_at,
 			updated_at,
-			archived: is_archived,
-			private: is_private,
+			archived,
+			private: isPrivate,
 		}) => {
+			const status: RepoSchema["status"] =
+				archived ? "Archived" : "Active";
+			const visibility: RepoSchema["visibility"] =
+				isPrivate ? "Private" : "Public";
 			repos[full_name] = {
 				id,
-				html_url,
-				homepage,
-				pushed_at,
+				htmlUrl: html_url,
+				pushedAt: pushed_at,
 				name,
-				full_name,
+				fullName: full_name,
 				description,
 				topics,
-				created_at,
-				updated_at,
-				is_archived,
-				is_private,
+				createdAt: created_at,
+				updatedAt: updated_at,
+				status,
+				visibility,
 				readme: undefined,
 			};
 		},
@@ -96,10 +98,11 @@ const getRepoReadMe = async (
 };
 
 export const getIssues = async (
-	fullName: string,
+	repoFullName: string,
 	repoId: number,
 ) => {
-	const [owner, repo, ..._] = fullName.split("/");
+	const [owner, repo, ..._] =
+		repoFullName.split("/");
 	const octokit = await getOctokit();
 	const response = await octokit.paginate(
 		"GET /repos/{owner}/{repo}/issues",
@@ -113,31 +116,32 @@ export const getIssues = async (
 		({
 			id,
 			html_url,
-			number: issue_number,
+			number: issueNumber,
 			title,
 			state,
-			locked,
 			created_at,
 			updated_at,
 			closed_at,
 			body,
 			user,
-		}) => ({
-			owner_type:
-				user === null ? null : user.type,
-			repo_id: repoId,
-			repo_full_name: fullName,
-			id,
-			html_url,
-			issue_number,
-			title,
-			state,
-			locked,
-			created_at,
-			updated_at,
-			closed_at,
-			body,
-		}),
+		}) => {
+			const ownerType: IssueSchema["ownerType"] =
+				user === null ? null : user.type;
+			return {
+				body,
+				id,
+				ownerType,
+				htmlUrl: html_url,
+				issueNumber,
+				updatedAt: updated_at,
+				createdAt: created_at,
+				closedAt: closed_at,
+				title,
+				state,
+				repoId,
+				repoFullName: repoFullName,
+			};
+		},
 	);
 	return issues;
 };
@@ -165,11 +169,11 @@ export const getComments = async (
 			updated_at,
 			body,
 		}) => ({
-			issue_id: issueId,
-			html_url,
+			issueId,
+			htmlUrl: html_url,
 			id,
-			created_at,
-			updated_at,
+			createdAt: created_at,
+			updatedAt: updated_at,
 			body,
 		}),
 	);

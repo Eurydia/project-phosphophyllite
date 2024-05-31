@@ -42,7 +42,7 @@ export const getIssueSortFn = (
 		| ((a: IssueSchema, b: IssueSchema) => number)
 		| undefined;
 	switch (property) {
-		case "issue_number":
+		case "issueNumber":
 			orderFn = (a, b) => {
 				return sortByNumber(
 					a[property] as
@@ -57,11 +57,11 @@ export const getIssueSortFn = (
 			};
 			break;
 		case "title":
-		case "repo_full_name":
-		case "owner_type":
+		case "repoFullName":
+		case "ownerType":
 		case "state":
-		case "created_at":
-		case "updated_at":
+		case "createdAt":
+		case "updatedAt":
 			orderFn = (a, b) => {
 				return sortByString(
 					a[property] as
@@ -84,23 +84,12 @@ export const getRepoSortFn = (
 	| ((a: RepoSchema, b: RepoSchema) => number)
 	| undefined => {
 	switch (property) {
-		case "is_archived":
-		case "is_private":
-			return (a, b) =>
-				sortByBoolean(
-					a[property] as
-						| boolean
-						| undefined
-						| null,
-					b[property] as
-						| boolean
-						| undefined
-						| null,
-				);
-		case "full_name":
-		case "pushed_at":
-		case "created_at":
-		case "updated_at":
+		case "status":
+		case "visibility":
+		case "fullName":
+		case "pushedAt":
+		case "createdAt":
+		case "updatedAt":
 			return (a, b) =>
 				sortByString(
 					a[property] as

@@ -3,13 +3,13 @@ import { useIssueColumnHeaders } from "hooks/useIssueColumnHeaders";
 import { getIssueSortFn } from "~core/sorting";
 import { SelectOption } from "~types/generic";
 import { IssueQuery } from "~types/query";
-import { IssueSchema } from "~types/schema";
+import { Issue } from "~types/schema";
 import { StyledDataTable } from "../StyledDataTable";
 import { StyledToolbar } from "./StyledToolbar";
 
 type IssueDataTableProps = {
-	orderBy?: keyof IssueSchema;
-	issues: IssueSchema[];
+	orderBy?: keyof Issue;
+	issues: Issue[];
 	query: IssueQuery;
 	repoOptions: SelectOption<string>[];
 };

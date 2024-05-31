@@ -3,10 +3,7 @@ import {
 	IssueQuery,
 	RepoQuery,
 } from "~types/query";
-import {
-	IssueSchema,
-	RepoSchema,
-} from "~types/schema";
+import { Issue, RepoSchema } from "~types/schema";
 
 export const filterRepos = (
 	repos: RepoSchema[],
@@ -25,18 +22,18 @@ export const filterRepos = (
 
 	switch (visibility) {
 		case "Private":
-			filterFns.push((item) => item.is_private);
+			filterFns.push((item) => item.visibility);
 			break;
 		case "Public":
-			filterFns.push((item) => !item.is_private);
+			filterFns.push((item) => !item.visibility);
 			break;
 	}
 	switch (status) {
 		case "Active":
-			filterFns.push((item) => !item.is_archived);
+			filterFns.push((item) => !item.status);
 			break;
 		case "Archived":
-			filterFns.push((item) => item.is_archived);
+			filterFns.push((item) => item.status);
 			break;
 	}
 
@@ -72,7 +69,7 @@ export const filterRepos = (
 };
 
 export const filterIssues = (
-	issues: IssueSchema[],
+	issues: Issue[],
 	query: IssueQuery,
 ) => {
 	const {
@@ -81,9 +78,8 @@ export const filterIssues = (
 		repoFullNames,
 		state,
 	} = query;
-	const filterFns: ((
-		item: IssueSchema,
-	) => boolean)[] = [];
+	const filterFns: ((item: Issue) => boolean)[] =
+		[];
 
 	if (ownerType !== "All") {
 		filterFns.push(

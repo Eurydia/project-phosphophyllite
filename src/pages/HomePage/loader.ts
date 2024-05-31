@@ -4,10 +4,10 @@ import {
 	getCachedRepos,
 } from "resources/cached";
 import { sortByString } from "~core/sorting";
-import { IssueSchema } from "~types/schema";
+import { Issue } from "~types/schema";
 
 export type LoaderData = {
-	recentIssues: IssueSchema[];
+	recentIssues: Issue[];
 	activeRepos: number;
 	archivedRepos: number;
 	openIssues: number;
@@ -22,7 +22,7 @@ export const loaderHome: LoaderFunction =
 		);
 
 		const activeRepos = cachedRepos.filter(
-			({ is_archived }) => !is_archived,
+			({ status: is_archived }) => !is_archived,
 		).length;
 		const openIssues = humanIssues.filter(
 			({ state }) => state === "open",

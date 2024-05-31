@@ -13,13 +13,13 @@ export const useRepoColumnHeaders = () => {
 			id: "full_name",
 			label: "Name",
 			render: (repo) => {
-				const target = `/Repositories/${repo.full_name}`;
+				const target = `/Repositories/${repo.fullName}`;
 				return (
 					<Typography
 						component={Link}
 						to={target}
 					>
-						{repo.full_name}
+						{repo.fullName}
 					</Typography>
 				);
 			},
@@ -28,20 +28,20 @@ export const useRepoColumnHeaders = () => {
 			id: "is_archived",
 			label: "Status",
 			render: (repo) =>
-				repo.is_archived ? "Archived" : "Active",
+				repo.status ? "Archived" : "Active",
 		},
 		{
 			id: "is_private",
 			label: "Visibility",
 			render: (repo) =>
-				repo.is_private ? "Private" : "Public",
+				repo.visibility ? "Private" : "Public",
 		},
 		{
 			id: "pushed_at",
 			label: "Last pushed",
 			render: (repo) =>
 				normalizeDateString(
-					repo.pushed_at,
+					repo.pushedAt,
 					"Never",
 				),
 		},
@@ -50,7 +50,7 @@ export const useRepoColumnHeaders = () => {
 			label: "Last updated",
 			render: (repo) =>
 				normalizeDateString(
-					repo.updated_at,
+					repo.updatedAt,
 					"Never",
 				),
 		},
@@ -59,7 +59,7 @@ export const useRepoColumnHeaders = () => {
 			label: "Created",
 			render: (repo) =>
 				normalizeDateString(
-					repo.created_at,
+					repo.createdAt,
 					"Unknown",
 				),
 		},

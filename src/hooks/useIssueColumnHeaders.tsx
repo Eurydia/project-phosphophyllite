@@ -6,12 +6,10 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { normalizeDateString } from "~core/time";
 import { ColumnHeader } from "~types/generic";
-import { IssueSchema } from "~types/schema";
+import { Issue } from "~types/schema";
 
 export const useIssueColumnHeaders = () => {
-	const columns = useRef<
-		ColumnHeader<IssueSchema>[]
-	>([
+	const columns = useRef<ColumnHeader<Issue>[]>([
 		{
 			id: "title",
 			label: "Title",

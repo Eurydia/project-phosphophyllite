@@ -7,7 +7,7 @@
 		"distDir": "../dist"
 	},
 	"package": {
-		"productName": "phosphophyllite",
+		"productName": "Phosphophyllite",
 		"version": "0.1.0"
 	},
 	"tauri": {

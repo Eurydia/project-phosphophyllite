@@ -25,7 +25,7 @@ const IssueComment: FC<IssueCommentProps> = (
 		"This comment does not have a body or its body is not cached.";
 	return (
 		<StyledCard
-			href={comment.html_url}
+			href={comment.htmlUrl}
 			title={title}
 			metadata={metadata}
 			content={content}

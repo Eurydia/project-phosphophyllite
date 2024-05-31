@@ -7,10 +7,10 @@ import { filterIssues } from "~core/filtering";
 import { extractIssueQuery } from "~core/query";
 import { SelectOption } from "~types/generic";
 import { IssueQuery } from "~types/query";
-import { IssueSchema } from "~types/schema";
+import { Issue } from "~types/schema";
 
 export type LoaderData = {
-	issues: IssueSchema[];
+	issues: Issue[];
 	repoOptions: SelectOption<string>[];
 	query: IssueQuery;
 };

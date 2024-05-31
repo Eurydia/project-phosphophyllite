@@ -7,10 +7,10 @@ import { filterIssues } from "~core/filtering";
 import { extractIssueQuery } from "~core/query";
 import { SelectOption } from "~types/generic";
 import { IssueQuery } from "~types/query";
-import { IssueSchema } from "~types/schema";
+import { Issue } from "~types/schema";
 
 export type LoaderData = {
-	issues: IssueSchema[];
+	issues: Issue[];
 	query: IssueQuery;
 	repoOptions: SelectOption<string>[];
 };
@@ -43,7 +43,7 @@ export const loader: LoaderFunction = async ({
 	);
 
 	const cachedIssues = await getCachedIssues(
-		repo.full_name,
+		repo.fullName,
 	);
 	const issues = filterIssues(
 		cachedIssues,
@@ -51,8 +51,8 @@ export const loader: LoaderFunction = async ({
 	);
 	const repoOptions: SelectOption<string>[] = [
 		{
-			label: repo.full_name,
-			value: repo.full_name,
+			label: repo.fullName,
+			value: repo.fullName,
 		},
 	];
 	const loaderData: LoaderData = {

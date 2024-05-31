@@ -32,12 +32,12 @@ export const getCachedIssues = async (
 	let issues = [...cachedIssues];
 	if (fullName !== undefined) {
 		issues = issues.filter(
-			(item) => item.repo_full_name === fullName,
+			(item) => item.repoFullName === fullName,
 		);
 	}
 	if (issueNumber !== undefined) {
 		issues = issues.filter(
-			(item) => item.issue_number === issueNumber,
+			(item) => item.issueNumber === issueNumber,
 		);
 	}
 	return issues;
@@ -64,7 +64,7 @@ export const updateCachedRepos = async () => {
 export const updateCachedIssues = async () => {
 	const cachedRepos = await getCachedRepos();
 	const issueReqs = cachedRepos.map((repo) =>
-		getIssues(repo.full_name, repo.id),
+		getIssues(repo.fullName, repo.id),
 	);
 	const issues = await Promise.all(issueReqs);
 	const db = await dbPromise;
@@ -78,8 +78,8 @@ export const updateCachedComments = async () => {
 	const cachedIssues = await getCachedIssues();
 	const commentReqs = cachedIssues.map((issue) =>
 		getComments(
-			issue.repo_full_name,
-			issue.issue_number,
+			issue.repoFullName,
+			issue.issueNumber,
 			issue.id,
 		),
 	);
@@ -97,7 +97,7 @@ export const updateCachedComments = async () => {
 export const getRepoOptions = async () => {
 	const repos = await getCachedRepos();
 	const repoNames = repos
-		.map((repo) => repo.full_name)
+		.map((repo) => repo.fullName)
 		.sort();
 	const options: SelectOption<string>[] =
 		repoNames.map((name) => ({
