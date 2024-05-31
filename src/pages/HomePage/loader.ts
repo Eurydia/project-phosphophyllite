@@ -4,10 +4,10 @@ import {
 	getCachedRepos,
 } from "resources/cached";
 import { sortByString } from "~core/sorting";
-import { Issue } from "~types/schema";
+import { IssueSchema } from "~types/schema";
 
 export type LoaderData = {
-	recentIssues: Issue[];
+	recentIssues: IssueSchema[];
 	activeRepos: number;
 	archivedRepos: number;
 	openIssues: number;
@@ -16,25 +16,26 @@ export type LoaderData = {
 export const loaderHome: LoaderFunction =
 	async (): Promise<LoaderData> => {
 		const cachedRepos = await getCachedRepos();
-		const cachedIssues = await getCachedIssues();
-		const humanIssues = cachedIssues.filter(
-			({ owner_type }) => owner_type === "User",
+		const cachedIssues = (
+			await getCachedIssues()
+		).filter(
+			({ ownerType }) => ownerType === "User",
 		);
 
 		const activeRepos = cachedRepos.filter(
-			({ status: is_archived }) => !is_archived,
+			({ status }) => status === "Active",
 		).length;
-		const openIssues = humanIssues.filter(
+		const openIssues = cachedIssues.filter(
 			({ state }) => state === "open",
 		).length;
 		const archivedRepos =
 			cachedRepos.length - activeRepos;
 		const closedIssues =
-			humanIssues.length - openIssues;
+			cachedIssues.length - openIssues;
 
 		const recentIssues = cachedIssues
 			.sort((a, b) =>
-				sortByString(a.updated_at, b.updated_at),
+				sortByString(a.updatedAt, b.updatedAt),
 			)
 			.slice(0, 5);
 

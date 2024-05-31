@@ -10,58 +10,47 @@ export const useRepoColumnHeaders = () => {
 		ColumnHeader<RepoSchema>[]
 	>([
 		{
-			id: "full_name",
+			id: "fullName",
 			label: "Name",
-			render: (repo) => {
-				const target = `/Repositories/${repo.fullName}`;
+			render: ({ fullName }) => {
+				const target = `/Repositories/${fullName}`;
 				return (
 					<Typography
 						component={Link}
 						to={target}
 					>
-						{repo.fullName}
+						{fullName}
 					</Typography>
 				);
 			},
 		},
 		{
-			id: "is_archived",
+			id: "status",
 			label: "Status",
-			render: (repo) =>
-				repo.status ? "Archived" : "Active",
+			render: ({ status }) => status,
 		},
 		{
-			id: "is_private",
+			id: "visibility",
 			label: "Visibility",
-			render: (repo) =>
-				repo.visibility ? "Private" : "Public",
+			render: ({ visibility }) => visibility,
 		},
 		{
-			id: "pushed_at",
+			id: "pushedAt",
 			label: "Last pushed",
-			render: (repo) =>
-				normalizeDateString(
-					repo.pushedAt,
-					"Never",
-				),
+			render: ({ pushedAt }) =>
+				normalizeDateString(pushedAt, "Never"),
 		},
 		{
-			id: "updated_at",
+			id: "updatedAt",
 			label: "Last updated",
-			render: (repo) =>
-				normalizeDateString(
-					repo.updatedAt,
-					"Never",
-				),
+			render: ({ updatedAt }) =>
+				normalizeDateString(updatedAt, "Never"),
 		},
 		{
-			id: "created_at",
+			id: "createdAt",
 			label: "Created",
-			render: (repo) =>
-				normalizeDateString(
-					repo.createdAt,
-					"Unknown",
-				),
+			render: ({ createdAt }) =>
+				normalizeDateString(createdAt, "Unknown"),
 		},
 	]);
 	return columns.current;

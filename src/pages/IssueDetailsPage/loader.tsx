@@ -5,11 +5,11 @@ import {
 } from "resources/cached";
 import {
 	CommentSchema,
-	Issue,
+	IssueSchema,
 } from "~types/schema";
 
 export type LoaderData = {
-	issue: Issue;
+	issue: IssueSchema;
 	comments: CommentSchema[];
 };
 export const loader: LoaderFunction = async ({

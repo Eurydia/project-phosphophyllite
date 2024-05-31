@@ -3,13 +3,13 @@ import { useIssueColumnHeaders } from "hooks/useIssueColumnHeaders";
 import { getIssueSortFn } from "~core/sorting";
 import { SelectOption } from "~types/generic";
 import { IssueQuery } from "~types/query";
-import { Issue } from "~types/schema";
+import { IssueSchema } from "~types/schema";
 import { StyledDataTable } from "../StyledDataTable";
 import { StyledToolbar } from "./StyledToolbar";
 
 type IssueDataTableProps = {
-	orderBy?: keyof Issue;
-	issues: Issue[];
+	orderBy?: keyof IssueSchema;
+	issues: IssueSchema[];
 	query: IssueQuery;
 	repoOptions: SelectOption<string>[];
 };
@@ -20,7 +20,7 @@ export const IssueDataTable: React.FC<
 		props;
 
 	const columnHeaders = useIssueColumnHeaders();
-	const defaultOrderBy = orderBy ?? "updated_at";
+	const defaultOrderBy = orderBy ?? "updatedAt";
 
 	const itemCountMsg =
 		issues.length === 1

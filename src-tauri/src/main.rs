@@ -3,6 +3,7 @@
 
 mod secrets;
 mod settings;
+mod shell;
 
 use tauri::generate_handler;
 
@@ -15,7 +16,8 @@ fn main() {
             settings::set_issue_query_preferences,
             secrets::get_app_id,
             secrets::get_private_key,
-            secrets::get_installation_id
+            secrets::get_installation_id,
+            shell::open_url
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

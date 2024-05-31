@@ -14,21 +14,21 @@ interface Database extends DBSchema {
 		key: string;
 		value: RepoSchema;
 		indexes: {
-			"by-full_name": string;
+			"by-fullName": string;
 		};
 	};
 	issues: {
 		key: number;
 		value: IssueSchema;
 		indexes: {
-			"by-repo_id": number;
+			"by-repoId": number;
 		};
 	};
 	issueComments: {
 		key: number;
 		value: CommentSchema;
 		indexes: {
-			"by-issue_id": number;
+			"by-issueId": number;
 		};
 	};
 }
@@ -42,8 +42,8 @@ const db1 = (db: IDBPDatabase<Database>) => {
 		},
 	);
 	repoStore.createIndex(
-		"by-full_name",
-		"full_name",
+		"by-fullName",
+		"fullName",
 		{
 			unique: true,
 			multiEntry: false,
@@ -56,11 +56,10 @@ const db1 = (db: IDBPDatabase<Database>) => {
 			autoIncrement: false,
 		},
 	);
-	issueStore.createIndex(
-		"by-repo_id",
-		"repo_id",
-		{ multiEntry: true, unique: false },
-	);
+	issueStore.createIndex("by-repoId", "repoId", {
+		multiEntry: true,
+		unique: false,
+	});
 	const issueCommentStore = db.createObjectStore(
 		"issueComments",
 		{
@@ -69,8 +68,8 @@ const db1 = (db: IDBPDatabase<Database>) => {
 		},
 	);
 	issueCommentStore.createIndex(
-		"by-issue_id",
-		"issue_id",
+		"by-issueId",
+		"issueId",
 		{ multiEntry: true, unique: false },
 	);
 };

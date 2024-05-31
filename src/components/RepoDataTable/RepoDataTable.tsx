@@ -20,7 +20,7 @@ export const RepoDataTable: React.FC<
 		props;
 
 	const columnHeaders = useRepoColumnHeaders();
-	const defaultOrderBy = orderBy ?? "pushed_at";
+	const defaultOrderBy = orderBy ?? "pushedAt";
 
 	const itemCountMsg =
 		repos.length === 1

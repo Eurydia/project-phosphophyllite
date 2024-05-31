@@ -3,7 +3,10 @@ import {
 	IssueQuery,
 	RepoQuery,
 } from "~types/query";
-import { Issue, RepoSchema } from "~types/schema";
+import {
+	IssueSchema,
+	RepoSchema,
+} from "~types/schema";
 
 export const filterRepos = (
 	repos: RepoSchema[],
@@ -19,24 +22,16 @@ export const filterRepos = (
 	const filterFns: ((
 		item: RepoSchema,
 	) => boolean)[] = [];
-
-	switch (visibility) {
-		case "Private":
-			filterFns.push((item) => item.visibility);
-			break;
-		case "Public":
-			filterFns.push((item) => !item.visibility);
-			break;
+	if (visibility !== "All") {
+		filterFns.push(
+			(item) => item.visibility === visibility,
+		);
 	}
-	switch (status) {
-		case "Active":
-			filterFns.push((item) => !item.status);
-			break;
-		case "Archived":
-			filterFns.push((item) => item.status);
-			break;
+	if (status !== "All") {
+		filterFns.push(
+			(item) => item.status === status,
+		);
 	}
-
 	if (topics.length > 0) {
 		switch (topicMatchStrategy) {
 			case "Match all":
@@ -63,13 +58,13 @@ export const filterRepos = (
 		filterFns.every((fn) => fn(repo)),
 	);
 	const filteredItems = matchSorter(items, name, {
-		keys: ["full_name"],
+		keys: ["fullName"],
 	});
 	return filteredItems;
 };
 
 export const filterIssues = (
-	issues: Issue[],
+	issues: IssueSchema[],
 	query: IssueQuery,
 ) => {
 	const {
@@ -78,19 +73,20 @@ export const filterIssues = (
 		repoFullNames,
 		state,
 	} = query;
-	const filterFns: ((item: Issue) => boolean)[] =
-		[];
+	const filterFns: ((
+		item: IssueSchema,
+	) => boolean)[] = [];
 
 	if (ownerType !== "All") {
 		filterFns.push(
 			(item) =>
-				item.owner_type !== null &&
-				item.owner_type === ownerType,
+				item.ownerType !== null &&
+				item.ownerType === ownerType,
 		);
 	}
 	if (repoFullNames.length > 0) {
 		filterFns.push((item) =>
-			repoFullNames.includes(item.repo_full_name),
+			repoFullNames.includes(item.repoFullName),
 		);
 	}
 	if (state !== "All") {

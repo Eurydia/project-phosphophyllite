@@ -15,8 +15,8 @@ type StyledCardProps = {
 export const StyledCard: FC<StyledCardProps> = (
 	props,
 ) => {
-	const { content, metadata, title, href } =
-		props;
+	const { content, metadata, title } = props;
+
 	return (
 		<Paper
 			square
@@ -26,10 +26,8 @@ export const StyledCard: FC<StyledCardProps> = (
 			}}
 		>
 			<Typography
-				href={href}
 				fontWeight="bold"
 				fontSize="x-large"
-				component="a"
 			>
 				{title}
 			</Typography>

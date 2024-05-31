@@ -16,7 +16,7 @@ export const getCachedRepo = async (
 	const db = await dbPromise;
 	const repo = await db.getFromIndex(
 		"repos",
-		"by-full_name",
+		"by-fullName",
 		fullName,
 	);
 	return repo;
@@ -48,7 +48,7 @@ export const getCachedComments = async (
 ) => {
 	return (await dbPromise).getAllFromIndex(
 		"issueComments",
-		"by-issue_id",
+		"by-issueId",
 		issueId,
 	);
 };

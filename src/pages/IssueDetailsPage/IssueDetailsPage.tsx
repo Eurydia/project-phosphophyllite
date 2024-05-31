@@ -47,7 +47,7 @@ export const IssueDetailsPage: FC = () => {
 			<Container maxWidth="sm">
 				<Stack spacing={2}>
 					<StyledCard
-						href={issue.html_url}
+						href={issue.htmlUrl}
 						title={issue.title}
 						metadata={metadata}
 						content={content}

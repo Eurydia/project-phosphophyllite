@@ -4,13 +4,7 @@ import {
 	Divider,
 	Toolbar,
 } from "@mui/material";
-import {
-	FC,
-	ReactNode,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { FC, ReactNode } from "react";
 import { AppHeader } from "~components/AppHeader";
 
 type MainViewProps = {
@@ -22,30 +16,10 @@ export const AppHeaderView: FC<MainViewProps> = (
 ) => {
 	const { children, nav } = props;
 
-	// const submit = useSubmit();
-	const appBarRef = useRef<HTMLDivElement | null>(
-		null,
-	);
-	const [contentHeight, setContentHeight] =
-		useState("0vh");
-	useEffect(() => {
-		if (
-			appBarRef === null ||
-			appBarRef.current === null
-		) {
-			return;
-		}
-		const height =
-			appBarRef.current.getBoundingClientRect()
-				.height + "px";
-		setContentHeight(`calc(100svh - ${height})`);
-	}, [appBarRef]);
-
 	return (
 		<Box>
 			<AppBar
 				elevation={0}
-				ref={appBarRef}
 				position="relative"
 			>
 				<Toolbar
@@ -69,13 +43,7 @@ export const AppHeaderView: FC<MainViewProps> = (
 					variant="fullWidth"
 				/>
 			</AppBar>
-			<Box
-				width="100%"
-				overflow="auto"
-				height={contentHeight}
-			>
-				{children}
-			</Box>
+			{children}
 		</Box>
 	);
 };
