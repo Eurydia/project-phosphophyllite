@@ -7,8 +7,8 @@ import { FC } from "react";
 import { SelectOption } from "~types/generic";
 
 type StyledSelectProps = {
-	name: string;
 	label: string;
+	name: string;
 	value: string;
 	options: SelectOption<string>[];
 	onChange: (value: string) => void;
@@ -16,32 +16,26 @@ type StyledSelectProps = {
 export const StyledSelect: FC<
 	StyledSelectProps
 > = (props) => {
-	const {
-		name,
-		options,
-		onChange,
-		label,
-		value,
-	} = props;
+	const { label, options, onChange, value } =
+		props;
 
 	const handleChange = (
 		event: SelectChangeEvent<string>,
 	) => {
 		onChange(event.target.value);
 	};
-	const renderValue = () => {
-		return label;
+	const renderValue = (v: string) => {
+		return `${label}: ${v}`;
 	};
 
 	return (
 		<Select
 			fullWidth
 			displayEmpty
-			name={name}
 			size="small"
 			value={value}
-			renderValue={renderValue}
 			onChange={handleChange}
+			renderValue={renderValue}
 			MenuProps={{
 				elevation: 1,
 			}}

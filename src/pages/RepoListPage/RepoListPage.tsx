@@ -1,38 +1,29 @@
-import { SearchRounded } from "@mui/icons-material";
 import {
 	Box,
+	Paper,
 	Stack,
+	Typography,
 	useMediaQuery,
 	useTheme,
 } from "@mui/material";
-import { useRepoQuery } from "hooks/useRepoQuery";
-import { useRepoQueryOptions } from "hooks/useRepoQueryOptions";
 import { FC } from "react";
-import {
-	Form,
-	useLoaderData,
-} from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 import { RepoCard } from "~components/RepoCard";
-import { StyledIconButton } from "~components/StyledIconButton";
-import { StyledSelect } from "~components/StyledSelect";
-import { StyledTextField } from "~components/StyledTextField";
+import { RepoQueryForm } from "~components/RepoQueryForm";
 import { LoaderData } from "./loader";
 
 export const RepoListPage: FC = () => {
-	const { repos, query: initQuery } =
+	const { repos, query } =
 		useLoaderData() as LoaderData;
 	const theme = useTheme();
 	const match = useMediaQuery(
 		theme.breakpoints.down("md"),
 	);
-	const {
-		query,
-		setName,
-		setStatus,
-		setVisibility,
-	} = useRepoQuery(initQuery);
-	const { statusOptions, visibilityOptions } =
-		useRepoQueryOptions();
+	const count = repos.length;
+	const itemCountMsg =
+		count === 1
+			? `Showing 1 repostiory`
+			: `Showing ${count} repostiories`;
 
 	if (match) {
 		const items = repos.map((repo) => (
@@ -46,6 +37,16 @@ export const RepoListPage: FC = () => {
 				padding={2}
 				spacing={2}
 			>
+				<Paper
+					square
+					variant="outlined"
+					sx={{
+						padding: 2,
+					}}
+				>
+					<RepoQueryForm initQuery={query} />
+					<Typography>{itemCountMsg}</Typography>
+				</Paper>
 				{items}
 			</Stack>
 		);
@@ -68,47 +69,25 @@ export const RepoListPage: FC = () => {
 			/>
 		));
 	return (
-		<Box
-			display="flex"
-			flexDirection="row"
+		<Stack
 			height="100%"
+			direction="row"
 		>
-			<Box
-				padding={2}
-				flexBasis={0}
-				flexGrow={1}
+			<Paper
+				square
+				variant="outlined"
+				sx={{
+					marginY: 2,
+					marginLeft: 2,
+					height: "fit-content",
+					padding: 2,
+					flexBasis: 0,
+					flexGrow: 1,
+				}}
 			>
-				<Form replace>
-					<Stack
-						spacing={1}
-						alignItems="start"
-					>
-						<StyledTextField
-							name="name"
-							placeholder="Search repository"
-							value={query.name}
-							onChange={setName}
-						/>
-						<StyledSelect
-							name="visibility"
-							label="Visibility"
-							value={query.visibility}
-							onChange={setVisibility}
-							options={visibilityOptions}
-						/>
-						<StyledSelect
-							name="status"
-							label="Status"
-							value={query.status}
-							onChange={setStatus}
-							options={statusOptions}
-						/>
-						<StyledIconButton type="submit">
-							<SearchRounded />
-						</StyledIconButton>
-					</Stack>
-				</Form>
-			</Box>
+				<RepoQueryForm initQuery={query} />
+				<Typography>{itemCountMsg}</Typography>
+			</Paper>
 			<Box
 				padding={2}
 				flexBasis={0}
@@ -135,6 +114,6 @@ export const RepoListPage: FC = () => {
 					</Stack>
 				</Stack>
 			</Box>
-		</Box>
+		</Stack>
 	);
 };
