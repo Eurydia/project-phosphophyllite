@@ -43,13 +43,7 @@ export const StyledSelect: FC<
 			renderValue={renderValue}
 			onChange={handleChange}
 			MenuProps={{
-				elevation: 2,
-				sx: {
-					borderidth: "1px 1px 1px 1px",
-					borderStyle: "solid",
-					borderColor: ({ palette }) =>
-						palette.text.secondary,
-				},
+				elevation: 1,
 			}}
 		>
 			{options.map(({ value, label }, index) => (
