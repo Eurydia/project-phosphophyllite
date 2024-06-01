@@ -6,7 +6,6 @@ import {
 import { useSync } from "hooks/useSync";
 import { FC } from "react";
 import { StyledSearchItem } from "~components/StyledSearchItem";
-import { SettingNavView } from "~views/SettingsNavView";
 
 export const SettingsPage: FC = () => {
 	const { itemText, syncStates, syncFn } =
@@ -47,8 +46,6 @@ export const SettingsPage: FC = () => {
 	);
 
 	return (
-		<SettingNavView tab={0}>
-			<Stack spacing={2}>{renderedItems}</Stack>
-		</SettingNavView>
+		<Stack spacing={2}>{renderedItems}</Stack>
 	);
 };

@@ -1,1 +1,0 @@
-export { RepoDataTable } from "./RepoDataTable";

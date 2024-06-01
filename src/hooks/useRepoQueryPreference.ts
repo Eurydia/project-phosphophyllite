@@ -28,38 +28,27 @@ export const useRepoQueryPreference = () => {
 		setRepoQueryPreference(pref);
 	}, [pref]);
 
-	const setStatus = (value: string) => {
-		setPref((prev) => {
-			if (prev === undefined) {
-				return;
-			}
-			const next = { ...prev };
-			next["status"] =
-				value as RepoQuery["status"];
-			return next;
-		});
-	};
-	const setVisibility = (value: string) => {
-		setPref((prev) => {
-			if (prev === undefined) {
-				return;
-			}
-			const next = { ...prev };
-			next["visibility"] =
-				value as RepoQuery["visibility"];
-			return next;
-		});
-	};
-	const setTopicMatchStrategy = (
-		value: string,
+	const setStatus = (
+		value: RepoQuery["status"],
 	) => {
 		setPref((prev) => {
 			if (prev === undefined) {
 				return;
 			}
 			const next = { ...prev };
-			next["topicMatchStrategy"] =
-				value as RepoQuery["topicMatchStrategy"];
+			next["status"] = value;
+			return next;
+		});
+	};
+	const setVisibility = (
+		value: RepoQuery["visibility"],
+	) => {
+		setPref((prev) => {
+			if (prev === undefined) {
+				return;
+			}
+			const next = { ...prev };
+			next["visibility"] = value;
 			return next;
 		});
 	};
@@ -67,6 +56,5 @@ export const useRepoQueryPreference = () => {
 		pref,
 		setStatus,
 		setVisibility,
-		setTopicMatchStrategy,
 	};
 };

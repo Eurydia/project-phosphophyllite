@@ -7,7 +7,6 @@ import { useIssueQueryPreference } from "hooks/useIssueQueryPreference";
 import { FC } from "react";
 import { StyledSearchItem } from "~components/StyledSearchItem";
 import { StyledSelect } from "~components/StyledSelect";
-import { SettingNavView } from "~views/SettingsNavView";
 
 export const SettingsIssuePage: FC = () => {
 	const { ownerTypeOptions, stateOptions } =
@@ -22,23 +21,21 @@ export const SettingsIssuePage: FC = () => {
 	}
 	const { ownerType, state } = pref;
 	return (
-		<SettingNavView tab={2}>
-			<Stack spacing={2}>
-				<StyledSearchItem text="State">
-					<StyledSelect
-						value={state}
-						options={stateOptions}
-						onChange={setState}
-					/>
-				</StyledSearchItem>
-				<StyledSearchItem text="Owner type">
-					<StyledSelect
-						value={ownerType}
-						options={ownerTypeOptions}
-						onChange={setOwnerType}
-					/>
-				</StyledSearchItem>
-			</Stack>
-		</SettingNavView>
+		<Stack spacing={2}>
+			<StyledSearchItem text="State">
+				<StyledSelect
+					value={state}
+					options={stateOptions}
+					onChange={setState}
+				/>
+			</StyledSearchItem>
+			<StyledSearchItem text="Owner type">
+				<StyledSelect
+					value={ownerType}
+					options={ownerTypeOptions}
+					onChange={setOwnerType}
+				/>
+			</StyledSearchItem>
+		</Stack>
 	);
 };

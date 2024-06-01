@@ -51,9 +51,7 @@ export const extractRepoQuery = async (
 	searchParams: URLSearchParams,
 ) => {
 	const pref = await getRepoQueryPreference();
-	const topics = extractQueryItems(
-		searchParams.get("topics") || "",
-	);
+
 	const name = searchParams.get("name") || "";
 	const status =
 		(searchParams.get(
@@ -64,17 +62,11 @@ export const extractRepoQuery = async (
 			"visibility",
 		) as RepoQuery["visibility"]) ||
 		pref.visibility;
-	const topicMatchStrategy =
-		(searchParams.get(
-			"topicMatchStrategy",
-		) as RepoQuery["topicMatchStrategy"]) ||
-		pref.topicMatchStrategy;
+
 	const query: RepoQuery = {
-		topics,
 		name,
 		status,
 		visibility,
-		topicMatchStrategy,
 	};
 	return query;
 };

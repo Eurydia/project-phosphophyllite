@@ -1,19 +1,24 @@
+import { HomeGroupLayout } from "layouts/HomeGroupLayout";
+import { RepoDetailsGroupLayout } from "layouts/RepoDetailsGroupLayout";
 import { FC } from "react";
 import {
 	RouterProvider,
 	redirect,
 } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
-import { ErrorBoundry } from "~pages/ErrorBoundary";
-import { loaderHome } from "~pages/HomePage";
-import { HomePage } from "~pages/HomePage/HomePage";
+import { SettingGroupLayout } from "~layouts/SettingGroupLayout";
+import { ErrorElement } from "~pages/ErrorElement";
+import {
+	HomePage,
+	homeLoader,
+} from "~pages/HomePage";
 import {
 	IssueDetailsPage,
 	loaderIssueDetailsPage,
 } from "~pages/IssueDetailsPage";
 import {
 	IssueListPage,
-	loaderIssueListPage,
+	issueListLoader,
 } from "~pages/IssueListPage";
 import {
 	RepoDetailsPage,
@@ -25,7 +30,7 @@ import {
 } from "~pages/RepoIssueListPage";
 import {
 	RepoListPage,
-	loaderRepoListPage,
+	repoListLoader,
 } from "~pages/RepoListPage";
 import { SettingsIssuePage } from "~pages/SettingsIssuePage";
 import { SettingsPage } from "~pages/SettingsPage";
@@ -34,60 +39,75 @@ import { SettingsRepoPage } from "~pages/SettingsRepoPage";
 const router = createBrowserRouter([
 	{
 		path: "/",
-		element: <HomePage />,
-		loader: loaderHome,
-		errorElement: <ErrorBoundry />,
+		element: <HomeGroupLayout />,
+		errorElement: <ErrorElement />,
+		children: [
+			{
+				index: true,
+				element: <HomePage />,
+				loader: homeLoader,
+			},
+			{
+				path: "Repositories",
+				element: <RepoListPage />,
+				loader: repoListLoader,
+			},
+			{
+				path: "Repositories/:owner",
+				errorElement: <ErrorElement />,
+				loader: ({ params }) => {
+					return redirect(
+						`/Repositories?name=${params.owner}`,
+					);
+				},
+			},
+			{
+				path: "Issues",
+				element: <IssueListPage />,
+				loader: issueListLoader,
+			},
+		],
 	},
 	{
-		path: "/repositories",
-		element: <RepoListPage />,
-		loader: loaderRepoListPage,
-		errorElement: <ErrorBoundry />,
+		path: "Repositories/:owner/:repo",
+		element: <RepoDetailsGroupLayout />,
+		errorElement: <ErrorElement />,
+		children: [
+			{
+				index: true,
+				element: <RepoDetailsPage />,
+				loader: loaderRepoDetailsPage,
+			},
+			{
+				path: "Issues",
+				element: <RepoIssueListPage />,
+				loader: loaderRepoIssueListPage,
+			},
+			{
+				path: "Issues/:issueNumber",
+				element: <IssueDetailsPage />,
+				loader: loaderIssueDetailsPage,
+			},
+		],
 	},
 	{
-		path: "/issues",
-		element: <IssueListPage />,
-		loader: loaderIssueListPage,
-		errorElement: <ErrorBoundry />,
-	},
-	{
-		errorElement: <ErrorBoundry />,
-		path: "/repositories/:owner",
-		loader: ({ params }) => {
-			return redirect(
-				`/Repositories?name=${params.owner}`,
-			);
-		},
-	},
-	{
-		errorElement: <ErrorBoundry />,
-		path: "/repositories/:owner/:repo",
-		element: <RepoDetailsPage />,
-		loader: loaderRepoDetailsPage,
-	},
-	{
-		errorElement: <ErrorBoundry />,
-		path: "/repositories/:owner/:repo/issues",
-		element: <RepoIssueListPage />,
-		loader: loaderRepoIssueListPage,
-	},
-	{
-		errorElement: <ErrorBoundry />,
-		path: "/repositories/:owner/:repo/issues/:issueNumber",
-		element: <IssueDetailsPage />,
-		loader: loaderIssueDetailsPage,
-	},
-	{
-		path: "/settings",
-		element: <SettingsPage />,
-	},
-	{
-		path: "/settings/repository",
-		element: <SettingsRepoPage />,
-	},
-	{
-		path: "/settings/issue",
-		element: <SettingsIssuePage />,
+		path: "/Settings",
+		element: <SettingGroupLayout />,
+		errorElement: <ErrorElement />,
+		children: [
+			{
+				index: true,
+				element: <SettingsPage />,
+			},
+			{
+				path: "Repository",
+				element: <SettingsRepoPage />,
+			},
+			{
+				path: "Issue",
+				element: <SettingsIssuePage />,
+			},
+		],
 	},
 ]);
 

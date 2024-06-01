@@ -1,51 +1,58 @@
-import { ArrowDropDownRounded } from "@mui/icons-material";
 import {
 	MenuItem,
 	Select,
 	SelectChangeEvent,
-	SelectProps,
-	useTheme,
 } from "@mui/material";
 import { FC } from "react";
+import { SelectOption } from "~types/generic";
 
-type StyledSelectProps = Omit<
-	SelectProps<string>,
-	"onChange"
-> & {
-	options?: { label: string; value: string }[];
+type StyledSelectProps = {
+	name: string;
+	label: string;
+	value: string;
+	options: SelectOption<string>[];
 	onChange: (value: string) => void;
 };
 export const StyledSelect: FC<
 	StyledSelectProps
 > = (props) => {
-	const { options, onChange, ...rest } = props;
-	const { palette } = useTheme();
-	const options_ = options ?? [];
+	const {
+		name,
+		options,
+		onChange,
+		label,
+		value,
+	} = props;
 
 	const handleChange = (
 		event: SelectChangeEvent<string>,
 	) => {
 		onChange(event.target.value);
 	};
-
-	const icon = () => {
-		return (
-			<ArrowDropDownRounded
-				fontSize="large"
-				htmlColor={palette.text.primary}
-			/>
-		);
+	const renderValue = () => {
+		return label;
 	};
+
 	return (
 		<Select
-			{...rest}
 			fullWidth
 			displayEmpty
+			name={name}
 			size="small"
-			IconComponent={icon}
+			value={value}
+			renderValue={renderValue}
 			onChange={handleChange}
+			MenuProps={{
+				elevation: 2,
+				sx: {
+					borderidth: "1px 1px 1px 1px",
+					borderStyle: "solid",
+					borderColor: ({ palette }) =>
+						palette.text.secondary,
+				},
+			}}
 		>
-			{options_.map(({ value, label }, index) => (
+			{options.map(({ value, label }, index) => (
 				<MenuItem
 					disableRipple
 					key={`item-${index}`}

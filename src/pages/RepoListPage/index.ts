@@ -1,2 +1,2 @@
 export { RepoListPage } from "./RepoListPage";
-export { loader as loaderRepoListPage } from "./loader";
+export { loader as repoListLoader } from "./loader";

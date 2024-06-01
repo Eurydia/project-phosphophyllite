@@ -1,18 +1,16 @@
-export type RepoQuery = {
+export type RepoQuery = RepoQueryPref & {
 	name: string;
-	topics: string[];
-} & RepoQueryPref;
+};
 
 export type RepoQueryPref = {
 	status: "All" | "Active" | "Archived";
 	visibility: "All" | "Private" | "Public";
-	topicMatchStrategy: "Match all" | "Match any";
 };
 
-export type IssueQuery = {
+export type IssueQuery = IssueQueryPref & {
 	title: string;
 	repoFullNames: string[];
-} & IssueQueryPref;
+};
 
 export type IssueQueryPref = {
 	ownerType: "All" | "Bot" | "User";

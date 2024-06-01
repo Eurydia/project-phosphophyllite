@@ -10,13 +10,6 @@ export const useRepoQuery = (init: RepoQuery) => {
 			return next;
 		});
 	};
-	const setTopics = (value: string[]) => {
-		setQuery((prev) => {
-			const next = { ...prev };
-			next["topics"] = value;
-			return next;
-		});
-	};
 	const setStatus = (value: string) => {
 		setQuery((prev) => {
 			const next = { ...prev };
@@ -33,22 +26,10 @@ export const useRepoQuery = (init: RepoQuery) => {
 			return next;
 		});
 	};
-	const setTopicMatchStrategy = (
-		value: string,
-	) => {
-		setQuery((prev) => {
-			const next = { ...prev };
-			next["topicMatchStrategy"] =
-				value as RepoQuery["topicMatchStrategy"];
-			return next;
-		});
-	};
 	return {
 		query,
 		setName,
-		setTopics,
 		setStatus,
 		setVisibility,
-		setTopicMatchStrategy,
 	};
 };

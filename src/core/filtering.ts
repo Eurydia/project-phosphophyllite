@@ -12,13 +12,7 @@ export const filterRepos = (
 	repos: RepoSchema[],
 	query: RepoQuery,
 ) => {
-	const {
-		name,
-		topics,
-		visibility,
-		status,
-		topicMatchStrategy,
-	} = query;
+	const { name, visibility, status } = query;
 	const filterFns: ((
 		item: RepoSchema,
 	) => boolean)[] = [];
@@ -31,28 +25,6 @@ export const filterRepos = (
 		filterFns.push(
 			(item) => item.status === status,
 		);
-	}
-	if (topics.length > 0) {
-		switch (topicMatchStrategy) {
-			case "Match all":
-				filterFns.push(
-					(item) =>
-						item.topics !== undefined &&
-						topics.every((topic) =>
-							item.topics!.includes(topic),
-						),
-				);
-				break;
-			case "Match any":
-				filterFns.push(
-					(item) =>
-						item.topics !== undefined &&
-						topics.some((topic) =>
-							item.topics!.includes(topic),
-						),
-				);
-				break;
-		}
 	}
 	const items = repos.filter((repo) =>
 		filterFns.every((fn) => fn(repo)),

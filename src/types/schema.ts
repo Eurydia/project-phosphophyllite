@@ -1,38 +1,54 @@
 export type RepoSchema = {
-	readme: string | undefined;
+	// KEY PROPERTIES
 	id: number;
-	htmlUrl: string;
+
+	// QUERY PROPERTIES
 	name: string;
 	fullName: string;
-	description: string | null;
-	topics: string[] | undefined;
+	visibility: "Public" | "Private";
+	status: "Active" | "Archived";
+
+	// SORT PROPERTIES
 	pushedAt: string | null;
 	createdAt: string | null;
 	updatedAt: string | null;
-	visibility: "Public" | "Private";
-	status: "Active" | "Archived";
+
+	// DETAIL PROEPRTIES
+	readme: string | undefined;
+	htmlUrl: string;
+	description: string | null;
 };
 
 export type IssueSchema = {
-	repoId: number;
-	repoFullName: string;
+	// KEY PROPERTIES
 	id: number;
-	htmlUrl: string;
+	repoId: number;
+
+	// QUERY PROPERTIES
+	repoFullName: string;
 	issueNumber: number;
 	title: string;
 	state: string;
+	ownerType: string | null;
+
+	// SORT PROPERTIES
 	createdAt: string;
 	updatedAt: string;
 	closedAt: string | null;
+
+	// DETAIL PROPERTIES
+	htmlUrl: string;
 	body: string | null | undefined;
-	ownerType: string | null;
 };
 
 export type CommentSchema = {
-	issueId: number;
+	// KEY PROPERTIES
 	id: number;
+
+	// DETAIL PROPERTIES
+	issueId: number;
 	htmlUrl: string;
+	body: string | undefined;
 	createdAt: string;
 	updatedAt: string;
-	body: string | undefined;
 };

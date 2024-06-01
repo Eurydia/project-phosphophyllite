@@ -25,16 +25,6 @@ export const useRepoColumnHeaders = () => {
 			},
 		},
 		{
-			id: "status",
-			label: "Status",
-			render: ({ status }) => status,
-		},
-		{
-			id: "visibility",
-			label: "Visibility",
-			render: ({ visibility }) => visibility,
-		},
-		{
 			id: "pushedAt",
 			label: "Last pushed",
 			render: ({ pushedAt }) =>
@@ -45,12 +35,6 @@ export const useRepoColumnHeaders = () => {
 			label: "Last updated",
 			render: ({ updatedAt }) =>
 				normalizeDateString(updatedAt, "Never"),
-		},
-		{
-			id: "createdAt",
-			label: "Created",
-			render: ({ createdAt }) =>
-				normalizeDateString(createdAt, "Unknown"),
 		},
 	]);
 	return columns.current;

@@ -5,7 +5,7 @@
 		"paths": {
 			"~components/*": ["./components/*"],
 			"~pages/*": ["./pages/*"],
-			"~views/*": ["./views/*"],
+			"~layouts/*": ["./layouts/*"],
 			"~database/*": ["./database/*"],
 			"~types/*": ["./types/*"],
 			"~core/*": ["./core/*"]

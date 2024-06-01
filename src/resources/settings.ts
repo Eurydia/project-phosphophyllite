@@ -12,7 +12,6 @@ export const getRepoQueryPreference =
 		);
 		const fallback: RepoQueryPref = {
 			status: "Active",
-			topicMatchStrategy: "Match all",
 			visibility: "All",
 		};
 		const query = jsonParseDefault(

@@ -29,7 +29,11 @@ export const StyledTextField: FC<
 		<TextField
 			{...rest}
 			fullWidth
+			type="text"
 			size="small"
+			autoSave="off"
+			autoCorrect="off"
+			autoComplete="off"
 			onChange={handleChange}
 		/>
 	);

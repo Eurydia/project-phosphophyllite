@@ -3,7 +3,11 @@ import {
 	ChevronRightRounded,
 	SettingsRounded,
 } from "@mui/icons-material";
-import { Box, Stack } from "@mui/material";
+import {
+	Box,
+	Stack,
+	Toolbar,
+} from "@mui/material";
 import { FC } from "react";
 import {
 	useLocation,
@@ -17,7 +21,6 @@ export const AppHeader: FC = () => {
 	const submit = useSubmit();
 	const navigator = useNavigate();
 	const { pathname } = useLocation();
-
 	const goBackward = () => {
 		navigator(-1);
 	};
@@ -42,11 +45,15 @@ export const AppHeader: FC = () => {
 	const appPath = "~" + pathname;
 
 	return (
-		<Stack
-			width="100%"
-			direction="row"
-			alignItems="center"
-			justifyContent="space-between"
+		<Toolbar
+			disableGutters
+			variant="dense"
+			sx={{
+				width: "100%",
+				direction: "row",
+				alignItems: "center",
+				justifyContent: "space-between",
+			}}
 		>
 			<Stack direction="row">
 				<StyledIconButton
@@ -68,6 +75,6 @@ export const AppHeader: FC = () => {
 			<StyledIconButton onClick={goSettings}>
 				<SettingsRounded />
 			</StyledIconButton>
-		</Stack>
+		</Toolbar>
 	);
 };

@@ -1,36 +1,19 @@
 import { LoaderFunction } from "react-router-dom";
-import {
-	getCachedIssues,
-	getRepoOptions,
-} from "resources/cached";
-import { filterIssues } from "~core/filtering";
-import { extractIssueQuery } from "~core/query";
-import { SelectOption } from "~types/generic";
-import { IssueQuery } from "~types/query";
+import { getCachedIssues } from "resources/cached";
 import { IssueSchema } from "~types/schema";
 
 export type LoaderData = {
 	issues: IssueSchema[];
-	repoOptions: SelectOption<string>[];
-	query: IssueQuery;
 };
-export const loader: LoaderFunction = async ({
-	request,
-}) => {
-	const cachedIssues = await getCachedIssues();
-	const repoOptions = await getRepoOptions();
-	const { searchParams } = new URL(request.url);
-	const query = await extractIssueQuery(
-		searchParams,
-	);
-	const issues = filterIssues(
-		cachedIssues,
-		query,
-	);
-	const loaderData: LoaderData = {
-		issues,
-		repoOptions,
-		query,
+export const loader: LoaderFunction =
+	async () => {
+		const issues = (
+			await getCachedIssues()
+		).filter(
+			({ ownerType }) => ownerType === "User",
+		);
+		const loaderData: LoaderData = {
+			issues,
+		};
+		return loaderData;
 	};
-	return loaderData;
-};

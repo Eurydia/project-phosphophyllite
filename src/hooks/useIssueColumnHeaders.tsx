@@ -47,16 +47,6 @@ export const useIssueColumnHeaders = () => {
 			},
 		},
 		{
-			id: "issueNumber",
-			label: "Issue number",
-			render: ({ issueNumber }) => issueNumber,
-		},
-		{
-			id: "ownerType",
-			label: "Type",
-			render: ({ ownerType }) => ownerType,
-		},
-		{
 			id: "state",
 			label: "State",
 			render: ({ state }) => capitalize(state),
@@ -66,12 +56,6 @@ export const useIssueColumnHeaders = () => {
 			label: "Last updated",
 			render: ({ updatedAt }) =>
 				normalizeDateString(updatedAt, "Never"),
-		},
-		{
-			id: "createdAt",
-			label: "Created",
-			render: ({ createdAt }) =>
-				normalizeDateString(createdAt, "Unknown"),
 		},
 	]);
 	return columns.current;

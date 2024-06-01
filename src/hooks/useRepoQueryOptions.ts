@@ -2,20 +2,7 @@ import { useRef } from "react";
 import { SelectOption } from "~types/generic";
 
 export const useRepoQueryOptions = () => {
-	const topicMatchStrategyOptions = useRef<
-		SelectOption<string>[]
-	>([
-		{
-			label: "Match all",
-			value: "Match all",
-		},
-		{
-			label: "Match any",
-			value: "Match any",
-		},
-	]);
-
-	const visibilityOptions = useRef<
+	const { current: visibilityOptions } = useRef<
 		SelectOption<string>[]
 	>([
 		{
@@ -32,7 +19,7 @@ export const useRepoQueryOptions = () => {
 		},
 	]);
 
-	const statusOptions = useRef<
+	const { current: statusOptions } = useRef<
 		SelectOption<string>[]
 	>([
 		{
@@ -50,9 +37,7 @@ export const useRepoQueryOptions = () => {
 	]);
 
 	return {
-		statusOptions: statusOptions.current,
-		topicMatchStrategyOptions:
-			topicMatchStrategyOptions.current,
-		visibilityOptions: visibilityOptions.current,
+		statusOptions,
+		visibilityOptions,
 	};
 };

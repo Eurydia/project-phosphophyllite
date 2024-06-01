@@ -1,28 +1,18 @@
-import { IconButton } from "@mui/material";
-import { FC, ReactNode } from "react";
+import {
+	IconButton,
+	IconButtonProps,
+} from "@mui/material";
+import { FC } from "react";
 
-type StyledIconButtonProps = {
-	submit?: boolean;
-	disabled?: boolean;
-	children: ReactNode;
-	onClick?: () => void;
-};
 export const StyledIconButton: FC<
-	StyledIconButtonProps
+	IconButtonProps
 > = (props) => {
-	const { submit, children, onClick, disabled } =
-		props;
-	const buttonType = submit ? "submit" : "button";
 	return (
 		<IconButton
+			{...props}
 			disableTouchRipple
 			size="small"
-			type={buttonType}
 			color="inherit"
-			onClick={onClick}
-			disabled={disabled}
-		>
-			{children}
-		</IconButton>
+		/>
 	);
 };

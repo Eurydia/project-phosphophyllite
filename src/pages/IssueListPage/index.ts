@@ -1,2 +1,2 @@
 export { IssueListPage } from "./IssueListPage";
-export { loader as loaderIssueListPage } from "./loader";
+export { loader as issueListLoader } from "./loader";

@@ -40,15 +40,14 @@ export const getRepos = async () => {
 		({
 			id,
 			html_url,
-			pushed_at,
 			name,
 			full_name,
+			private: isPrivate,
+			archived,
 			description,
-			topics,
+			pushed_at,
 			created_at,
 			updated_at,
-			archived,
-			private: isPrivate,
 		}) => {
 			const status: RepoSchema["status"] =
 				archived ? "Archived" : "Active";
@@ -61,7 +60,6 @@ export const getRepos = async () => {
 				name,
 				fullName: full_name,
 				description,
-				topics,
 				createdAt: created_at,
 				updatedAt: updated_at,
 				status,

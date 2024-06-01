@@ -7,7 +7,6 @@ import {
 	issueToMetadata,
 } from "~core/text";
 import { CommentSchema } from "~types/schema";
-import { RepoDetailsNavView } from "~views/RepoDetailsNavView";
 import { LoaderData } from "./loader";
 
 type IssueCommentProps = {
@@ -43,24 +42,22 @@ export const IssueDetailsPage: FC = () => {
 		"This issue does not have a body or its body is not cached.";
 
 	return (
-		<RepoDetailsNavView tab={1}>
-			<Container maxWidth="sm">
-				<Stack spacing={2}>
-					<StyledCard
-						href={issue.htmlUrl}
-						title={issue.title}
-						metadata={metadata}
-						content={content}
+		<Container maxWidth="sm">
+			<Stack spacing={2}>
+				<StyledCard
+					href={issue.htmlUrl}
+					title={issue.title}
+					metadata={metadata}
+					content={content}
+				/>
+				{comments.map((comment, index) => (
+					<IssueComment
+						key={`comment-${index}`}
+						index={index}
+						comment={comment}
 					/>
-					{comments.map((comment, index) => (
-						<IssueComment
-							key={`comment-${index}`}
-							index={index}
-							comment={comment}
-						/>
-					))}
-				</Stack>
-			</Container>
-		</RepoDetailsNavView>
+				))}
+			</Stack>
+		</Container>
 	);
 };

@@ -1,23 +1,17 @@
 import { Stack, Typography } from "@mui/material";
 import { useRepoColumnHeaders } from "hooks/useRepoColumnHeaders";
 import { getRepoSortFn } from "~core/sorting";
-import { SelectOption } from "~types/generic";
-import { RepoQuery } from "~types/query";
 import { RepoSchema } from "~types/schema";
-import { StyledDataTable } from "../StyledDataTable";
-import { StyledToolbar } from "./StyledToolbar";
+import { StyledDataTable } from "./StyledDataTable";
 
 type RepoDataTableProps = {
 	orderBy?: keyof RepoSchema;
-	topicOptions: SelectOption<string>[];
-	query: RepoQuery;
 	repos: RepoSchema[];
 };
 export const RepoDataTable: React.FC<
 	RepoDataTableProps
 > = (props) => {
-	const { orderBy, repos, query, topicOptions } =
-		props;
+	const { orderBy, repos } = props;
 
 	const columnHeaders = useRepoColumnHeaders();
 	const defaultOrderBy = orderBy ?? "pushedAt";
@@ -28,11 +22,6 @@ export const RepoDataTable: React.FC<
 			: `Showing ${repos.length} repositories`;
 	return (
 		<Stack spacing={2}>
-			<StyledToolbar
-				itemCount={repos.length}
-				query={query}
-				topicOptions={topicOptions}
-			/>
 			<Typography>{itemCountMsg}</Typography>
 			<StyledDataTable
 				items={repos}
