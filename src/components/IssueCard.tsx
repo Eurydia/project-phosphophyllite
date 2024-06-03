@@ -65,7 +65,13 @@ export const IssueCard: FC<IssueCardProps> = (
 			/>
 			{body && (
 				<CardContent>
-					<Typography>{body}</Typography>
+					<Typography
+						maxHeight="250px"
+						overflow="hidden"
+						textOverflow="ellipsis"
+					>
+						{body}
+					</Typography>
 				</CardContent>
 			)}
 			<CardActions>
