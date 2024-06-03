@@ -3,19 +3,6 @@ import { SelectOption } from "~types/generic";
 import { RepoQuery } from "~types/query";
 
 export const useRepoQueryOptions = () => {
-	const { current: sortOrderOptions } = useRef<
-		SelectOption<RepoQuery["sortOrder"]>[]
-	>([
-		{
-			label: "Ascending",
-			value: "asc",
-		},
-		{
-			label: "Descending",
-			value: "desc",
-		},
-	]);
-
 	const { current: visibilityOptions } = useRef<
 		SelectOption<RepoQuery["visibility"]>[]
 	>([
@@ -30,6 +17,18 @@ export const useRepoQueryOptions = () => {
 		{
 			label: "Public",
 			value: "public",
+		},
+	]);
+	const { current: sortOrderOptions } = useRef<
+		SelectOption<RepoQuery["sortOrder"]>[]
+	>([
+		{
+			label: "Ascending",
+			value: "asc",
+		},
+		{
+			label: "Descending",
+			value: "desc",
 		},
 	]);
 	const { current: sortByOptions } = useRef<

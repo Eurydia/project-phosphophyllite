@@ -46,12 +46,7 @@ export const filterIssues = (
 	issues: IssueSchema[],
 	query: IssueQuery,
 ) => {
-	const {
-		title,
-		ownerType,
-		repoFullNames,
-		state,
-	} = query;
+	const { title, ownerType, state } = query;
 	const filterFns: ((
 		item: IssueSchema,
 	) => boolean)[] = [];
@@ -61,11 +56,6 @@ export const filterIssues = (
 			(item) =>
 				item.ownerType !== null &&
 				item.ownerType === ownerType,
-		);
-	}
-	if (repoFullNames.length > 0) {
-		filterFns.push((item) =>
-			repoFullNames.includes(item.repoFullName),
 		);
 	}
 	if (state !== "all") {

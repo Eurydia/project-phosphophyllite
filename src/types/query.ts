@@ -1,4 +1,7 @@
-import { RepoSchema } from "./schema";
+import {
+	IssueSchema,
+	RepoSchema,
+} from "./schema";
 
 export type RepoQuery = RepoQueryPref & {
 	fullName: string;
@@ -13,10 +16,11 @@ export type RepoQueryPref = {
 
 export type IssueQuery = IssueQueryPref & {
 	title: string;
-	repoFullNames: string[];
 };
 
 export type IssueQueryPref = {
 	ownerType: "all" | "bot" | "user";
 	state: "all" | "open" | "closed";
+	sortBy: keyof IssueSchema;
+	sortOrder: "asc" | "desc";
 };

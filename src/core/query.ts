@@ -31,30 +31,18 @@ export const extractQueryItems = (
 
 export const extractIssueQuery = async (
 	searchParams: URLSearchParams,
-) => {
+): Promise<IssueQuery> => {
 	const pref = await getIssueQueryPreference();
-
-	const title = searchParams.get("title") || "";
-	const repoFullNames = extractQueryItems(
-		searchParams.get("repoFullNames") || "",
-	);
-	const ownerType =
-		(searchParams.get(
-			"ownerType",
-		) as IssueQuery["ownerType"]) ||
-		pref.ownerType;
-	const state =
-		(searchParams.get(
-			"state",
-		) as IssueQuery["state"]) || pref.state;
-
-	const query: IssueQuery = {
-		title,
-		state,
-		ownerType,
-		repoFullNames,
+	const fallback: IssueQuery = {
+		title: "",
+		...pref,
 	};
-	return query;
+	const param = searchParamsToObj(searchParams);
+	const _q: Record<string, string> = {};
+	for (const [k, v] of Object.entries(fallback)) {
+		_q[k] = param[k] || v;
+	}
+	return _q as IssueQuery;
 };
 
 export const extractRepoQuery = async (

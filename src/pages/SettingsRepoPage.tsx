@@ -5,21 +5,13 @@ import {
 import { useRepoQueryOptions } from "hooks/useRepoQueryOptions";
 import { useRepoQueryPreference } from "hooks/useRepoQueryPreference";
 import { FC } from "react";
-import { StyledSearchItem } from "~components/StyledSearchItem";
 import { StyledSelect } from "~components/StyledSelect";
 
 export const SettingsRepoPage: FC = () => {
-	const {
-		statusOptions,
-		topicMatchStrategyOptions,
-		visibilityOptions,
-	} = useRepoQueryOptions();
-	const {
-		pref,
-		setStatus,
-		setTopicMatchStrategy,
-		setVisibility,
-	} = useRepoQueryPreference();
+	const { statusOptions, visibilityOptions } =
+		useRepoQueryOptions();
+	const { pref, setStatus, setVisibility } =
+		useRepoQueryPreference();
 
 	if (pref === undefined) {
 		return (

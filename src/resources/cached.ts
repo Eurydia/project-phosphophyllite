@@ -106,29 +106,3 @@ export const getRepoOptions = async () => {
 		}));
 	return options;
 };
-
-const getCachedTopics = async () => {
-	const repos = await getCachedRepos();
-	const cachedTopics = new Set<string>();
-	for (const repo of repos) {
-		if (repo.topics === undefined) {
-			continue;
-		}
-		for (const topic of repo.topics) {
-			cachedTopics.add(topic);
-		}
-	}
-	const topics = [...cachedTopics];
-	topics.sort();
-	return topics;
-};
-
-export const getTopicOptions = async () => {
-	const topics = await getCachedTopics();
-	const topicOptions: SelectOption<string>[] =
-		topics.map((topic) => ({
-			label: topic,
-			value: topic,
-		}));
-	return topicOptions;
-};
