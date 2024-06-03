@@ -7,7 +7,7 @@ import { FC } from "react";
 import { Outlet } from "react-router-dom";
 import { AppHeader } from "~components/AppHeader";
 
-export const SettingGroupLayout: FC = () => {
+export const SettingGroupView: FC = () => {
 	return (
 		<Stack>
 			<AppHeader />

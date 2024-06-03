@@ -20,7 +20,7 @@ import {
 } from "react-router-dom";
 import { AppHeader } from "~components/AppHeader";
 
-export const HomeGroupLayout: FC = () => {
+export const HomeGroupView: FC = () => {
 	const { pathname: appPathname } = useLocation();
 	const [tab, setTab] = useState<number>(0);
 	useEffect(() => {

@@ -13,7 +13,7 @@ import {
 } from "react-router-dom";
 import { AppHeader } from "~components/AppHeader";
 
-export const RepoDetailsGroupLayout: FC = () => {
+export const RepoDetailsGroupView: FC = () => {
 	const [tab, setTab] = useState(0);
 	const { pathname } = useLocation();
 	const submit = useSubmit();

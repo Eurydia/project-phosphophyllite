@@ -6,6 +6,7 @@
 			"~components/*": ["./components/*"],
 			"~pages/*": ["./pages/*"],
 			"~layouts/*": ["./layouts/*"],
+			"~views/*": ["./views/*"],
 			"~database/*": ["./database/*"],
 			"~types/*": ["./types/*"],
 			"~core/*": ["./core/*"]

@@ -1,4 +1,3 @@
-import { HomeGroupLayout } from "layouts/HomeGroupLayout";
 import { FC } from "react";
 import {
 	RouterProvider,
@@ -14,11 +13,12 @@ import {
 	RepoListPage,
 	repoListLoader,
 } from "~pages/RepoListPage";
+import { HomeGroupView } from "~views/HomeGroupView";
 
 const router = createBrowserRouter([
 	{
 		path: "/",
-		element: <HomeGroupLayout />,
+		element: <HomeGroupView />,
 		errorElement: <ErrorElement />,
 		children: [
 			{
