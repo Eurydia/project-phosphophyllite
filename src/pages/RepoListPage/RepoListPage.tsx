@@ -9,7 +9,7 @@ import { useLoaderData } from "react-router-dom";
 import { PaddedPaper } from "~components/PaddedPaper";
 import { RepoCard } from "~components/RepoCard";
 import { RepoQueryForm } from "~components/RepoQueryForm";
-import { FlexColumnLayout } from "~layouts/DualColumnLayout";
+import { DualColumnLayout } from "~layouts/DualColumnLayout";
 import { LoaderData } from "./loader";
 
 export const RepoListPage: FC = () => {
@@ -64,7 +64,7 @@ export const RepoListPage: FC = () => {
 				paddingRight={2}
 				overflow={overflow}
 			>
-				<FlexColumnLayout
+				<DualColumnLayout
 					items={items}
 					single={single}
 				/>

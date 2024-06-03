@@ -1,12 +1,12 @@
-import { Stack } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
 import { FC, ReactNode } from "react";
 
-type FlexColumnLayoutProps = {
+type DualColumnLayoutProps = {
 	single?: boolean;
 	items: ReactNode[];
 };
-export const FlexColumnLayout: FC<
-	FlexColumnLayoutProps
+export const DualColumnLayout: FC<
+	DualColumnLayoutProps
 > = (props) => {
 	const { items, single } = props;
 	if (single) {
@@ -19,24 +19,22 @@ export const FlexColumnLayout: FC<
 		(_, i) => i % 2 === 1,
 	);
 	return (
-		<Stack
+		<Grid
+			container
 			spacing={2}
-			direction="row"
 		>
-			<Stack
-				spacing={2}
-				flexGrow={1}
-				flexBasis={0}
+			<Grid
+				item
+				xs={6}
 			>
-				{leftItems}
-			</Stack>
-			<Stack
-				spacing={2}
-				flexGrow={1}
-				flexBasis={0}
+				<Stack spacing={2}>{leftItems}</Stack>
+			</Grid>
+			<Grid
+				item
+				xs={6}
 			>
-				{rightItems}
-			</Stack>
-		</Stack>
+				<Stack spacing={2}>{rightItems}</Stack>
+			</Grid>
+		</Grid>
 	);
 };

@@ -9,7 +9,7 @@ import { useLoaderData } from "react-router-dom";
 import { IssueCard } from "~components/IssueCard";
 import { IssueQueryForm } from "~components/IssueQueryForm";
 import { PaddedPaper } from "~components/PaddedPaper";
-import { FlexColumnLayout } from "~layouts/DualColumnLayout";
+import { DualColumnLayout } from "~layouts/DualColumnLayout";
 import { LoaderData } from "./loader";
 
 export const IssueListPage: FC = () => {
@@ -64,7 +64,7 @@ export const IssueListPage: FC = () => {
 				paddingRight={2}
 				overflow={overflow}
 			>
-				<FlexColumnLayout
+				<DualColumnLayout
 					items={items}
 					single={single}
 				/>
