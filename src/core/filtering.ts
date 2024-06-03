@@ -71,7 +71,7 @@ export const filterIssues = (
 		items,
 		title,
 		{
-			keys: ["title"],
+			keys: ["title", "repoFullName"],
 		},
 	);
 	return filteredItems;

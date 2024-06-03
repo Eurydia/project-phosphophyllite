@@ -68,7 +68,6 @@ export const IssueCard: FC<IssueCardProps> = (
 					<Typography
 						maxHeight="250px"
 						overflow="hidden"
-						textOverflow="ellipsis"
 					>
 						{body}
 					</Typography>
