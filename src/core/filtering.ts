@@ -7,14 +7,12 @@ import {
 	IssueSchema,
 	RepoSchema,
 } from "~types/schema";
-import { sortByString } from "./sorting";
 
 export const filterRepos = (
 	repos: RepoSchema[],
 	query: RepoQuery,
 ) => {
-	const { fullName, visibility, status, sortBy } =
-		query;
+	const { fullName, visibility, status } = query;
 	const filterFns: ((
 		item: RepoSchema,
 	) => boolean)[] = [];
@@ -39,13 +37,6 @@ export const filterRepos = (
 		fullName,
 		{
 			keys: ["fullName"],
-			sorter: (items) =>
-				items.sort((a, b) =>
-					sortByString(
-						a.item[sortBy] as string | undefined,
-						b.item[sortBy] as string | undefined,
-					),
-				),
 		},
 	);
 	return filteredItems;
