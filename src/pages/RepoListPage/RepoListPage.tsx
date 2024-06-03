@@ -1,13 +1,13 @@
 import {
 	Box,
-	Paper,
 	Stack,
 	Typography,
 	useMediaQuery,
-	useTheme,
+	useTheme
 } from "@mui/material";
 import { FC } from "react";
 import { useLoaderData } from "react-router-dom";
+import { PaddedPaper } from "~components/PaddedPaper";
 import { RepoCard } from "~components/RepoCard";
 import { RepoQueryForm } from "~components/RepoQueryForm";
 import { LoaderData } from "./loader";
@@ -37,16 +37,13 @@ export const RepoListPage: FC = () => {
 				padding={2}
 				spacing={2}
 			>
-				<Paper
+				<PaddedPaper
 					square
 					variant="outlined"
-					sx={{
-						padding: 2,
-					}}
 				>
 					<RepoQueryForm initQuery={query} />
 					<Typography>{itemCountMsg}</Typography>
-				</Paper>
+				</PaddedPaper>
 				{items}
 			</Stack>
 		);
@@ -73,21 +70,20 @@ export const RepoListPage: FC = () => {
 			height="100%"
 			direction="row"
 		>
-			<Paper
+			<PaddedPaper
 				square
 				variant="outlined"
 				sx={{
+					height: "fit-content",
 					marginY: 2,
 					marginLeft: 2,
-					height: "fit-content",
-					padding: 2,
 					flexBasis: 0,
 					flexGrow: 1,
 				}}
 			>
 				<RepoQueryForm initQuery={query} />
 				<Typography>{itemCountMsg}</Typography>
-			</Paper>
+			</PaddedPaper>
 			<Box
 				padding={2}
 				flexBasis={0}
