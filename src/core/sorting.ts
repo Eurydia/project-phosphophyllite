@@ -1,4 +1,7 @@
-import { RepoQuery } from "~types/query";
+import {
+	IssueQuery,
+	RepoQuery,
+} from "~types/query";
 import {
 	IssueSchema,
 	RepoSchema,
@@ -36,47 +39,35 @@ export const sortByNumber = (
 	return b! - a!;
 };
 
-export const getIssueSortFn = (
+const getIssueSortFn = (
 	property: keyof IssueSchema,
-) => {
-	let orderFn:
-		| ((a: IssueSchema, b: IssueSchema) => number)
-		| undefined;
+):
+	| ((a: IssueSchema, b: IssueSchema) => number)
+	| undefined => {
 	switch (property) {
 		case "issueNumber":
-			orderFn = (a, b) => {
+			return (a, b) => {
 				return sortByNumber(
-					a[property] as
-						| number
-						| undefined
-						| null,
-					b[property] as
-						| number
-						| undefined
-						| null,
+					a[property],
+					b[property],
 				);
 			};
-			break;
 		case "title":
-		case "repoFullName":
-		case "ownerType":
-		case "state":
+			return (a, b) => {
+				return sortByString(
+					a[property],
+					b[property],
+				);
+			};
 		case "createdAt":
 		case "updatedAt":
-			orderFn = (a, b) => {
+			return (a, b) => {
 				return sortByString(
-					a[property] as
-						| string
-						| undefined
-						| null,
-					b[property] as
-						| string
-						| undefined
-						| null,
+					b[property],
+					a[property],
 				);
 			};
 	}
-	return orderFn;
 };
 
 const getRepoSortFn = (
@@ -109,5 +100,20 @@ export const sortRepos = (
 	repos.sort(sortFn);
 	if (sortOrder === "desc") {
 		repos.reverse();
+	}
+};
+
+export const sortIssues = (
+	issues: IssueSchema[],
+	query: IssueQuery,
+): void => {
+	const { sortOrder, sortBy } = query;
+	const sortFn = getIssueSortFn(sortBy);
+	if (sortFn === undefined) {
+		return;
+	}
+	issues.sort(sortFn);
+	if (sortOrder === "desc") {
+		issues.reverse();
 	}
 };

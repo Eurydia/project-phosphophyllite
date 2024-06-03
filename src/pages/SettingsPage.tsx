@@ -5,8 +5,6 @@ import {
 } from "@mui/material";
 import { useSync } from "hooks/useSync";
 import { FC } from "react";
-import { StyledSearchItem } from "~components/StyledSearchItem";
-
 export const SettingsPage: FC = () => {
 	const { itemText, syncStates, syncFn } =
 		useSync();
@@ -25,22 +23,17 @@ export const SettingsPage: FC = () => {
 
 	const renderedItems = itemText.map(
 		(text, index) => {
-			const msg = `Update ${text}`;
 			return (
-				<StyledSearchItem
+				<Button
 					key={text}
-					text={msg}
-				>
-					<Button
-						fullWidth
-						disableElevation
-						disabled={syncStates[index]}
-						size="small"
-						variant="contained"
-						onClick={syncFn[index]}
-						children={renderButtonContent(index)}
-					/>
-				</StyledSearchItem>
+					fullWidth
+					disableElevation
+					disabled={syncStates[index]}
+					size="small"
+					variant="contained"
+					onClick={syncFn[index]}
+					children={renderButtonContent(index)}
+				/>
 			);
 		},
 	);

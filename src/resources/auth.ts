@@ -2,7 +2,6 @@ import { invoke } from "@tauri-apps/api";
 import { App } from "octokit";
 import {
 	CommentSchema,
-	IssueSchema,
 	RepoSchema,
 } from "~types/schema";
 
@@ -35,9 +34,8 @@ export const getRepos = async () => {
 		"GET /installation/repositories",
 	);
 	const repos: Record<string, RepoSchema> = {};
-
-	pages.map(
-		({
+	for (const item of pages) {
+		const {
 			id,
 			html_url,
 			name,
@@ -48,26 +46,27 @@ export const getRepos = async () => {
 			pushed_at,
 			created_at,
 			updated_at,
-		}) => {
-			const status: RepoSchema["status"] =
-				archived ? "archived" : "active";
-			const visibility: RepoSchema["visibility"] =
-				isPrivate ? "private" : "public";
-			repos[full_name] = {
-				id,
-				htmlUrl: html_url,
-				pushedAt: pushed_at,
-				name,
-				fullName: full_name,
-				description,
-				createdAt: created_at,
-				updatedAt: updated_at,
-				status,
-				visibility,
-				readme: undefined,
-			};
-		},
-	);
+		} = item;
+		const status: RepoSchema["status"] = archived
+			? "archived"
+			: "active";
+		const visibility: RepoSchema["visibility"] =
+			isPrivate ? "private" : "public";
+		repos[full_name] = {
+			id,
+			htmlUrl: html_url,
+			pushedAt: pushed_at,
+			name,
+			fullName: full_name,
+			description,
+			createdAt: created_at,
+			updatedAt: updated_at,
+			status,
+			visibility,
+			readme: undefined,
+		};
+	}
+
 	const readmeReqs = Object.keys(repos).map(
 		async (fullName) => {
 			const readme = await getRepoReadMe(
@@ -102,7 +101,7 @@ export const getIssues = async (
 	const [owner, repo, ..._] =
 		repoFullName.split("/");
 	const octokit = await getOctokit();
-	const response = await octokit.paginate(
+	const pages = await octokit.paginate(
 		"GET /repos/{owner}/{repo}/issues",
 		{
 			owner,
@@ -110,7 +109,7 @@ export const getIssues = async (
 			state: "all",
 		},
 	);
-	const issues: IssueSchema[] = response.map(
+	const issues = pages.map(
 		({
 			id,
 			html_url,
@@ -123,8 +122,10 @@ export const getIssues = async (
 			body,
 			user,
 		}) => {
-			const ownerType: IssueSchema["ownerType"] =
-				user === null ? null : user.type;
+			const ownerType =
+				user === null
+					? null
+					: user.type.toLowerCase();
 			return {
 				body,
 				id,

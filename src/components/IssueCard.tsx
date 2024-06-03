@@ -8,36 +8,41 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import { useSubmit } from "react-router-dom";
-import { RepoSchema } from "~types/schema";
+import { IssueSchema } from "~types/schema";
 
-type RepoCardProps = {
-	repo: RepoSchema;
+type IssueCardProps = {
+	issue: IssueSchema;
 };
-export const RepoCard: FC<RepoCardProps> = (
+export const IssueCard: FC<IssueCardProps> = (
 	props,
 ) => {
-	const { repo } = props;
-	const { fullName } = repo;
+	const { issue } = props;
+	const {
+		repoFullName,
+		issueNumber,
+		title,
+		body,
+	} = issue;
 
 	const submit = useSubmit();
 	const goToDetails = () => {
+		const action = `/Repositories/${repoFullName}/Issues/${issueNumber}`;
 		submit(
 			{},
 			{
-				action: `./${fullName}`,
+				action,
 			},
 		);
 	};
-	const goToIssues = () => {
+	const goToRepo = () => {
+		const action = `/Repositories/${repoFullName}`;
 		submit(
 			{},
 			{
-				action: `./${fullName}/Issues`,
+				action,
 			},
 		);
 	};
-
-	const desc = repo.description;
 
 	return (
 		<Card
@@ -51,13 +56,16 @@ export const RepoCard: FC<RepoCardProps> = (
 						fontWeight="bold"
 						fontSize="x-large"
 					>
-						{fullName}
+						{title}
 					</Typography>
 				}
+				subheader={
+					<Typography>{repoFullName}</Typography>
+				}
 			/>
-			{desc && (
+			{body && (
 				<CardContent>
-					<Typography>{desc}</Typography>
+					<Typography>{body}</Typography>
 				</CardContent>
 			)}
 			<CardActions>
@@ -66,14 +74,14 @@ export const RepoCard: FC<RepoCardProps> = (
 					disableFocusRipple
 					onClick={goToDetails}
 				>
-					Detail
+					Open
 				</Button>
 				<Button
 					disableTouchRipple
 					disableFocusRipple
-					onClick={goToIssues}
+					onClick={goToRepo}
 				>
-					Issues
+					Repository
 				</Button>
 			</CardActions>
 		</Card>

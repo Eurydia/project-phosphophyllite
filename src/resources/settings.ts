@@ -41,16 +41,28 @@ export const setRepoQueryPreference = async (
 
 export const getIssueQueryPreference =
 	async (): Promise<IssueQueryPref> => {
-		const jsonString: string = await invoke(
-			"get_issue_query_preferences",
-		);
 		const fallback: IssueQueryPref = {
-			ownerType: "User",
-			state: "Open",
+			ownerType: "user",
+			state: "open",
+			sortBy: "title",
+			sortOrder: "asc",
 		};
-		// const query: IssueQueryPref =
-		// 	objCopyPropDefault(jsonString, fallback);
-		return fallback;
+		try {
+			const jsonString: string = await invoke(
+				"get_issue_query_preferences",
+			);
+			const jsonObj: Record<string, string> =
+				JSON.parse(jsonString);
+			const _q: Record<string, string> = {};
+			for (const k in fallback) {
+				const _k = k as keyof IssueQueryPref;
+				_q[_k] = jsonObj[_k] || fallback[_k];
+			}
+			return _q as IssueQueryPref;
+		} catch (err) {
+			console.warn(err);
+			return fallback;
+		}
 	};
 
 export const setIssueQueryPreference = async (

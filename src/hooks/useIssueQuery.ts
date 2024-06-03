@@ -12,34 +12,48 @@ export const useIssueQuery = (
 			return next;
 		});
 	};
-	const setRepoFullNames = (value: string[]) => {
+	const setState = (
+		value: IssueQuery["state"],
+	) => {
 		setQuery((prev) => {
 			const next = { ...prev };
-			next["repoFullNames"] = value;
+			next["state"] = value;
 			return next;
 		});
 	};
-	const setState = (value: string) => {
+	const setOwnerType = (
+		value: IssueQuery["ownerType"],
+	) => {
 		setQuery((prev) => {
 			const next = { ...prev };
-			next["state"] =
-				value as IssueQuery["state"];
+			next["ownerType"] = value;
 			return next;
 		});
 	};
-	const setOwnerType = (value: string) => {
+	const setSortBy = (
+		value: IssueQuery["sortBy"],
+	) => {
 		setQuery((prev) => {
 			const next = { ...prev };
-			next["ownerType"] =
-				value as IssueQuery["ownerType"];
+			next["sortBy"] = value;
+			return next;
+		});
+	};
+	const setSortOrder = (
+		value: IssueQuery["sortOrder"],
+	) => {
+		setQuery((prev) => {
+			const next = { ...prev };
+			next["sortOrder"] = value;
 			return next;
 		});
 	};
 	return {
 		query,
 		setOwnerType,
-		setRepoFullNames,
 		setState,
 		setTitle,
+		setSortBy,
+		setSortOrder,
 	};
 };

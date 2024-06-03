@@ -10,10 +10,16 @@ import {
 	homeLoader,
 } from "~pages/HomePage";
 import {
+	IssueListPage,
+	issueListLoader,
+} from "~pages/IssueListPage";
+import {
 	RepoListPage,
 	repoListLoader,
 } from "~pages/RepoListPage";
+import { SettingsPage } from "~pages/SettingsPage";
 import { HomeGroupView } from "~views/HomeGroupView";
+import { SettingGroupView } from "~views/SettingGroupView";
 
 const router = createBrowserRouter([
 	{
@@ -33,18 +39,17 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "Repositories/:owner",
-				errorElement: <ErrorElement />,
 				loader: ({ params }) => {
 					return redirect(
 						`/Repositories?name=${params.owner}`,
 					);
 				},
 			},
-			// {
-			// 	path: "Issues",
-			// 	element: <IssueListPage />,
-			// 	loader: issueListLoader,
-			// },
+			{
+				path: "Issues",
+				element: <IssueListPage />,
+				loader: issueListLoader,
+			},
 		],
 	},
 	// {
@@ -69,25 +74,25 @@ const router = createBrowserRouter([
 	// 		},
 	// 	],
 	// },
-	// {
-	// 	path: "/Settings",
-	// 	element: <SettingGroupLayout />,
-	// 	errorElement: <ErrorElement />,
-	// 	children: [
-	// 		{
-	// 			index: true,
-	// 			element: <SettingsPage />,
-	// 		},
-	// 		{
-	// 			path: "Repository",
-	// 			element: <SettingsRepoPage />,
-	// 		},
-	// 		{
-	// 			path: "Issue",
-	// 			element: <SettingsIssuePage />,
-	// 		},
-	// 	],
-	// },
+	{
+		path: "/Settings",
+		element: <SettingGroupView />,
+		errorElement: <ErrorElement />,
+		children: [
+			{
+				index: true,
+				element: <SettingsPage />,
+			},
+			// {
+			// 	path: "Repository",
+			// 	element: <SettingsRepoPage />,
+			// },
+			// {
+			// 	path: "Issue",
+			// 	element: <SettingsIssuePage />,
+			// },
+		],
+	},
 ]);
 
 export const App: FC = () => {
