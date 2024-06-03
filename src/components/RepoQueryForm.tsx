@@ -41,7 +41,7 @@ export const RepoQueryForm: FC<
 				</Typography>
 				<StyledTextField
 					name="fullName"
-					placeholder="Search repository"
+					placeholder="Search a repository"
 					value={query.fullName}
 					onChange={setFullName}
 				/>
