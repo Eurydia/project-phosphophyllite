@@ -39,11 +39,21 @@ export const useRepoQueryForm = (
 			return next;
 		});
 	};
+	const setSortOrder = (
+		value: RepoQuery["sortOrder"],
+	) => {
+		setQuery((prev) => {
+			const next = { ...prev };
+			next["sortOrder"] = value;
+			return next;
+		});
+	};
 	return {
 		query,
 		setFullName,
 		setStatus,
 		setVisibility,
 		setSortBy,
+		setSortOrder,
 	};
 };

@@ -3,6 +3,19 @@ import { SelectOption } from "~types/generic";
 import { RepoQuery } from "~types/query";
 
 export const useRepoQueryOptions = () => {
+	const { current: sortOrderOptions } = useRef<
+		SelectOption<RepoQuery["sortOrder"]>[]
+	>([
+		{
+			label: "Ascending",
+			value: "asc",
+		},
+		{
+			label: "Descending",
+			value: "desc",
+		},
+	]);
+
 	const { current: visibilityOptions } = useRef<
 		SelectOption<RepoQuery["visibility"]>[]
 	>([
@@ -27,15 +40,15 @@ export const useRepoQueryOptions = () => {
 			value: "fullName",
 		},
 		{
-			label: "Date created",
+			label: "Time since created",
 			value: "createdAt",
 		},
 		{
-			label: "Last updated",
+			label: "Time since last updated",
 			value: "updatedAt",
 		},
 		{
-			label: "Last pushed",
+			label: "Time since last pushed",
 			value: "pushedAt",
 		},
 	]);
@@ -59,5 +72,6 @@ export const useRepoQueryOptions = () => {
 		statusOptions,
 		visibilityOptions,
 		sortByOptions,
+		sortOrderOptions,
 	};
 };

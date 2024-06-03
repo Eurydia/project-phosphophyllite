@@ -22,11 +22,13 @@ export const RepoQueryForm: FC<
 		setFullName,
 		setStatus,
 		setVisibility,
+		setSortOrder,
 	} = useRepoQueryForm(initQuery);
 	const {
 		statusOptions,
 		visibilityOptions,
 		sortByOptions,
+		sortOrderOptions,
 	} = useRepoQueryOptions();
 	return (
 		<Form replace>
@@ -35,7 +37,7 @@ export const RepoQueryForm: FC<
 				spacing={1}
 			>
 				<Typography fontWeight="bold">
-					Filter
+					Filtering
 				</Typography>
 				<StyledTextField
 					name="fullName"
@@ -66,6 +68,13 @@ export const RepoQueryForm: FC<
 					value={query.sortBy}
 					onChange={setSortBy}
 					options={sortByOptions}
+				/>
+				<StyledSelect
+					label="Order"
+					name="sortOrder"
+					value={query.sortOrder}
+					onChange={setSortOrder}
+					options={sortOrderOptions}
 				/>
 				<StyledIconButton type="submit">
 					<SearchRounded />
