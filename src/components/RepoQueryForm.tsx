@@ -1,6 +1,6 @@
 import { SearchRounded } from "@mui/icons-material";
 import { Stack, Typography } from "@mui/material";
-import { useRepoQuery } from "hooks/useRepoQuery";
+import { useRepoQueryForm } from "hooks/useRepoQueryForm";
 import { useRepoQueryOptions } from "hooks/useRepoQueryOptions";
 import { FC } from "react";
 import { Form } from "react-router-dom";
@@ -18,13 +18,16 @@ export const RepoQueryForm: FC<
 	const { initQuery } = props;
 	const {
 		query,
-		setName,
+		setSortBy,
+		setFullName,
 		setStatus,
 		setVisibility,
-	} = useRepoQuery(initQuery);
-	const { statusOptions, visibilityOptions } =
-		useRepoQueryOptions();
-
+	} = useRepoQueryForm(initQuery);
+	const {
+		statusOptions,
+		visibilityOptions,
+		sortByOptions,
+	} = useRepoQueryOptions();
 	return (
 		<Form replace>
 			<Stack
@@ -35,10 +38,10 @@ export const RepoQueryForm: FC<
 					Filter
 				</Typography>
 				<StyledTextField
-					name="name"
+					name="fullName"
 					placeholder="Search repository"
-					value={query.name}
-					onChange={setName}
+					value={query.fullName}
+					onChange={setFullName}
 				/>
 				<StyledSelect
 					label="Visibility"
@@ -53,6 +56,16 @@ export const RepoQueryForm: FC<
 					value={query.status}
 					onChange={setStatus}
 					options={statusOptions}
+				/>
+				<Typography fontWeight="bold">
+					Sorting
+				</Typography>
+				<StyledSelect
+					label="Sort by"
+					name="sortBy"
+					value={query.sortBy}
+					onChange={setSortBy}
+					options={sortByOptions}
 				/>
 				<StyledIconButton type="submit">
 					<SearchRounded />

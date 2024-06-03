@@ -7,6 +7,16 @@ import {
 	RepoQuery,
 } from "~types/query";
 
+const searchParamsToObj = (
+	searchParam: URLSearchParams,
+): Record<string, string> => {
+	const obj: Record<string, string> = {};
+	for (const [k, v] of searchParam.entries()) {
+		obj[k] = v;
+	}
+	return obj;
+};
+
 export const extractQueryItems = (
 	query: string,
 ) => {
@@ -49,24 +59,16 @@ export const extractIssueQuery = async (
 
 export const extractRepoQuery = async (
 	searchParams: URLSearchParams,
-) => {
+): Promise<RepoQuery> => {
 	const pref = await getRepoQueryPreference();
-
-	const name = searchParams.get("name") || "";
-	const status =
-		(searchParams.get(
-			"status",
-		) as RepoQuery["status"]) || pref.status;
-	const visibility =
-		(searchParams.get(
-			"visibility",
-		) as RepoQuery["visibility"]) ||
-		pref.visibility;
-
-	const query: RepoQuery = {
-		name,
-		status,
-		visibility,
+	const fallback: RepoQuery = {
+		fullName: "",
+		...pref,
 	};
-	return query;
+	const param = searchParamsToObj(searchParams);
+	const _q: Record<string, string> = {};
+	for (const [k, v] of Object.entries(fallback)) {
+		_q[k] = param[k] || v;
+	}
+	return _q as RepoQuery;
 };

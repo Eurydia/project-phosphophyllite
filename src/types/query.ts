@@ -1,10 +1,13 @@
+import { RepoSchema } from "./schema";
+
 export type RepoQuery = RepoQueryPref & {
-	name: string;
+	fullName: string;
 };
 
 export type RepoQueryPref = {
-	status: "All" | "Active" | "Archived";
-	visibility: "All" | "Private" | "Public";
+	status: "all" | "active" | "archived";
+	visibility: "all" | "private" | "public";
+	sortBy: keyof RepoSchema;
 };
 
 export type IssueQuery = IssueQueryPref & {
@@ -13,6 +16,6 @@ export type IssueQuery = IssueQueryPref & {
 };
 
 export type IssueQueryPref = {
-	ownerType: "All" | "Bot" | "User";
-	state: "All" | "Open" | "Closed";
+	ownerType: "all" | "bot" | "user";
+	state: "all" | "open" | "closed";
 };

@@ -3,36 +3,47 @@ import {
 	Select,
 	SelectChangeEvent,
 } from "@mui/material";
-import { FC } from "react";
 import { SelectOption } from "~types/generic";
 
-type StyledSelectProps = {
+type StyledSelectProps<T> = {
 	label: string;
 	name: string;
 	value: string;
-	options: SelectOption<string>[];
-	onChange: (value: string) => void;
+	options: SelectOption<T>[];
+	onChange: (value: T) => void;
 };
-export const StyledSelect: FC<
-	StyledSelectProps
-> = (props) => {
-	const { label, options, onChange, value } =
-		props;
+export const StyledSelect = <T extends string>(
+	props: StyledSelectProps<T>,
+) => {
+	const {
+		name,
+		label,
+		options,
+		onChange,
+		value,
+	} = props;
 
 	const handleChange = (
 		event: SelectChangeEvent<string>,
 	) => {
-		onChange(event.target.value);
+		onChange(event.target.value as T);
 	};
 	const renderValue = (v: string) => {
-		return `${label}: ${v}`;
+		const selected = options.filter(
+			(opt) => opt.value === v,
+		);
+		let l = "";
+		if (selected.length > 0) {
+			l = selected[0].label;
+		}
+		return `${label}: ${l}`;
 	};
-
 	return (
 		<Select
 			fullWidth
 			displayEmpty
 			size="small"
+			name={name}
 			value={value}
 			onChange={handleChange}
 			renderValue={renderValue}
@@ -42,8 +53,8 @@ export const StyledSelect: FC<
 		>
 			{options.map(({ value, label }, index) => (
 				<MenuItem
+					key={`opt-${index}`}
 					disableRipple
-					key={`item-${index}`}
 					value={value}
 				>
 					{label}

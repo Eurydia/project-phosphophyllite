@@ -31,11 +31,11 @@ export const useRepoQueryPreference = () => {
 	const setStatus = (
 		value: RepoQuery["status"],
 	) => {
+		if (pref === undefined) {
+			return;
+		}
 		setPref((prev) => {
-			if (prev === undefined) {
-				return;
-			}
-			const next = { ...prev };
+			const next = { ...prev! };
 			next["status"] = value;
 			return next;
 		});
@@ -43,12 +43,24 @@ export const useRepoQueryPreference = () => {
 	const setVisibility = (
 		value: RepoQuery["visibility"],
 	) => {
+		if (pref === undefined) {
+			return;
+		}
 		setPref((prev) => {
-			if (prev === undefined) {
-				return;
-			}
-			const next = { ...prev };
+			const next = { ...prev! };
 			next["visibility"] = value;
+			return next;
+		});
+	};
+	const setSort = (
+		value: RepoQuery["sortBy"],
+	) => {
+		if (pref === undefined) {
+			return;
+		}
+		setPref((prev) => {
+			const next = { ...prev! };
+			next["sortBy"] = value;
 			return next;
 		});
 	};
@@ -56,5 +68,6 @@ export const useRepoQueryPreference = () => {
 		pref,
 		setStatus,
 		setVisibility,
+		setSort,
 	};
 };

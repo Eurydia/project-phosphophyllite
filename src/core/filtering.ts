@@ -7,31 +7,47 @@ import {
 	IssueSchema,
 	RepoSchema,
 } from "~types/schema";
+import { sortByString } from "./sorting";
 
 export const filterRepos = (
 	repos: RepoSchema[],
 	query: RepoQuery,
 ) => {
-	const { name, visibility, status } = query;
+	const { fullName, visibility, status, sortBy } =
+		query;
 	const filterFns: ((
 		item: RepoSchema,
 	) => boolean)[] = [];
-	if (visibility !== "All") {
+	if (visibility !== "all") {
 		filterFns.push(
 			(item) => item.visibility === visibility,
 		);
 	}
-	if (status !== "All") {
+	if (status !== "all") {
 		filterFns.push(
 			(item) => item.status === status,
 		);
 	}
-	const items = repos.filter((repo) =>
-		filterFns.every((fn) => fn(repo)),
+	let items = repos;
+	if (filterFns.length > 0) {
+		items = repos.filter((repo) =>
+			filterFns.every((fn) => fn(repo)),
+		);
+	}
+	const filteredItems = matchSorter(
+		items,
+		fullName,
+		{
+			keys: ["fullName"],
+			sorter: (items) =>
+				items.sort((a, b) =>
+					sortByString(
+						a.item[sortBy] as string | undefined,
+						b.item[sortBy] as string | undefined,
+					),
+				),
+		},
 	);
-	const filteredItems = matchSorter(items, name, {
-		keys: ["fullName"],
-	});
 	return filteredItems;
 };
 
@@ -49,7 +65,7 @@ export const filterIssues = (
 		item: IssueSchema,
 	) => boolean)[] = [];
 
-	if (ownerType !== "All") {
+	if (ownerType !== "all") {
 		filterFns.push(
 			(item) =>
 				item.ownerType !== null &&
@@ -61,7 +77,7 @@ export const filterIssues = (
 			repoFullNames.includes(item.repoFullName),
 		);
 	}
-	if (state !== "All") {
+	if (state !== "all") {
 		filterFns.push(
 			(item) =>
 				item.state === state.toLowerCase(),

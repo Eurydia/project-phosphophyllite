@@ -50,9 +50,9 @@ export const getRepos = async () => {
 			updated_at,
 		}) => {
 			const status: RepoSchema["status"] =
-				archived ? "Archived" : "Active";
+				archived ? "archived" : "active";
 			const visibility: RepoSchema["visibility"] =
-				isPrivate ? "Private" : "Public";
+				isPrivate ? "private" : "public";
 			repos[full_name] = {
 				id,
 				htmlUrl: html_url,

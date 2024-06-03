@@ -3,7 +3,7 @@ import {
 	Stack,
 	Typography,
 	useMediaQuery,
-	useTheme
+	useTheme,
 } from "@mui/material";
 import { FC } from "react";
 import { useLoaderData } from "react-router-dom";
@@ -22,8 +22,8 @@ export const RepoListPage: FC = () => {
 	const count = repos.length;
 	const itemCountMsg =
 		count === 1
-			? `Showing 1 repostiory`
-			: `Showing ${count} repostiories`;
+			? `Showing 1 repositiory`
+			: `Showing ${count} repositories`;
 
 	if (match) {
 		const items = repos.map((repo) => (

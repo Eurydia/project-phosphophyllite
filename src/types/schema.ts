@@ -5,8 +5,8 @@ export type RepoSchema = {
 	// QUERY PROPERTIES
 	name: string;
 	fullName: string;
-	visibility: "Public" | "Private";
-	status: "Active" | "Archived";
+	visibility: "public" | "private";
+	status: "active" | "archived";
 
 	// SORT PROPERTIES
 	pushedAt: string | null;
