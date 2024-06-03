@@ -39,12 +39,15 @@ export const RepoListPage: FC = () => {
 			repo={repo}
 		/>
 	));
+	const overflow = !single ? "auto" : undefined;
 	return (
 		<Grid
-			padding={2}
 			container
+			paddingTop={2}
+			paddingLeft={2}
 			columns={12}
 			spacing={2}
+			height="100%"
 		>
 			<Grid
 				item
@@ -57,6 +60,9 @@ export const RepoListPage: FC = () => {
 				item
 				xs={12}
 				md={9}
+				height="100%"
+				paddingRight={2}
+				overflow={overflow}
 			>
 				<FlexColumnLayout
 					items={items}

@@ -63,6 +63,7 @@ export const HomeGroupView: FC = () => {
 			<AppBar
 				ref={elemRef}
 				elevation={0}
+				position="relative"
 			>
 				<AppHeader />
 				<Divider flexItem />
@@ -94,7 +95,6 @@ export const HomeGroupView: FC = () => {
 				<Divider flexItem />
 			</AppBar>
 			<Box
-				marginTop={elemHeight}
 				height={contentHeight}
 				overflow="auto"
 			>
