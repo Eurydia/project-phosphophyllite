@@ -1,3 +1,4 @@
+import { RepoQuery } from "~types/query";
 import {
 	IssueSchema,
 	RepoSchema,
@@ -12,7 +13,7 @@ export const sortByString = (
 	if (_a + _b !== 2) {
 		return _b - _a;
 	}
-	return b!.localeCompare(a!);
+	return a!.localeCompare(b!);
 };
 
 export const sortByBoolean = (
@@ -78,29 +79,35 @@ export const getIssueSortFn = (
 	return orderFn;
 };
 
-export const getRepoSortFn = (
+const getRepoSortFn = (
 	property: keyof RepoSchema,
 ):
 	| ((a: RepoSchema, b: RepoSchema) => number)
 	| undefined => {
 	switch (property) {
-		case "status":
-		case "visibility":
 		case "fullName":
+			return (a, b) =>
+				sortByString(a[property], b[property]);
 		case "pushedAt":
 		case "createdAt":
 		case "updatedAt":
 			return (a, b) =>
-				sortByString(
-					a[property] as
-						| string
-						| undefined
-						| null,
-					b[property] as
-						| string
-						| undefined
-						| null,
-				);
+				sortByString(b[property], a[property]);
 	}
 	return undefined;
+};
+
+export const sortRepos = (
+	repos: RepoSchema[],
+	query: RepoQuery,
+): void => {
+	const { sortOrder, sortBy } = query;
+	const sortFn = getRepoSortFn(sortBy);
+	if (sortFn === undefined) {
+		return;
+	}
+	repos.sort(sortFn);
+	if (sortOrder === "desc") {
+		repos.reverse();
+	}
 };

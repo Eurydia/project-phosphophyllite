@@ -8,6 +8,7 @@ export type RepoQueryPref = {
 	status: "all" | "active" | "archived";
 	visibility: "all" | "private" | "public";
 	sortBy: keyof RepoSchema;
+	sortOrder: "asc" | "desc";
 };
 
 export type IssueQuery = IssueQueryPref & {

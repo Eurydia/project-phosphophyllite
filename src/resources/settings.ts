@@ -10,6 +10,7 @@ export const getRepoQueryPreference =
 			status: "active",
 			visibility: "all",
 			sortBy: "fullName",
+			sortOrder: "asc",
 		};
 		try {
 			const jsonString: string = await invoke(
