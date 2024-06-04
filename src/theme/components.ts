@@ -22,6 +22,13 @@ export const themeComponent = createTheme({
 				},
 			},
 		},
+		MuiSvgIcon: {
+			styleOverrides: {
+				root: {
+					color: "inherit",
+				},
+			},
+		},
 		MuiCssBaseline: {
 			styleOverrides: {
 				"*": {
