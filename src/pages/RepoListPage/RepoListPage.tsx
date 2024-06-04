@@ -29,8 +29,8 @@ export const RepoListPage: FC = () => {
 			square
 			variant="outlined"
 		>
-			<RepoQueryForm initQuery={query} />
 			<Typography>{itemCountMsg}</Typography>
+			<RepoQueryForm initQuery={query} />
 		</PaddedPaper>
 	);
 	const items = repos.map((repo, index) => (

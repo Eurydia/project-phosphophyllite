@@ -29,8 +29,8 @@ export const IssueListPage: FC = () => {
 			square
 			variant="outlined"
 		>
-			<IssueQueryForm initQuery={query} />
 			<Typography>{itemCountMsg}</Typography>
+			<IssueQueryForm initQuery={query} />
 		</PaddedPaper>
 	);
 	const items = issues.map((issue, index) => (

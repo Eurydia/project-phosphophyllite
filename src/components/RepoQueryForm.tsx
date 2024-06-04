@@ -1,11 +1,13 @@
-import { SearchRounded } from "@mui/icons-material";
-import { Stack, Typography } from "@mui/material";
+import {
+	Button,
+	Stack,
+	Typography,
+} from "@mui/material";
 import { useRepoQueryForm } from "hooks/useRepoQueryForm";
 import { useRepoQueryOptions } from "hooks/useRepoQueryOptions";
 import { FC } from "react";
 import { Form } from "react-router-dom";
 import { RepoQuery } from "~types/query";
-import { StyledIconButton } from "./StyledIconButton";
 import { StyledSelect } from "./StyledSelect";
 import { StyledTextField } from "./StyledTextField";
 
@@ -76,9 +78,13 @@ export const RepoQueryForm: FC<
 					onChange={setSortOrder}
 					options={sortOrderOptions}
 				/>
-				<StyledIconButton type="submit">
-					<SearchRounded />
-				</StyledIconButton>
+				<Button
+					disableElevation
+					disableTouchRipple
+					type="submit"
+				>
+					Search
+				</Button>
 			</Stack>
 		</Form>
 	);

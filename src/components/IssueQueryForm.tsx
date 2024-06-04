@@ -1,11 +1,13 @@
-import { SearchRounded } from "@mui/icons-material";
-import { Stack, Typography } from "@mui/material";
+import {
+	Button,
+	Stack,
+	Typography,
+} from "@mui/material";
 import { useIssueQuery } from "hooks/useIssueQuery";
 import { useIssueQueryOptions } from "hooks/useIssueQueryOptions";
 import { FC } from "react";
 import { Form } from "react-router-dom";
 import { IssueQuery } from "~types/query";
-import { StyledIconButton } from "./StyledIconButton";
 import { StyledSelect } from "./StyledSelect";
 import { StyledTextField } from "./StyledTextField";
 
@@ -76,9 +78,13 @@ export const IssueQueryForm: FC<
 					onChange={setSortOrder}
 					options={sortOrderOptions}
 				/>
-				<StyledIconButton type="submit">
-					<SearchRounded />
-				</StyledIconButton>
+				<Button
+					disableElevation
+					disableTouchRipple
+					type="submit"
+				>
+					Search
+				</Button>
 			</Stack>
 		</Form>
 	);

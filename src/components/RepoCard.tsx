@@ -66,7 +66,7 @@ export const RepoCard: FC<RepoCardProps> = (
 					disableFocusRipple
 					onClick={goToDetails}
 				>
-					Detail
+					Open
 				</Button>
 				<Button
 					disableTouchRipple

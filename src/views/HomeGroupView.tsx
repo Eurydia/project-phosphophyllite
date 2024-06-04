@@ -26,21 +26,15 @@ export const HomeGroupView: FC = () => {
 	useEffect(() => {
 		switch (appPathname.toLowerCase()) {
 			case "/repositories":
-				setTab(1);
+				setTab(0);
 				break;
 			case "/issues":
-				setTab(2);
-				break;
-			default:
-				setTab(0);
+				setTab(1);
 				break;
 		}
 	}, [appPathname]);
 
 	const submit = useSubmit();
-	const goToHome = () => {
-		submit({}, { action: "/", method: "get" });
-	};
 	const goToRepos = () => {
 		submit(
 			{},
@@ -75,18 +69,12 @@ export const HomeGroupView: FC = () => {
 						<Tab
 							disableRipple
 							value={0}
-							label="Overview"
-							onClick={goToHome}
-						/>
-						<Tab
-							disableRipple
-							value={1}
 							label="Repositories"
 							onClick={goToRepos}
 						/>
 						<Tab
 							disableRipple
-							value={2}
+							value={1}
 							label="Issues"
 							onClick={goToIssues}
 						/>
@@ -94,10 +82,7 @@ export const HomeGroupView: FC = () => {
 				</Toolbar>
 				<Divider flexItem />
 			</AppBar>
-			<Box
-				height={contentHeight}
-				overflow="auto"
-			>
+			<Box height={contentHeight}>
 				<Outlet />
 			</Box>
 		</Fragment>

@@ -6,10 +6,6 @@ import {
 import { createBrowserRouter } from "react-router-dom";
 import { ErrorElement } from "~pages/ErrorElement";
 import {
-	HomePage,
-	homeLoader,
-} from "~pages/HomePage";
-import {
 	IssueListPage,
 	issueListLoader,
 } from "~pages/IssueListPage";
@@ -29,8 +25,7 @@ const router = createBrowserRouter([
 		children: [
 			{
 				index: true,
-				element: <HomePage />,
-				loader: homeLoader,
+				loader: () => redirect("/Repositories"),
 			},
 			{
 				path: "Repositories",
@@ -39,11 +34,10 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "Repositories/:owner",
-				loader: ({ params }) => {
-					return redirect(
+				loader: ({ params }) =>
+					redirect(
 						`/Repositories?name=${params.owner}`,
-					);
-				},
+					),
 			},
 			{
 				path: "Issues",
