@@ -1,4 +1,4 @@
-import { LoaderFunction } from "react-router-dom";
+import { LoaderFunction } from "react-router";
 import { getCachedRepos } from "resources/cached";
 import { filterRepos } from "~core/filtering";
 import { extractRepoQuery } from "~core/query";

@@ -8,10 +8,7 @@ import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
-import {
-	CommentSchema,
-	IssueSchema,
-} from "~types/schema";
+import { CommentSchema } from "~types/schema";
 import { normalizeDateString } from "./time";
 
 export const decodeBase64 = (content: string) => {
@@ -40,32 +37,6 @@ export const commentToMetadata = (
 	const metadata = `
 ${createdMsg}
 ${updatedMsg}`;
-	return metadata;
-};
-
-export const issueToMetadata = (
-	issue: IssueSchema,
-): string => {
-	const normCreated = normalizeDateString(
-		issue.createdAt,
-		"Unknown",
-	);
-	const normClosed = normalizeDateString(
-		issue.closedAt,
-		"Never",
-	);
-	const normUpdated = normalizeDateString(
-		issue.updatedAt,
-	);
-	const createdMsg = `Created: ${normCreated}`;
-	const closedMsg = `Closed: ${normClosed}`;
-	const updatedMsg = `Last updated: ${normUpdated}`;
-
-	const metadata = `
-${createdMsg}
-${updatedMsg}
-${closedMsg}`;
-
 	return metadata;
 };
 

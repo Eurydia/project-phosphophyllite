@@ -1,16 +1,11 @@
 import {
 	Container,
-	Grid,
 	Typography,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
-import {
-	FC,
-	Fragment,
-	ReactNode,
-	useRef,
-} from "react";
+import { FC, ReactNode, useRef } from "react";
 import { useLoaderData } from "react-router";
+import { StyledGrid } from "~components/StyledGrid";
 import { normalizeDateString } from "~core/time";
 import { LoaderData } from "./loader";
 
@@ -44,14 +39,12 @@ export const RepoMetadataPage: FC = () => {
 	const desc =
 		description ??
 		"This repository does not have a description.";
-
-	const openLink = () => {
-		invoke("open_url", { url: htmlUrl });
-	};
 	const link = (
 		<Typography
 			component="a"
-			onClick={openLink}
+			onClick={() => {
+				invoke("open_url", { url: htmlUrl });
+			}}
 			sx={{
 				cursor: "pointer",
 			}}
@@ -83,36 +76,13 @@ export const RepoMetadataPage: FC = () => {
 		normPushed,
 		link,
 	]);
-	const renderedRows = headers.map(
-		(header, index) => {
-			return (
-				<Fragment key={header}>
-					<Grid
-						item
-						xs={4}
-					>
-						<Typography>{header}:</Typography>
-					</Grid>
-					<Grid
-						item
-						xs={8}
-					>
-						{items[index]}
-					</Grid>
-				</Fragment>
-			);
-		},
-	);
 
 	return (
 		<Container maxWidth="sm">
-			<Grid
-				padding={2}
-				container
-				spacing={1}
-			>
-				{renderedRows}
-			</Grid>
+			<StyledGrid
+				items={items}
+				headers={headers}
+			/>
 		</Container>
 	);
 };

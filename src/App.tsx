@@ -1,10 +1,8 @@
 import { FC } from "react";
-import {
-	RouterProvider,
-	redirect,
-} from "react-router";
+import { RouterProvider } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
 import { ErrorElement } from "~pages/ErrorElement";
+import { HomePage } from "~pages/HomePage";
 import {
 	IssueDetailsPage,
 	loaderIssueDetailsPage,
@@ -25,6 +23,7 @@ import {
 	RepoMetadataPage,
 	loaderRepoMetadataPage,
 } from "~pages/RepoMetadataPage";
+import { RepoOwnerListPage } from "~pages/RepoOwnerListPage";
 import {
 	RepoReadmePage,
 	loaderRepoReadmePage,
@@ -43,12 +42,17 @@ const router = createBrowserRouter([
 		children: [
 			{
 				index: true,
-				loader: () => redirect("/Repositories"),
+				element: <HomePage />,
 			},
 			{
 				path: "Repositories",
 				element: <RepoListPage />,
 				loader: repoListLoader,
+			},
+
+			{
+				path: "Repositories/:owner",
+				element: <RepoOwnerListPage />,
 			},
 			{
 				path: "Issues",

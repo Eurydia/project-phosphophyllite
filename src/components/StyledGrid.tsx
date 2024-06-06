@@ -1,0 +1,41 @@
+import { Grid, Typography } from "@mui/material";
+import { FC, Fragment, ReactNode } from "react";
+
+type StyledGridProps = {
+	headers: ReactNode[];
+	items: ReactNode[];
+};
+export const StyledGrid: FC<StyledGridProps> = (
+	props,
+) => {
+	const { headers, items } = props;
+	const renderedRows = headers.map(
+		(header, index) => {
+			const key = `row-${index}`;
+			return (
+				<Fragment key={key}>
+					<Grid
+						item
+						xs={4}
+					>
+						<Typography>{header}:</Typography>
+					</Grid>
+					<Grid
+						item
+						xs={8}
+					>
+						{items[index]}
+					</Grid>
+				</Fragment>
+			);
+		},
+	);
+	return (
+		<Grid
+			container
+			spacing={1}
+		>
+			{renderedRows}
+		</Grid>
+	);
+};
