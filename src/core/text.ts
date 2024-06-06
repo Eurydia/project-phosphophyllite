@@ -11,7 +11,6 @@ import { unified } from "unified";
 import {
 	CommentSchema,
 	IssueSchema,
-	RepoSchema,
 } from "~types/schema";
 import { normalizeDateString } from "./time";
 
@@ -67,49 +66,6 @@ ${createdMsg}
 ${updatedMsg}
 ${closedMsg}`;
 
-	return metadata;
-};
-
-export const repoToMetadata = (
-	repo: RepoSchema,
-): string => {
-	const normCreated = normalizeDateString(
-		repo.createdAt,
-		"Unknown",
-	);
-	const normUpdated = normalizeDateString(
-		repo.updatedAt,
-		"Never",
-	);
-	const normPushed = normalizeDateString(
-		repo.pushedAt,
-		"Never",
-	);
-	const desc =
-		repo.description ??
-		"This repository does not have a description";
-	const status = repo.status
-		? "Archived"
-		: "Active";
-	const visibility = repo.visibility
-		? "Private"
-		: "Public";
-	const statusMsg = `Status: ${status}`;
-	const visibilityMsg = `Visibility: ${visibility}`;
-	const descMsg = `${desc}`;
-	const createdMsg = `Created: ${normCreated}`;
-	const updatedMsg = `Last updated: ${normUpdated}`;
-	const pushedMsg = `Last pushed: ${normPushed}`;
-
-	const metadata = `
-${descMsg}
-
-${statusMsg} 
-${visibilityMsg}
-
-${createdMsg}
-${updatedMsg}
-${pushedMsg}`;
 	return metadata;
 };
 

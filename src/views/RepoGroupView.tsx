@@ -83,6 +83,7 @@ export const RepoGroupView: FC = () => {
 			<Box
 				marginTop={elemHeight}
 				height={contentHeight}
+				overflow="auto"
 			>
 				<Outlet />
 			</Box>

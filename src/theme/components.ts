@@ -26,7 +26,6 @@ export const themeComponent = createTheme({
 			styleOverrides: {
 				"*": {
 					scrollbarColor: `${TEXT_SND} ${BG_PAPER}`,
-					scrollbarWidth: "thin",
 				},
 				"html": {
 					backgroundColor: BG_PAPER,

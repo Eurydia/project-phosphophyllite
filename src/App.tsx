@@ -34,6 +34,7 @@ import { HomeGroupView } from "~views/HomeGroupView";
 import { RepoGroupView } from "~views/RepoGroupView";
 import { SettingGroupView } from "~views/SettingGroupView";
 
+//
 const router = createBrowserRouter([
 	{
 		path: "/",
@@ -48,13 +49,6 @@ const router = createBrowserRouter([
 				path: "Repositories",
 				element: <RepoListPage />,
 				loader: repoListLoader,
-			},
-			{
-				path: "Repositories/:owner",
-				loader: ({ params }) =>
-					redirect(
-						`/Repositories?name=${params.owner}`,
-					),
 			},
 			{
 				path: "Issues",
