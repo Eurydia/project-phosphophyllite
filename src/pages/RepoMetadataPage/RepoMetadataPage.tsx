@@ -1,18 +1,16 @@
 import {
 	Container,
-	Divider,
 	Typography,
 } from "@mui/material";
 import { FC } from "react";
 import { useLoaderData } from "react-router";
-import { Markdown } from "~components/Markdown";
 import {
 	decodeBase64,
 	repoToMetadata,
 } from "~core/text";
 import { LoaderData } from "./loader";
 
-export const RepoDetailsPage: FC = () => {
+export const RepoMetadataPage: FC = () => {
 	const { repo } = useLoaderData() as LoaderData;
 
 	let decodedReadme: string | undefined;
@@ -23,16 +21,7 @@ export const RepoDetailsPage: FC = () => {
 
 	return (
 		<Container maxWidth="sm">
-			<Markdown
-				markdownContent={decodedReadme}
-				emptyText="This repository does not contain a readme."
-			/>
-			<Divider
-				flexItem
-				variant="middle"
-			>
-				Metadata
-			</Divider>
+			<Typography>Metadata</Typography>
 			<Typography whiteSpace="pre-line">
 				{metadata}
 			</Typography>
