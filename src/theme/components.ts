@@ -23,20 +23,29 @@ export const themeComponent = createTheme({
 			},
 		},
 		MuiCssBaseline: {
-			styleOverrides: {
-				"*": {
-					scrollbarColor: `${TEXT_SND} ${BG_PAPER}`,
-				},
-				"html": {
-					backgroundColor: BG_PAPER,
-					fontFamily: `"Courier New" Courier, monospace`,
-				},
-				"a": {
-					"color": alpha(PRM_MAIN, 0.78),
-					"&:hover": {
-						color: alpha(SND_MAIN, 0.78),
+			styleOverrides: ({ spacing }) => {
+				return {
+					"*": {
+						scrollbarColor: `${TEXT_SND} ${BG_PAPER}`,
 					},
-				},
+					"html": {
+						backgroundColor: BG_PAPER,
+						fontFamily: `"Courier New" Courier, monospace`,
+					},
+					"a": {
+						"color": alpha(PRM_MAIN, 0.78),
+						"cursor": "pointer",
+						"&:hover": {
+							color: alpha(SND_MAIN, 0.78),
+						},
+					},
+					"code": {
+						display: "block",
+						width: "100%",
+						whiteSpace: "wrap",
+						paddingLeft: spacing(2),
+					},
+				};
 			},
 		},
 	},

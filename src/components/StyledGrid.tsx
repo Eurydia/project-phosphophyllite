@@ -23,6 +23,9 @@ export const StyledGrid: FC<StyledGridProps> = (
 					<Grid
 						item
 						xs={8}
+						sx={{
+							wordBreak: "break-all",
+						}}
 					>
 						{items[index]}
 					</Grid>
@@ -34,6 +37,7 @@ export const StyledGrid: FC<StyledGridProps> = (
 		<Grid
 			container
 			spacing={1}
+			width="100%"
 		>
 			{renderedRows}
 		</Grid>

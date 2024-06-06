@@ -5,14 +5,13 @@ import {
 } from "resources/cached";
 import { filterIssues } from "~core/filtering";
 import { extractIssueQuery } from "~core/query";
-import { SelectOption } from "~types/generic";
+import { sortIssues } from "~core/sorting";
 import { IssueQuery } from "~types/query";
 import { IssueSchema } from "~types/schema";
 
 export type LoaderData = {
 	issues: IssueSchema[];
 	query: IssueQuery;
-	repoOptions: SelectOption<string>[];
 };
 export const loader: LoaderFunction = async ({
 	params,
@@ -34,14 +33,13 @@ export const loader: LoaderFunction = async ({
 	if (repo === undefined) {
 		throw new Response("Not found", {
 			status: 404,
-			statusText: "Repository not found in cache",
+			statusText: "Repository is not in cache",
 		});
 	}
 	const { searchParams } = new URL(request.url);
 	const query = await extractIssueQuery(
 		searchParams,
 	);
-
 	const cachedIssues = await getCachedIssues(
 		repo.fullName,
 	);
@@ -49,15 +47,9 @@ export const loader: LoaderFunction = async ({
 		cachedIssues,
 		query,
 	);
-	const repoOptions: SelectOption<string>[] = [
-		{
-			label: repo.fullName,
-			value: repo.fullName,
-		},
-	];
+	sortIssues(issues, query);
 	const loaderData: LoaderData = {
 		issues,
-		repoOptions,
 		query,
 	};
 	return loaderData;
