@@ -7,7 +7,7 @@ import { useIssueQuery } from "hooks/useIssueQuery";
 import { useIssueQueryOptions } from "hooks/useIssueQueryOptions";
 import { FC } from "react";
 import { Form } from "react-router-dom";
-import { IssueQuery } from "~types/query";
+import { IssueQuery } from "~types/schema";
 import { StyledSelect } from "./StyledSelect";
 import { StyledTextField } from "./StyledTextField";
 
@@ -48,14 +48,14 @@ export const IssueQueryForm: FC<
 					onChange={setTitle}
 				/>
 				<StyledSelect
-					label="State"
+					label="State:"
 					name="state"
 					value={query.state}
 					onChange={setState}
 					options={stateOptions}
 				/>
 				<StyledSelect
-					label="Type"
+					label="Owner type:"
 					name="ownerType"
 					value={query.ownerType}
 					onChange={setOwnerType}
@@ -65,14 +65,14 @@ export const IssueQueryForm: FC<
 					Sorting
 				</Typography>
 				<StyledSelect
-					label="Sort by"
+					label="Sort by:"
 					name="sortBy"
 					value={query.sortBy}
 					onChange={setSortBy}
 					options={sortByOptions}
 				/>
 				<StyledSelect
-					label="Order"
+					label="Order:"
 					name="sortOrder"
 					value={query.sortOrder}
 					onChange={setSortOrder}

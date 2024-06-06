@@ -1,13 +1,16 @@
 import { LoaderFunction } from "react-router";
-import {
-	getCachedIssues,
-	getCachedRepo,
-} from "resources/cached";
+
 import { filterIssues } from "~core/filtering";
 import { extractIssueQuery } from "~core/query";
 import { sortIssues } from "~core/sorting";
-import { IssueQuery } from "~types/query";
-import { IssueSchema } from "~types/schema";
+import {
+	getCachedIssues,
+	getCachedRepo,
+} from "~database/cached";
+import {
+	IssueQuery,
+	IssueSchema,
+} from "~types/schema";
 
 export type LoaderData = {
 	issues: IssueSchema[];

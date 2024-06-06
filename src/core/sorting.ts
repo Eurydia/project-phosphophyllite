@@ -1,9 +1,7 @@
 import {
 	IssueQuery,
-	RepoQuery,
-} from "~types/query";
-import {
 	IssueSchema,
+	RepoQuery,
 	RepoSchema,
 } from "~types/schema";
 

@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { SelectOption } from "~types/generic";
-import { IssueQuery } from "~types/query";
+import { IssueQuery } from "~types/schema";
 
 export const useIssueQueryOptions = () => {
 	const { current: sortOrderOptions } = useRef<

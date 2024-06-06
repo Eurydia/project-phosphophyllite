@@ -11,9 +11,8 @@ export const StyledGrid: FC<StyledGridProps> = (
 	const { headers, items } = props;
 	const renderedRows = headers.map(
 		(header, index) => {
-			const key = `row-${index}`;
 			return (
-				<Fragment key={key}>
+				<Fragment key={`r${index}`}>
 					<Grid
 						item
 						xs={4}

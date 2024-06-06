@@ -35,17 +35,18 @@ export const HomeGroupView: FC = () => {
 	}, [appPathname]);
 
 	const submit = useSubmit();
-	const goToRepos = () => {
-		submit(
-			{},
-			{ action: "/Repositories", method: "get" },
-		);
-	};
-	const goToIssues = () => {
-		submit(
-			{},
-			{ action: "/Issues", method: "get" },
-		);
+	const handleTabChange = (
+		_: any,
+		value: number,
+	) => {
+		let action = "/Repositories";
+		switch (value) {
+			case 1:
+				action = "/Issues";
+				break;
+		}
+		setTab(value);
+		submit({}, { action });
 	};
 
 	const { elemRef, elemHeight } =
@@ -64,18 +65,19 @@ export const HomeGroupView: FC = () => {
 					disableGutters
 					variant="dense"
 				>
-					<Tabs value={tab}>
+					<Tabs
+						value={tab}
+						onChange={handleTabChange}
+					>
 						<Tab
 							disableRipple
 							value={0}
 							label="Repositories"
-							onClick={goToRepos}
 						/>
 						<Tab
 							disableRipple
 							value={1}
 							label="Issues"
-							onClick={goToIssues}
 						/>
 					</Tabs>
 				</Toolbar>
@@ -84,6 +86,7 @@ export const HomeGroupView: FC = () => {
 			<Box
 				marginTop={elemHeight}
 				height={contentHeight}
+				overflow="auto"
 			>
 				<Outlet />
 			</Box>

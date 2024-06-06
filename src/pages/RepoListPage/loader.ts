@@ -1,10 +1,12 @@
 import { LoaderFunction } from "react-router";
-import { getCachedRepos } from "resources/cached";
 import { filterRepos } from "~core/filtering";
 import { extractRepoQuery } from "~core/query";
 import { sortRepos } from "~core/sorting";
-import { RepoQuery } from "~types/query";
-import { RepoSchema } from "~types/schema";
+import { getCachedRepos } from "~database/cached";
+import {
+	RepoQuery,
+	RepoSchema,
+} from "~types/schema";
 
 export type LoaderData = {
 	repos: RepoSchema[];

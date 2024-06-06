@@ -1,5 +1,5 @@
 import { LoaderFunction } from "react-router";
-import { getCachedRepo } from "resources/cached";
+import { getCachedRepo } from "~database/cached";
 import { RepoSchema } from "~types/schema";
 
 export type LoaderData = {

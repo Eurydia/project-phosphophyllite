@@ -7,7 +7,7 @@ import { useRepoQueryForm } from "hooks/useRepoQueryForm";
 import { useRepoQueryOptions } from "hooks/useRepoQueryOptions";
 import { FC } from "react";
 import { Form } from "react-router-dom";
-import { RepoQuery } from "~types/query";
+import { RepoQuery } from "~types/schema";
 import { StyledSelect } from "./StyledSelect";
 import { StyledTextField } from "./StyledTextField";
 
@@ -55,7 +55,7 @@ export const RepoQueryForm: FC<
 					options={visibilityOptions}
 				/>
 				<StyledSelect
-					label="Status"
+					label="Status:"
 					name="status"
 					value={query.status}
 					onChange={setStatus}
@@ -65,14 +65,14 @@ export const RepoQueryForm: FC<
 					Sorting
 				</Typography>
 				<StyledSelect
-					label="Sort by"
+					label="Sort by:"
 					name="sortBy"
 					value={query.sortBy}
 					onChange={setSortBy}
 					options={sortByOptions}
 				/>
 				<StyledSelect
-					label="Order"
+					label="Order:"
 					name="sortOrder"
 					value={query.sortOrder}
 					onChange={setSortOrder}

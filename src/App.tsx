@@ -28,7 +28,18 @@ import {
 	RepoReadmePage,
 	loaderRepoReadmePage,
 } from "~pages/RepoReadmePage";
-import { SettingsPage } from "~pages/SettingsPage";
+import {
+	SettingsIssuePage,
+	loaderSettingsIssuePage,
+} from "~pages/SettingsIssuePage";
+import {
+	SettingsPage,
+	loaderSettingsPage,
+} from "~pages/SettingsPage";
+import {
+	SettingsRepoPage,
+	loaderSettingsRepoPage,
+} from "~pages/SettingsRepoPage";
 import { HomeGroupView } from "~views/HomeGroupView";
 import { RepoGroupView } from "~views/RepoGroupView";
 import { SettingGroupView } from "~views/SettingGroupView";
@@ -96,15 +107,18 @@ const router = createBrowserRouter([
 			{
 				index: true,
 				element: <SettingsPage />,
+				loader: loaderSettingsPage,
 			},
-			// {
-			// 	path: "Repository",
-			// 	element: <SettingsRepoPage />,
-			// },
-			// {
-			// 	path: "Issue",
-			// 	element: <SettingsIssuePage />,
-			// },
+			{
+				path: "Repositories",
+				element: <SettingsRepoPage />,
+				loader: loaderSettingsRepoPage,
+			},
+			{
+				path: "Issues",
+				element: <SettingsIssuePage />,
+				loader: loaderSettingsIssuePage,
+			},
 		],
 	},
 ]);

@@ -2,7 +2,7 @@ import { LoaderFunction } from "react-router";
 import {
 	getCachedComments,
 	getCachedIssues,
-} from "resources/cached";
+} from "~database/cached";
 import {
 	CommentSchema,
 	IssueSchema,

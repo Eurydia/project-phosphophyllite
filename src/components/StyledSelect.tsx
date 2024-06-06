@@ -6,8 +6,8 @@ import {
 import { SelectOption } from "~types/generic";
 
 type StyledSelectProps<T> = {
-	label: string;
-	name: string;
+	label?: string;
+	name?: string;
 	value: string;
 	options: SelectOption<T>[];
 	onChange: (value: T) => void;
@@ -36,7 +36,10 @@ export const StyledSelect = <T extends string>(
 		if (selected.length > 0) {
 			l = selected[0].label;
 		}
-		return `${label}: ${l}`;
+		if (label === undefined) {
+			return l;
+		}
+		return `${label} ${l}`;
 	};
 	return (
 		<Select

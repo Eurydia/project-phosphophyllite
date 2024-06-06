@@ -2,9 +2,9 @@ import { invoke } from "@tauri-apps/api";
 import {
 	IssueQueryPref,
 	RepoQueryPref,
-} from "~types/query";
+} from "~types/schema";
 
-export const getRepoQueryPreference =
+export const getPrefRepo =
 	async (): Promise<RepoQueryPref> => {
 		const fallback: RepoQueryPref = {
 			status: "active",
@@ -14,7 +14,7 @@ export const getRepoQueryPreference =
 		};
 		try {
 			const jsonString: string = await invoke(
-				"get_repo_query_preferences",
+				"get_pref_repo",
 			);
 			const jsonObj: Record<string, string> =
 				JSON.parse(jsonString);
@@ -30,16 +30,16 @@ export const getRepoQueryPreference =
 		}
 	};
 
-export const setRepoQueryPreference = async (
+export const setPrefRepo = async (
 	pref: RepoQueryPref,
 ) => {
 	const jsonString = JSON.stringify(pref);
-	await invoke("set_repo_query_preferences", {
+	await invoke("set_pref_repo", {
 		jsonString,
 	});
 };
 
-export const getIssueQueryPreference =
+export const getPrefIssue =
 	async (): Promise<IssueQueryPref> => {
 		const fallback: IssueQueryPref = {
 			ownerType: "user",
@@ -49,7 +49,7 @@ export const getIssueQueryPreference =
 		};
 		try {
 			const jsonString: string = await invoke(
-				"get_issue_query_preferences",
+				"get_pref_issue",
 			);
 			const jsonObj: Record<string, string> =
 				JSON.parse(jsonString);
@@ -65,11 +65,11 @@ export const getIssueQueryPreference =
 		}
 	};
 
-export const setIssueQueryPreference = async (
+export const setPrefIssue = async (
 	pref: IssueQueryPref,
 ) => {
 	const jsonString = JSON.stringify(pref);
-	await invoke("set_issue_query_preferences", {
+	await invoke("set_pref_issue", {
 		jsonString,
 	});
 };

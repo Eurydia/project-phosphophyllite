@@ -1,56 +1,52 @@
-import { useEffect, useState } from "react";
-import {
-	getIssueQueryPreference,
-	setIssueQueryPreference,
-} from "resources/settings";
-import { IssueQueryPref } from "~types/query";
+import { useState } from "react";
+import { IssueQueryPref } from "~types/schema";
 
-export const useIssueQueryPreference = () => {
-	const [pref, setPref] = useState<
-		IssueQueryPref | undefined
-	>();
-
-	useEffect(() => {
-		(async () => {
-			const cPref =
-				await getIssueQueryPreference();
-			setPref(cPref);
-		})();
-	}, []);
-
-	useEffect(() => {
-		if (pref === undefined) {
-			return;
-		}
-		setIssueQueryPreference(pref);
-	}, [pref]);
-
-	const setState = (value: string) => {
+export const useIssueQueryPreference = (
+	initPref: IssueQueryPref,
+) => {
+	const [pref, setPref] =
+		useState<IssueQueryPref>(initPref);
+	const setState = (
+		value: IssueQueryPref["state"],
+	) => {
 		setPref((prev) => {
-			if (prev === undefined) {
-				return;
-			}
 			const next = { ...prev };
-			next["state"] =
-				value as IssueQueryPref["state"];
+			next["state"] = value;
 			return next;
 		});
 	};
-
-	const setOwnerType = (value: string) => {
+	const setOwnerType = (
+		value: IssueQueryPref["ownerType"],
+	) => {
 		setPref((prev) => {
-			if (prev === undefined) {
-				return;
-			}
 			const next = { ...prev };
-			next["ownerType"] =
-				value as IssueQueryPref["ownerType"];
+			next["ownerType"] = value;
+			return next;
+		});
+	};
+	const setSortBy = (
+		value: IssueQueryPref["sortBy"],
+	) => {
+		setPref((prev) => {
+			const next = { ...prev };
+			next["sortBy"] = value;
+			return next;
+		});
+	};
+	const setSortOrder = (
+		value: IssueQueryPref["sortOrder"],
+	) => {
+		setPref((prev) => {
+			const next = { ...prev };
+			next["sortOrder"] = value;
 			return next;
 		});
 	};
 	return {
 		pref,
 		setState,
+		setSortBy,
+		setSortOrder,
 		setOwnerType,
 	};
 };

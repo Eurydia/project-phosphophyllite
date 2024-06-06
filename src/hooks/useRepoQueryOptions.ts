@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { SelectOption } from "~types/generic";
-import { RepoQuery } from "~types/query";
+import { RepoQuery } from "~types/schema";
 
 export const useRepoQueryOptions = () => {
 	const { current: visibilityOptions } = useRef<

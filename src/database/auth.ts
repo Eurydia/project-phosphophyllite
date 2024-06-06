@@ -1,20 +1,19 @@
-import { invoke } from "@tauri-apps/api";
 import { App } from "octokit";
+import {
+	getAppId,
+	getInstallationId,
+	getPrivateKey,
+} from "resources/secrets";
 import {
 	CommentSchema,
 	RepoSchema,
 } from "~types/schema";
 
 const getOctokit = async () => {
-	const installationId: string = await invoke(
-		"get_installation_id",
-	);
-	const appId: string = await invoke(
-		"get_app_id",
-	);
-	const privateKey: string = await invoke(
-		"get_private_key",
-	);
+	const installationId =
+		await getInstallationId();
+	const appId = await getAppId();
+	const privateKey = await getPrivateKey();
 
 	const app = new App({
 		appId,

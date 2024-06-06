@@ -19,10 +19,9 @@ export const RepoGroupView: FC = () => {
 	const { pathname } = useLocation();
 	const submit = useSubmit();
 	const handleTabChange = (
-		_: React.SyntheticEvent<Element, Event>,
+		_: any,
 		value: number,
 	) => {
-		setTab(value);
 		let action = "";
 		switch (value) {
 			case 1:
@@ -38,12 +37,8 @@ export const RepoGroupView: FC = () => {
 					.slice(0, 4)
 					.join("/");
 		}
-		submit(
-			{},
-			{
-				action,
-			},
-		);
+		setTab(value);
+		submit({}, { action });
 	};
 
 	const { elemRef, elemHeight } =

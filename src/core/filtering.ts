@@ -1,10 +1,8 @@
 import { matchSorter } from "match-sorter";
 import {
 	IssueQuery,
-	RepoQuery,
-} from "~types/query";
-import {
 	IssueSchema,
+	RepoQuery,
 	RepoSchema,
 } from "~types/schema";
 

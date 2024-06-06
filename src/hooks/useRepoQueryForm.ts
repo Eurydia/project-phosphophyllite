@@ -1,52 +1,25 @@
 import { useState } from "react";
-import { RepoQuery } from "~types/query";
+import {
+	RepoQuery,
+	RepoQueryPref,
+} from "~types/schema";
+import { useRepoQueryPreference } from "./useRepoQueryPreference";
 
 export const useRepoQueryForm = (
-	init: RepoQuery,
+	init: RepoQueryPref,
 ) => {
-	const [query, setQuery] = useState(init);
-	const setFullName = (value: string) => {
-		setQuery((prev) => {
-			const next = { ...prev };
-			next["fullName"] = value;
-			return next;
-		});
-	};
-	const setStatus = (
-		value: RepoQuery["status"],
-	) => {
-		setQuery((prev) => {
-			const next = { ...prev };
-			next["status"] = value;
-			return next;
-		});
-	};
-	const setVisibility = (
-		value: RepoQuery["visibility"],
-	) => {
-		setQuery((prev) => {
-			const next = { ...prev };
-			next["visibility"] = value;
-			return next;
-		});
-	};
-	const setSortBy = (
-		value: RepoQuery["sortBy"],
-	) => {
-		setQuery((prev) => {
-			const next = { ...prev };
-			next["sortBy"] = value;
-			return next;
-		});
-	};
-	const setSortOrder = (
-		value: RepoQuery["sortOrder"],
-	) => {
-		setQuery((prev) => {
-			const next = { ...prev };
-			next["sortOrder"] = value;
-			return next;
-		});
+	const {
+		pref,
+		setSortBy,
+		setSortOrder,
+		setStatus,
+		setVisibility,
+	} = useRepoQueryPreference(init);
+	const [fullName, setFullName] = useState("");
+
+	const query: RepoQuery = {
+		fullName,
+		...pref,
 	};
 	return {
 		query,

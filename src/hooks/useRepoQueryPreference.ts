@@ -1,66 +1,50 @@
 import { useEffect, useState } from "react";
-import {
-	getRepoQueryPreference,
-	setRepoQueryPreference,
-} from "resources/settings";
-import {
-	RepoQuery,
-	RepoQueryPref,
-} from "~types/query";
+import { setPrefRepo } from "resources/pref";
+import { RepoQueryPref } from "~types/schema";
 
-export const useRepoQueryPreference = () => {
-	const [pref, setPref] = useState<
-		RepoQueryPref | undefined
-	>();
+export const useRepoQueryPreference = (
+	init: RepoQueryPref,
+) => {
+	const [pref, setPref] =
+		useState<RepoQueryPref>(init);
 
 	useEffect(() => {
-		(async () => {
-			const cPref =
-				await getRepoQueryPreference();
-			setPref(cPref);
-		})();
-	}, []);
-
-	useEffect(() => {
-		if (pref === undefined) {
-			return;
-		}
-		setRepoQueryPreference(pref);
+		setPrefRepo(pref);
 	}, [pref]);
 
 	const setStatus = (
-		value: RepoQuery["status"],
+		value: RepoQueryPref["status"],
 	) => {
-		if (pref === undefined) {
-			return;
-		}
 		setPref((prev) => {
-			const next = { ...prev! };
+			const next = { ...prev };
 			next["status"] = value;
 			return next;
 		});
 	};
 	const setVisibility = (
-		value: RepoQuery["visibility"],
+		value: RepoQueryPref["visibility"],
 	) => {
-		if (pref === undefined) {
-			return;
-		}
 		setPref((prev) => {
-			const next = { ...prev! };
+			const next = { ...prev };
 			next["visibility"] = value;
 			return next;
 		});
 	};
-	const setSort = (
-		value: RepoQuery["sortBy"],
+	const setSortBy = (
+		value: RepoQueryPref["sortBy"],
 	) => {
-		if (pref === undefined) {
-			return;
-		}
 		setPref((prev) => {
-			const next = { ...prev! };
+			const next = { ...prev };
 			next["sortBy"] = value;
+			return next;
+		});
+	};
+	const setSortOrder = (
+		value: RepoQueryPref["sortOrder"],
+	) => {
+		setPref((prev) => {
+			const next = { ...prev };
+			next["sortOrder"] = value;
 			return next;
 		});
 	};
@@ -68,6 +52,7 @@ export const useRepoQueryPreference = () => {
 		pref,
 		setStatus,
 		setVisibility,
-		setSort,
+		setSortBy,
+		setSortOrder,
 	};
 };

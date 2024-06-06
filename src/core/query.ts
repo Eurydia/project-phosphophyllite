@@ -1,11 +1,11 @@
 import {
-	getIssueQueryPreference,
-	getRepoQueryPreference,
-} from "resources/settings";
+	getPrefIssue,
+	getPrefRepo,
+} from "resources/pref";
 import {
 	IssueQuery,
 	RepoQuery,
-} from "~types/query";
+} from "~types/schema";
 
 const searchParamsToObj = (
 	searchParam: URLSearchParams,
@@ -32,7 +32,7 @@ export const extractQueryItems = (
 export const extractIssueQuery = async (
 	searchParams: URLSearchParams,
 ): Promise<IssueQuery> => {
-	const pref = await getIssueQueryPreference();
+	const pref = await getPrefIssue();
 	const fallback: IssueQuery = {
 		title: "",
 		...pref,
@@ -48,7 +48,7 @@ export const extractIssueQuery = async (
 export const extractRepoQuery = async (
 	searchParams: URLSearchParams,
 ): Promise<RepoQuery> => {
-	const pref = await getRepoQueryPreference();
+	const pref = await getPrefRepo();
 	const fallback: RepoQuery = {
 		fullName: "",
 		...pref,

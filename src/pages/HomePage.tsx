@@ -8,7 +8,7 @@ export const HomePage: FC = () => {
 	useEffect(() => {
 		setTimeout(() => {
 			submit({}, { action: "/Repositories" });
-		}, 1000);
+		}, 750);
 	}, []);
 	return <CircularProgress color="secondary" />;
 };
