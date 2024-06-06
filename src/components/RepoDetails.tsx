@@ -1,7 +1,4 @@
-import {
-	Container,
-	Typography,
-} from "@mui/material";
+import { Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { FC, ReactNode, useRef } from "react";
 import { normalizeDateString } from "~core/time";
@@ -79,11 +76,9 @@ export const RepoDetails: FC<RepoDetailsProps> = (
 	]);
 
 	return (
-		<Container maxWidth="sm">
-			<StyledGrid
-				items={items}
-				headers={headers}
-			/>
-		</Container>
+		<StyledGrid
+			items={items}
+			headers={headers}
+		/>
 	);
 };

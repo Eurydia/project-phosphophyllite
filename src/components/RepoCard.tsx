@@ -1,7 +1,6 @@
 import {
-	Button,
 	Card,
-	CardActions,
+	CardActionArea,
 	CardContent,
 	CardHeader,
 	Typography,
@@ -17,10 +16,10 @@ export const RepoCard: FC<RepoCardProps> = (
 	props,
 ) => {
 	const { repo } = props;
-	const { fullName } = repo;
+	const { fullName, description } = repo;
 
 	const submit = useSubmit();
-	const goToDetails = () => {
+	const openRepo = () => {
 		submit(
 			{},
 			{
@@ -28,54 +27,32 @@ export const RepoCard: FC<RepoCardProps> = (
 			},
 		);
 	};
-	const goToIssues = () => {
-		submit(
-			{},
-			{
-				action: `./${fullName}/Issues`,
-			},
-		);
-	};
-
-	const desc = repo.description;
-
+	let desc = description ?? "...";
 	return (
 		<Card
 			square
 			variant="outlined"
 		>
-			<CardHeader
-				disableTypography
-				title={
-					<Typography
-						fontWeight="bold"
-						fontSize="x-large"
-					>
-						{fullName}
-					</Typography>
-				}
-			/>
-			{desc && (
+			<CardActionArea
+				disableTouchRipple
+				onClick={openRepo}
+			>
+				<CardHeader
+					disableTypography
+					title={
+						<Typography
+							fontWeight="bold"
+							fontSize="x-large"
+							color="primary"
+						>
+							{fullName}
+						</Typography>
+					}
+				/>
 				<CardContent>
 					<Typography>{desc}</Typography>
 				</CardContent>
-			)}
-			<CardActions>
-				<Button
-					disableTouchRipple
-					disableFocusRipple
-					onClick={goToDetails}
-				>
-					Open
-				</Button>
-				<Button
-					disableTouchRipple
-					disableFocusRipple
-					onClick={goToIssues}
-				>
-					Issues
-				</Button>
-			</CardActions>
+			</CardActionArea>
 		</Card>
 	);
 };

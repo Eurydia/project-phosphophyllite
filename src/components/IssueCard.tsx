@@ -1,7 +1,6 @@
 import {
-	Button,
 	Card,
-	CardActions,
+	CardActionArea,
 	CardContent,
 	CardHeader,
 	Typography,
@@ -25,17 +24,8 @@ export const IssueCard: FC<IssueCardProps> = (
 	} = issue;
 
 	const submit = useSubmit();
-	const goToDetails = () => {
+	const openIssue = () => {
 		const action = `/Repositories/${repoFullName}/Issues/${issueNumber}`;
-		submit(
-			{},
-			{
-				action,
-			},
-		);
-	};
-	const goToRepo = () => {
-		const action = `/Repositories/${repoFullName}`;
 		submit(
 			{},
 			{
@@ -49,46 +39,38 @@ export const IssueCard: FC<IssueCardProps> = (
 			square
 			variant="outlined"
 		>
-			<CardHeader
-				disableTypography
-				title={
-					<Typography
-						fontWeight="bold"
-						fontSize="x-large"
-					>
-						{title}
-					</Typography>
-				}
-				subheader={
-					<Typography>{repoFullName}</Typography>
-				}
-			/>
-			{body && (
-				<CardContent>
-					<Typography
-						maxHeight="250px"
-						overflow="hidden"
-					>
-						{body}
-					</Typography>
-				</CardContent>
-			)}
-			<CardActions>
-				<Button
-					disableTouchRipple
-					disableFocusRipple
-					onClick={goToDetails}
-				>
-					Open
-				</Button>
-				<Button
-					disableTouchRipple
-					disableFocusRipple
-					onClick={goToRepo}
-				>
-					Repository
-				</Button>
-			</CardActions>
+			<CardActionArea
+				disableTouchRipple
+				onClick={openIssue}
+			>
+				<CardHeader
+					disableTypography
+					title={
+						<Typography
+							fontWeight="bold"
+							fontSize="x-large"
+							color="primary"
+						>
+							{title}
+						</Typography>
+					}
+					subheader={
+						<Typography>
+							{repoFullName}
+						</Typography>
+					}
+				/>
+				{body && (
+					<CardContent>
+						<Typography
+							maxHeight="250px"
+							overflow="hidden"
+						>
+							{body}
+						</Typography>
+					</CardContent>
+				)}
+			</CardActionArea>
 		</Card>
 	);
 };

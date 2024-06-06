@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { FC } from "react";
 import { useLoaderData } from "react-router";
 import { RepoDetails } from "~components/RepoDetails";
@@ -9,7 +9,9 @@ export const RepoMetadataPage: FC = () => {
 
 	return (
 		<Container maxWidth="sm">
-			<RepoDetails repo={repo} />
+			<Box padding={2}>
+				<RepoDetails repo={repo} />
+			</Box>
 		</Container>
 	);
 };
