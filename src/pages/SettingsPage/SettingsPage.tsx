@@ -1,7 +1,6 @@
 import {
 	Box,
 	Button,
-	CircularProgress,
 	Stack,
 	Typography,
 } from "@mui/material";
@@ -33,11 +32,9 @@ export const SettingsPage: FC = () => {
 				"Unknown",
 			);
 			const lastUpdatedMsg = `Last updated: ${timeUpdated} (${timeSinceUpdated})`;
-			const buttonText = isBusy ? (
-				<CircularProgress size={24} />
-			) : (
-				label
-			);
+			const buttonText = isBusy
+				? "Working"
+				: label;
 			return (
 				<Box key={`s-${index}`}>
 					<Button
