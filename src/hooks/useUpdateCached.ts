@@ -28,7 +28,7 @@ export const useUpdateCached = (
 
 	const handleUpdate = async (
 		index: number,
-		item: string,
+		// item: string,
 		callback: () => Promise<void>,
 	) => {
 		setIsBusy((prev) => {
@@ -55,29 +55,29 @@ export const useUpdateCached = (
 		if (!status) {
 			return;
 		}
+		let key: keyof MiscData =
+			"repoDataLastUpdate";
+		let label = "Repository";
+		switch (index) {
+			case 1:
+				key = "issueDataLastUpdate";
+				break;
+			case 2:
+				key = "commentDataLastUpdate";
+				break;
+		}
 		enqueueSnackbar({
-			message: `${item} data is up to date.`,
+			message: `${label} data is up to date.`,
 			variant: "success",
 		});
 		setAppData((prev) => {
 			const next = { ...prev };
 			const time = new Date(Date.now());
 			const timeUTC = time.toUTCString();
-			switch (index) {
-				case 0:
-					next["repoDataLastUpdate"] = timeUTC;
-					break;
-				case 1:
-					next["issueDataLastUpdate"] = timeUTC;
-					break;
-				case 2:
-					next["commentDataLastUpdate"] = timeUTC;
-					break;
-			}
+			next[key] = timeUTC;
 			return next;
 		});
 	};
-
 	const items: {
 		label: string;
 		callback: () => Promise<void>;
@@ -87,33 +87,21 @@ export const useUpdateCached = (
 		{
 			label: "Update repositories",
 			callback: () =>
-				handleUpdate(
-					0,
-					"Repository",
-					updateCachedRepos,
-				),
+				handleUpdate(0, updateCachedRepos),
 			isBusy: isBusy[0],
 			lastUpdated: appData.repoDataLastUpdate,
 		},
 		{
 			label: "Update Issues",
 			callback: () =>
-				handleUpdate(
-					1,
-					"Issue",
-					updateCachedIssues,
-				),
+				handleUpdate(1, updateCachedIssues),
 			isBusy: isBusy[1],
 			lastUpdated: appData.issueDataLastUpdate,
 		},
 		{
 			label: "Update comments",
 			callback: () =>
-				handleUpdate(
-					2,
-					"Comment",
-					updateCachedComments,
-				),
+				handleUpdate(2, updateCachedComments),
 			isBusy: isBusy[2],
 			lastUpdated: appData.commentDataLastUpdate,
 		},
