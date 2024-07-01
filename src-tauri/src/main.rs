@@ -22,7 +22,7 @@ fn main() {
             data::get_data_misc,
             data::set_data_misc,
             shell::open_url,
-            shell::open_preference_dir,
+            shell::open_preference_file,
             shell::open_secret_dir
         ])
         .run(tauri::generate_context!())

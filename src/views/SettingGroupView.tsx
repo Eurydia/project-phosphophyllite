@@ -46,7 +46,7 @@ export const SettingGroupView: FC = () => {
 	) => {
 		switch (value) {
 			case 1:
-				invoke("open_preference_dir");
+				invoke("open_preference_file");
 				return;
 			case 2:
 				invoke("open_secret_dir");

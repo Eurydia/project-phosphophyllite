@@ -105,7 +105,7 @@ impl Default for PreferenceStruct {
     }
 }
 
-pub fn resolve_preference_dir(handle: tauri::AppHandle) -> PathBuf {
+pub fn resolve_preference_file_path(handle: tauri::AppHandle) -> PathBuf {
     let path = handle
         .path_resolver()
         .app_config_dir()
@@ -134,7 +134,7 @@ pub fn resolve_preference_dir(handle: tauri::AppHandle) -> PathBuf {
 
 #[tauri::command]
 pub fn get_preference(handle: tauri::AppHandle) -> String {
-    let path = resolve_preference_dir(handle);
+    let path = resolve_preference_file_path(handle);
     let file_content = std::fs::read_to_string(path).unwrap();
     let json_string = serde_json::from_str(&file_content).unwrap();
     return json_string;
