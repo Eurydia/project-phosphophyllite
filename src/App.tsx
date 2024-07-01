@@ -2,7 +2,6 @@ import { FC } from "react";
 import { RouterProvider } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
 import { ErrorElement } from "~pages/ErrorElement";
-import { HomePage } from "~pages/HomePage";
 import {
 	IssueDetailsPage,
 	loaderIssueDetailsPage,
@@ -53,7 +52,12 @@ const router = createBrowserRouter([
 		children: [
 			{
 				index: true,
-				element: <HomePage />,
+				loader: () => {
+					window.location.replace(
+						"./Repositories",
+					);
+					return null;
+				},
 			},
 			{
 				path: "Repositories",

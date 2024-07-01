@@ -26,7 +26,7 @@ fn main() {
             shell::open_secret_dir
         ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .unwrap()
 }
 
 // fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error + 'static>> {
