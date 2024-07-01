@@ -2,76 +2,65 @@ use std::io::Write;
 
 #[tauri::command]
 pub fn get_pref_repo(handle: tauri::AppHandle) -> String {
-    let resource_path_option = handle
+    let path = handle
         .path_resolver()
-        .resolve_resource("./resources/pref/repo.json");
-    let resource_path = match resource_path_option {
-        None => return String::default(),
-        Some(p) => p,
-    };
-    let data_result = std::fs::read_to_string(resource_path);
-    let _ = match data_result {
-        Err(_) => return String::default(),
-        Ok(dt) => return dt,
-    };
+        .app_config_dir()
+        .unwrap()
+        .join("preferences")
+        .join("query_preferences_repository.json");
+    return std::fs::read_to_string(path).unwrap_or(String::default());
 }
 
 #[tauri::command]
 pub fn set_pref_repo(handle: tauri::AppHandle, json_string: String) {
     let path = handle
         .path_resolver()
-        .resolve_resource("./resources/pref")
-        .unwrap();
-
+        .app_config_dir()
+        .unwrap()
+        .join("preferences");
     if !std::path::Path::exists(&path) {
         std::fs::create_dir_all(&path).unwrap();
     }
-    let file_result = std::fs::OpenOptions::new()
+
+    std::fs::OpenOptions::new()
         .create(true)
         .write(true)
         .truncate(true)
-        .open(path.join("repo.json"));
-    let mut file = match file_result {
-        Err(_) => return,
-        Ok(f) => f,
-    };
-    file.write_all(&json_string.as_bytes()).unwrap();
+        .open(path.join("query_preferences_repository.json"))
+        .unwrap()
+        .write_all(&json_string.as_bytes())
+        .unwrap();
 }
 
 #[tauri::command]
 pub fn get_pref_issue(handle: tauri::AppHandle) -> String {
-    let resource_path_option = handle
+    let path = handle
         .path_resolver()
-        .resolve_resource("./resources/pref/issue.json");
-    let resource_path = match resource_path_option {
-        None => return String::default(),
-        Some(p) => p,
-    };
-    let data_result = std::fs::read_to_string(resource_path);
-    let _ = match data_result {
-        Err(_) => return String::default(),
-        Ok(dt) => return dt,
-    };
+        .app_config_dir()
+        .unwrap()
+        .join("preferences")
+        .join("query_preferences_issues.json");
+
+    return std::fs::read_to_string(path).unwrap_or(String::default());
 }
 
 #[tauri::command]
 pub fn set_pref_issue(handle: tauri::AppHandle, json_string: String) {
     let path = handle
         .path_resolver()
-        .resolve_resource("./resources/pref")
-        .unwrap();
+        .app_config_dir()
+        .unwrap()
+        .join("preferences");
 
     if !std::path::Path::exists(&path) {
         std::fs::create_dir_all(&path).unwrap();
     }
-    let file_result = std::fs::OpenOptions::new()
+    std::fs::OpenOptions::new()
         .create(true)
         .write(true)
         .truncate(true)
-        .open(path.join("issue.json"));
-    let mut file = match file_result {
-        Err(_) => return,
-        Ok(f) => f,
-    };
-    file.write_all(&json_string.as_bytes()).unwrap();
+        .open(path.join("query_preferences_issues.json"))
+        .unwrap()
+        .write_all(&json_string.as_bytes())
+        .unwrap();
 }
