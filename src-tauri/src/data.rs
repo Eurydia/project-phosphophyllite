@@ -21,8 +21,6 @@ pub fn get_data_misc(handle: tauri::AppHandle) -> String {
 #[tauri::command]
 pub fn set_data_misc(handle: tauri::AppHandle, json_string: String) {
     let path = resolve_data_storage_path(&handle);
-    std::fs::File::create(path.join("misc.json"))
-        .unwrap()
-        .write_all(&json_string.as_bytes())
-        .unwrap();
+    let mut file = std::fs::File::create(path.join("misc.json")).unwrap();
+    file.write_all(json_string.as_bytes()).unwrap();
 }

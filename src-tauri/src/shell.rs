@@ -1,4 +1,4 @@
-use crate::{pref::resolve_preference_file_path, secrets::resolve_secret_path};
+use crate::{secrets::resolve_secret_path, settings::resolve_preference_file_path};
 
 #[tauri::command]
 pub fn open_url(url: String) {

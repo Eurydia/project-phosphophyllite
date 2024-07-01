@@ -1,6 +1,6 @@
 import {
 	getPrefIssue,
-	getPrefRepo,
+	getPreference,
 } from "resources/pref";
 import {
 	IssueQuery,
@@ -48,7 +48,7 @@ export const extractIssueQuery = async (
 export const extractRepoQuery = async (
 	searchParams: URLSearchParams,
 ): Promise<RepoQuery> => {
-	const pref = await getPrefRepo();
+	const pref = await getPreference();
 	const fallback: RepoQuery = {
 		fullName: "",
 		...pref,

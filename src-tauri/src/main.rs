@@ -2,8 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod data;
-mod pref;
 mod secrets;
+mod settings;
 mod shell;
 
 use tauri::generate_handler;
@@ -15,7 +15,7 @@ fn main() {
         //     Ok(())
         // })
         .invoke_handler(generate_handler![
-            pref::get_preference,
+            settings::get_preference,
             secrets::get_secret_app_id,
             secrets::get_private_key,
             secrets::get_installation_id,

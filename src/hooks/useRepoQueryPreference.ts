@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { setPrefRepo } from "resources/pref";
+import { useState } from "react";
 import { RepoQueryPref } from "~types/schema";
 
 export const useRepoQueryPreference = (
@@ -7,10 +6,6 @@ export const useRepoQueryPreference = (
 ) => {
 	const [pref, setPref] =
 		useState<RepoQueryPref>(init);
-
-	useEffect(() => {
-		setPrefRepo(pref);
-	}, [pref]);
 
 	const setStatus = (
 		value: RepoQueryPref["status"],
