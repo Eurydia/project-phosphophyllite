@@ -17,7 +17,6 @@ import {
 import {
 	Outlet,
 	useLocation,
-	useSubmit,
 } from "react-router-dom";
 import { AppHeader } from "~components/AppHeader";
 
@@ -41,22 +40,19 @@ export const SettingGroupView: FC = () => {
 		useElementHeight();
 	const contentHeight = `calc(100svh - ${elemHeight})`;
 
-	const submit = useSubmit();
 	const handleTabChange = (
 		_: any,
 		value: number,
 	) => {
-		let action = "/Settings";
 		switch (value) {
 			case 1:
-				action = "/Settings/Repositories";
-				break;
+				invoke("open_preference_dir");
+				return;
 			case 2:
-				action = "/Settings/Issues";
-				break;
+				invoke("open_secret_dir");
+				return;
 		}
 		setTab(value);
-		submit({}, { action });
 	};
 
 	return (
@@ -83,21 +79,14 @@ export const SettingGroupView: FC = () => {
 						<Tab
 							disableRipple
 							value={1}
-							label="Repository settings"
+							label="Preference settings"
 						/>
 						<Tab
 							disableRipple
+							label="Secrets"
 							value={2}
-							label="Issue settings"
 						/>
 					</Tabs>
-					<Tab
-						disableRipple
-						label="Secrets"
-						onClick={() =>
-							invoke("open_secret_dir")
-						}
-					/>
 				</Toolbar>
 				<Divider flexItem />
 			</AppBar>
