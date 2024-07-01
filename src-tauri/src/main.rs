@@ -10,18 +10,19 @@ use tauri::generate_handler;
 
 fn main() {
     tauri::Builder::default()
-        // .setup(setup_handler)
+        // .setup(|app| {
+        //     shell::open_preference_dir(app.handle());
+        //     Ok(())
+        // })
         .invoke_handler(generate_handler![
-            pref::get_pref_repo,
-            pref::set_pref_repo,
-            pref::get_pref_issue,
-            pref::set_pref_issue,
-            secrets::get_app_id,
+            pref::get_preference,
+            secrets::get_secret_app_id,
             secrets::get_private_key,
             secrets::get_installation_id,
             data::get_data_misc,
             data::set_data_misc,
             shell::open_url,
+            shell::open_preference_dir,
             shell::open_secret_dir
         ])
         .run(tauri::generate_context!())

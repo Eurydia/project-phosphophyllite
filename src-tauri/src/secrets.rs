@@ -1,50 +1,36 @@
-#[tauri::command]
-pub fn get_app_id(handle: tauri::AppHandle) -> String {
-    let path_option = handle
+use std::path::PathBuf;
+
+pub fn resolve_secret_path(handle: tauri::AppHandle) -> PathBuf {
+    return handle
         .path_resolver()
-        .resolve_resource("./resources/secrets/APP_ID.txt");
-    let path = match path_option {
-        Some(p) => p,
-        None => return String::default(),
-    };
-    let data_result = std::fs::read_to_string(&path);
-    let data = match data_result {
-        Ok(dt) => dt,
-        Err(_) => return String::default(),
-    };
-    return data;
+        .app_local_data_dir()
+        .unwrap()
+        .join("secrets");
+}
+
+fn resolve_secret_file(handle: tauri::AppHandle, file_name: &str) -> String {
+    let path = resolve_secret_path(handle);
+    let file = path.join(file_name);
+    return std::fs::read_to_string(&file).unwrap_or_else(|_| {
+        if !file.exists() {
+            std::fs::create_dir_all(path).unwrap();
+            std::fs::File::create(file).unwrap();
+        }
+        return String::default();
+    });
+}
+
+#[tauri::command]
+pub fn get_secret_app_id(handle: tauri::AppHandle) -> String {
+    return resolve_secret_file(handle, "APP_ID.txt");
 }
 
 #[tauri::command]
 pub fn get_installation_id(handle: tauri::AppHandle) -> String {
-    let path_option = handle
-        .path_resolver()
-        .resolve_resource("./resources/secrets/INSTALLATION_ID.txt");
-    let path = match path_option {
-        Some(p) => p,
-        None => return String::default(),
-    };
-    let data_result = std::fs::read_to_string(&path);
-    let data = match data_result {
-        Ok(dt) => dt,
-        Err(_) => return String::default(),
-    };
-    return data;
+    return resolve_secret_file(handle, "INSTALLATION_ID.txt");
 }
 
 #[tauri::command]
 pub fn get_private_key(handle: tauri::AppHandle) -> String {
-    let path_option = handle
-        .path_resolver()
-        .resolve_resource("./resources/secrets/PRIVATE_KEY.txt");
-    let path = match path_option {
-        Some(p) => p,
-        None => return String::default(),
-    };
-    let data_result = std::fs::read_to_string(&path);
-    let data = match data_result {
-        Ok(dt) => dt,
-        Err(_) => return String::default(),
-    };
-    return data;
+    return resolve_secret_file(handle, "PRIVATE_KEY.txt");
 }
