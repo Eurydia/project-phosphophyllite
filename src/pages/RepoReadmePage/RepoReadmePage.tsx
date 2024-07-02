@@ -2,7 +2,7 @@ import { Container } from "@mui/material";
 import { FC } from "react";
 import { useLoaderData } from "react-router";
 import { Markdown } from "~components/Markdown";
-import { decodeBase64 } from "~core/text";
+import { decodeBase64 } from "~core/encoding";
 import { LoaderData } from "./loader";
 
 export const RepoReadmePage: FC = () => {

@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
+import { invoke } from "@tauri-apps/api";
 import { FC, useEffect, useRef } from "react";
-import { parseMarkdown } from "~core/text";
 
 type MarkdownProps = {
 	markdownContent: string | undefined | null;
@@ -11,27 +11,31 @@ export const Markdown: FC<MarkdownProps> = (
 ) => {
 	const { markdownContent, emptyText } = props;
 
-	const contentRef =
-		useRef<HTMLDivElement | null>(null);
+	const ref = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
-		if (
-			markdownContent === undefined ||
-			markdownContent === null ||
-			contentRef === null ||
-			contentRef.current === null
-		) {
-			return;
-		}
-		const innerHtml = parseMarkdown(
-			markdownContent,
-		);
-		contentRef.current.innerHTML = innerHtml;
-	}, [markdownContent]);
+		(async () => {
+			if (
+				markdownContent === undefined ||
+				markdownContent === null ||
+				ref === null ||
+				ref.current === null
+			) {
+				return;
+			}
+			const parsedHtml: string = await invoke(
+				"parse_markdown",
+				{
+					markdownString: markdownContent,
+				},
+			);
+			ref.current.innerHTML = parsedHtml;
+		})();
+	}, []);
 
 	return (
 		<Typography
-			ref={contentRef}
+			ref={ref}
 			width="100%"
 			fontFamily="IBM Plex Serif"
 			whiteSpace="wrap"

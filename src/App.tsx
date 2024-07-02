@@ -1,5 +1,8 @@
 import { FC } from "react";
-import { RouterProvider } from "react-router";
+import {
+	RouterProvider,
+	redirect,
+} from "react-router";
 import { createBrowserRouter } from "react-router-dom";
 import { ErrorElement } from "~pages/ErrorElement";
 import {
@@ -42,12 +45,8 @@ const router = createBrowserRouter([
 		children: [
 			{
 				index: true,
-				loader: () => {
-					window.location.replace(
-						"./Repositories",
-					);
-					return null;
-				},
+				loader: () =>
+					redirect("/Repositories", 301),
 			},
 			{
 				path: "Repositories",
@@ -56,13 +55,11 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "Repositories/:owner",
-				loader: async ({ params }) => {
-					const owner = params.owner ?? "";
-					window.location.replace(
-						`./Repositories?fullName=${owner}$`,
-					);
-					return null;
-				},
+				loader: async ({ params }) =>
+					redirect(
+						`/Repositories?fullName=${params.owner}`,
+						301,
+					),
 			},
 			{
 				path: "Issues",

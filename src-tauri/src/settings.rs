@@ -123,7 +123,7 @@ struct UserSetting {
     #[serde(rename = "$schema")]
     schema: String,
     repository: RepositoryQueryPreference,
-    issues: IssueQueryPreference,
+    issue: IssueQueryPreference,
     auto_update: AutoUpdateSetting,
 }
 
@@ -132,7 +132,7 @@ impl Default for UserSetting {
         Self {
             schema: String::from(SCHEMA_NAME),
             repository: RepositoryQueryPreference::default(),
-            issues: IssueQueryPreference::default(),
+            issue: IssueQueryPreference::default(),
             auto_update: AutoUpdateSetting::default(),
         }
     }

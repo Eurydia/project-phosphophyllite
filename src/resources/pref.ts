@@ -5,7 +5,7 @@ import {
 	RepoQueryPref,
 } from "~types/schema";
 
-export const getPreference =
+export const getPrefRepo =
 	async (): Promise<RepoQueryPref> => {
 		const jsonString: string = await invoke(
 			"get_preference",

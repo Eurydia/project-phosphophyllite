@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod data;
+mod markdown;
 mod secrets;
 mod settings;
 mod shell;
@@ -11,10 +12,11 @@ use tauri::generate_handler;
 fn main() {
     tauri::Builder::default()
         .invoke_handler(generate_handler![
+            markdown::parse_markdown,
             settings::get_preference,
             secrets::get_secret_app_id,
-            secrets::get_private_key,
-            secrets::get_installation_id,
+            secrets::get_secret_private_key,
+            secrets::get_secret_installation_id,
             data::get_data_misc,
             data::set_data_misc,
             shell::open_url,

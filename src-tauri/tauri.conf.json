@@ -13,8 +13,10 @@
 	},
 	"tauri": {
 		"allowlist": {
-			"globalShortcut": {
-				"all": true
+			"all": false,
+			"shell": {
+				"all": false,
+				"open": true
 			}
 		},
 		"bundle": {

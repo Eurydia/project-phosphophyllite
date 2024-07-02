@@ -23,11 +23,11 @@ pub fn get_secret_app_id(handle: tauri::AppHandle) -> String {
 }
 
 #[tauri::command]
-pub fn get_installation_id(handle: tauri::AppHandle) -> String {
+pub fn get_secret_installation_id(handle: tauri::AppHandle) -> String {
     return resolve_secret_file(handle, "INSTALLATION_ID.txt");
 }
 
 #[tauri::command]
-pub fn get_private_key(handle: tauri::AppHandle) -> String {
+pub fn get_secret_private_key(handle: tauri::AppHandle) -> String {
     return resolve_secret_file(handle, "PRIVATE_KEY.txt");
 }
