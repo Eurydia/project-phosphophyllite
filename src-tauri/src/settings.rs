@@ -183,7 +183,6 @@ pub fn get_preference(handle: tauri::AppHandle) -> String {
             .unwrap();
         return UserSetting::default();
     });
-    let preference_string = serde_json::to_string_pretty(&preference_obj).unwrap();
-
+    let preference_string = serde_json::to_string(&preference_obj).unwrap();
     return preference_string;
 }

@@ -22,7 +22,6 @@ import {
 	RepoMetadataPage,
 	loaderRepoMetadataPage,
 } from "~pages/RepoMetadataPage";
-import { RepoOwnerListPage } from "~pages/RepoOwnerListPage";
 import {
 	RepoReadmePage,
 	loaderRepoReadmePage,
@@ -35,7 +34,6 @@ import { HomeGroupView } from "~views/HomeGroupView";
 import { RepoGroupView } from "~views/RepoGroupView";
 import { SettingGroupView } from "~views/SettingGroupView";
 
-//
 const router = createBrowserRouter([
 	{
 		path: "/",
@@ -56,10 +54,15 @@ const router = createBrowserRouter([
 				element: <RepoListPage />,
 				loader: repoListLoader,
 			},
-
 			{
 				path: "Repositories/:owner",
-				element: <RepoOwnerListPage />,
+				loader: async ({ params }) => {
+					const owner = params.owner ?? "";
+					window.location.replace(
+						`./Repositories?fullName=${owner}$`,
+					);
+					return null;
+				},
 			},
 			{
 				path: "Issues",

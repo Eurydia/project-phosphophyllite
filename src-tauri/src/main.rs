@@ -10,10 +10,6 @@ use tauri::generate_handler;
 
 fn main() {
     tauri::Builder::default()
-        // .setup(|app| {
-        //     shell::open_preference_dir(app.handle());
-        //     Ok(())
-        // })
         .invoke_handler(generate_handler![
             settings::get_preference,
             secrets::get_secret_app_id,
