@@ -38,7 +38,11 @@ export const SettingsPage: FC = () => {
 			>
 				Hi
 			</Button>
-			{/* {renderedItems} */}
+			<Button
+				onClick={() => invoke("get_repositories")}
+			>
+				Hi
+			</Button>
 		</Stack>
 	);
 };

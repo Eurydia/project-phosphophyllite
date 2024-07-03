@@ -7,6 +7,7 @@ use tauri::Manager;
 
 mod database;
 mod github;
+mod model;
 mod secrets;
 
 struct AppState {
@@ -17,7 +18,10 @@ struct AppState {
 #[tokio::main]
 async fn main() {
     let app = tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![database::update_repository_table])
+        .invoke_handler(tauri::generate_handler![
+            database::update_repository_table,
+            database::get_repositories,
+        ])
         .build(tauri::generate_context!())
         .unwrap();
     let db = database::setup_db(&app).await;

@@ -1,8 +1,6 @@
-use futures::TryFutureExt;
 use octocrab::{
     models::{
         issues::{Comment, Issue},
-        webhook_events::payload::DeleteWebhookEventAction,
         AppId, InstallationId, InstallationRepositories, Repository,
     },
     Octocrab,
@@ -69,7 +67,7 @@ pub async fn get_issues(octocrab: Octocrab, repository: Repository) -> Vec<Issue
     items
 }
 
-pub async fn get_comments_all(octocrab: Octocrab, repository: Repository) -> Vec<Comment> {
+pub async fn get_comments(octocrab: Octocrab, repository: Repository) -> Vec<Comment> {
     let crab = octocrab.clone();
     let items = crab
         .issues(repository.owner.unwrap().login, repository.name)
