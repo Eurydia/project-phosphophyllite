@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-	updateCachedComments,
-	updateCachedIssues,
-	updateCachedRepos,
-} from "~database/cached";
+import { updateCacheRepositories } from "~database/sync";
 
 export const useUpdateCached = () => {
 	const [isBusy, setIsBusy] = useState([
@@ -43,19 +39,19 @@ export const useUpdateCached = () => {
 		{
 			label: "Update repositories",
 			callback: () =>
-				handleUpdate(0, updateCachedRepos),
+				handleUpdate(0, updateCacheRepositories),
 			isBusy: isBusy[0],
 		},
 		{
 			label: "Update Issues",
 			callback: () =>
-				handleUpdate(1, updateCachedIssues),
+				handleUpdate(1, updateCacheRepositories),
 			isBusy: isBusy[1],
 		},
 		{
 			label: "Update comments",
 			callback: () =>
-				handleUpdate(2, updateCachedComments),
+				handleUpdate(2, updateCacheRepositories),
 			isBusy: isBusy[2],
 		},
 	];

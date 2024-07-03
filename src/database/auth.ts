@@ -27,7 +27,7 @@ const getOctokit = async () => {
 	return octokit;
 };
 
-export const getRepos = async () => {
+export const getRepositories = async () => {
 	const octokit = await getOctokit();
 	const pages = await octokit.paginate(
 		"GET /installation/repositories",

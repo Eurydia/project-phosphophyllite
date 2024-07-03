@@ -2,42 +2,31 @@ import { fs } from "@tauri-apps/api";
 import { BaseDirectory } from "@tauri-apps/api/fs";
 import { appLocalDataDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/api/shell";
-import { convertRSAPublicKey as convertPrivateToPublicKey } from "~core/encoding";
 
 const getSecretFileContent = async (
 	filename: string,
 ) => {
 	const pathExists = await fs.exists("secrets", {
-		dir: BaseDirectory.AppData,
+		dir: BaseDirectory.AppLocalData,
 	});
 	if (!pathExists) {
 		await fs.createDir("secrets", {
-			recursive: true,
-			dir: BaseDirectory.AppData,
+			dir: BaseDirectory.AppLocalData,
+		});
+	}
+	const filePath = "secrets/" + filename;
+	const fileExists = await fs.exists(filePath, {
+		dir: BaseDirectory.AppLocalData,
+	});
+	if (!fileExists) {
+		await fs.writeTextFile(filePath, "", {
+			dir: BaseDirectory.AppLocalData,
 		});
 	}
 
-	const fileExists = await fs.exists(
-		"secrets/" + filename,
-		{
-			dir: BaseDirectory.AppData,
-		},
-	);
-	if (!fileExists) {
-		await fs.writeTextFile(
-			"secrets/" + filename,
-			"",
-			{
-				dir: BaseDirectory.AppData,
-			},
-		);
-	}
-	return await fs.readTextFile(
-		"secrets/" + filename,
-		{
-			dir: BaseDirectory.AppData,
-		},
-	);
+	return await fs.readTextFile(filePath, {
+		dir: BaseDirectory.AppLocalData,
+	});
 };
 
 export const getAppID = async () =>
@@ -46,22 +35,18 @@ export const getAppID = async () =>
 export const getInstallationID = async () =>
 	getSecretFileContent("INSTALLATION_ID.txt");
 
-export const getPublicKey = async () => {
-	const privateKey = await getSecretFileContent(
-		"PRIVATE_KEY.pem",
-	);
-	return convertPrivateToPublicKey(privateKey);
-};
+export const getPublicKey = async () =>
+	getSecretFileContent("PRIVATE_KEY.txt");
 
 export const openSecretsDir = async () => {
 	const dirName = "secrets/";
 	const pathExists = await fs.exists(dirName, {
-		dir: BaseDirectory.AppData,
+		dir: BaseDirectory.AppLocalData,
 	});
 	if (!pathExists) {
 		await fs.createDir(dirName, {
 			recursive: true,
-			dir: BaseDirectory.AppData,
+			dir: BaseDirectory.AppLocalData,
 		});
 	}
 	open((await appLocalDataDir()) + dirName);

@@ -1,12 +1,10 @@
 import {
 	AppBar,
-	Box,
 	Divider,
 	Tab,
 	Tabs,
 	Toolbar,
 } from "@mui/material";
-import { useElementHeight } from "hooks/useElementHeight";
 import {
 	FC,
 	Fragment,
@@ -37,9 +35,6 @@ export const SettingGroupView: FC = () => {
 				break;
 		}
 	}, [appPathname]);
-	const { elemRef, elemHeight } =
-		useElementHeight();
-	const contentHeight = `calc(100svh - ${elemHeight})`;
 
 	const handleTabChange = async (
 		_: any,
@@ -51,7 +46,6 @@ export const SettingGroupView: FC = () => {
 				return;
 			case 2:
 				await openSecretsDir();
-
 				return;
 		}
 	};
@@ -59,8 +53,8 @@ export const SettingGroupView: FC = () => {
 	return (
 		<Fragment>
 			<AppBar
-				ref={elemRef}
 				elevation={0}
+				position="relative"
 			>
 				<AppHeader />
 				<Divider flexItem />
@@ -91,13 +85,7 @@ export const SettingGroupView: FC = () => {
 				</Toolbar>
 				<Divider flexItem />
 			</AppBar>
-			<Box
-				marginTop={elemHeight}
-				height={contentHeight}
-				overflow="auto"
-			>
-				<Outlet />
-			</Box>
+			<Outlet />
 		</Fragment>
 	);
 };
