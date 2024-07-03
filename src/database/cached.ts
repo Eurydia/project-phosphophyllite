@@ -1,39 +1,55 @@
-// export const getCachedRepos = async () => {
-// 	return (await dbPromise).getAll("repos");
-// };
+import { invoke } from "@tauri-apps/api";
+import { SelectOption } from "~types/generic";
+import {
+	Repository,
+	REPOSITORY_SCHEMA,
+} from "~types/schema";
+import { dbPromise } from "./migration";
 
-// export const getCachedRepo = async (
-// 	fullName: string,
-// ) => {
-// 	const db = await dbPromise;
-// 	const repo = await db.getFromIndex(
-// 		"repos",
-// 		"by-fullName",
-// 		fullName,
-// 	);
-// 	return repo;
-// };
+export const getRepositories = async () => {
+	const items: unknown[] = await invoke(
+		"get_repositories",
+	);
+	return checked as Repository[];
+};
 
-// export const getCachedIssues = async (
-// 	fullName: string | undefined = undefined,
-// 	issueNumber: number | undefined = undefined,
-// ) => {
-// 	const cachedIssues = await dbPromise.then(
-// 		(db) => db.getAll("issues"),
-// 	);
-// 	let issues = [...cachedIssues];
-// 	if (fullName !== undefined) {
-// 		issues = issues.filter(
-// 			(item) => item.repoFullName === fullName,
-// 		);
-// 	}
-// 	if (issueNumber !== undefined) {
-// 		issues = issues.filter(
-// 			(item) => item.issueNumber === issueNumber,
-// 		);
-// 	}
-// 	return issues;
-// };
+export const getRepositoryWithFullName = async (
+	fullName: string,
+) => {
+	const item: unknown = await invoke(
+		"get_repository_with_full_name",
+		{ fullName },
+	);
+	return checked.data;
+};
+
+export const getIssues = async () => {
+	const items: unknown[] = await invoke(
+		"get_issues",
+	);
+	return items;
+};
+
+export const getCachedIssues = async (
+	fullName: string | undefined = undefined,
+	issueNumber: number | undefined = undefined,
+) => {
+	const cachedIssues = await dbPromise.then(
+		(db) => db.getAll("issues"),
+	);
+	let issues = [...cachedIssues];
+	if (fullName !== undefined) {
+		issues = issues.filter(
+			(item) => item.repoFullName === fullName,
+		);
+	}
+	if (issueNumber !== undefined) {
+		issues = issues.filter(
+			(item) => item.issueNumber === issueNumber,
+		);
+	}
+	return issues;
+};
 
 // export const getCachedComments = async (
 // 	issueId: number,

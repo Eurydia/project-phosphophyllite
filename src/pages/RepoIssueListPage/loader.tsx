@@ -5,7 +5,7 @@ import { extractIssueQuery } from "~core/query";
 import { sortIssues } from "~core/sorting";
 import {
 	getCachedIssues,
-	getCachedRepo,
+	getRepositoryWithFullName,
 } from "~database/cached";
 import { Issue, IssueQuery } from "~types/schema";
 
@@ -29,7 +29,9 @@ export const loader: LoaderFunction = async ({
 		});
 	}
 	const fullName = `${owner}/${repoName}`;
-	let repo = await getCachedRepo(fullName);
+	let repo = await getRepositoryWithFullName(
+		fullName,
+	);
 	if (repo === undefined) {
 		throw new Response("Not found", {
 			status: 404,

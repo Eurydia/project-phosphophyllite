@@ -1,12 +1,14 @@
 use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct AppRepository {
-    id: u64,
+    id: i64,
     name: String,
     full_name: String,
     visibility: String,
-    archived: i8,
+    archived: bool,
     pushed_at: String,
     created_at: String,
     updated_at: String,
@@ -15,12 +17,13 @@ pub struct AppRepository {
     description: String,
 }
 
-#[derive(sqlx::FromRow, Serialize, Deserialize)]
+#[derive(FromRow, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AppIssue {
-    id: u64,
-    repo_id: u64,
+    id: i64,
+    repo_id: i64,
     repo_full_name: String,
-    number: u64,
+    number: i64,
     title: String,
     state: String,
     owner_type: String,

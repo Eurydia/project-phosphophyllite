@@ -1,5 +1,5 @@
 import { LoaderFunction } from "react-router";
-import { getCachedRepo } from "~database/cached";
+import { getRepositoryWithFullName } from "~database/cached";
 import { Repository } from "~types/schema";
 
 export type LoaderData = {
@@ -20,7 +20,9 @@ export const loader: LoaderFunction = async ({
 		});
 	}
 	const fullName = `${owner}/${repoName}`;
-	const repo = await getCachedRepo(fullName);
+	const repo = await getRepositoryWithFullName(
+		fullName,
+	);
 	if (repo === undefined) {
 		throw new Response("Not found", {
 			status: 404,

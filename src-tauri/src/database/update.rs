@@ -1,0 +1,43 @@
+use futures::TryStreamExt;
+use sqlx::{migrate::Migrator, Pool, Sqlite};
+
+use crate::model::AppRepository;
+
+#[tauri::command]
+pub async fn update_repository_table(
+    state: tauri::State<'_, crate::AppState>,
+) -> Result<(), String> {
+    let db = &state.db;
+    let crab = &state.octocrab;
+
+    let items = crate::github::get_repositories(crab.to_owned()).await;
+
+    let reqs = items.into_iter().map(|item| {
+        let db = db.clone();
+        async move {
+            let readme = crate::github::get_repository_readme(crab.to_owned(), item.clone()).await;
+
+            sqlx::query(
+                r#"
+                INSERT OR REPLACE INTO repositories (id, name, full_name, visibility, archived, pushed_at, created_at, updated_at, html_url, description, readme)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                "#
+            )
+                .bind(&item.id.to_string())
+                .bind(&item.name)
+                .bind(&item.full_name)
+                .bind(&item.visibility)
+                .bind(&item.archived)
+                .bind(&item.pushed_at.unwrap().to_string())
+                .bind(&item.created_at.unwrap().to_string())
+                .bind(&item.updated_at.unwrap().to_string())
+                .bind(&item.html_url.unwrap().as_str().to_string())
+                .bind(&item.description)
+                .bind(readme)
+                .execute(&db).await
+                .unwrap();
+        }
+    });
+    futures::future::join_all(reqs).await;
+    Ok(())
+}

@@ -1,74 +1,69 @@
 import zod from "zod";
 
-export const REPOSITORY_SCHEMA = zod.object({
-	id: zod
-		.number()
-		.int()
-		.nonnegative()
-		.safe()
-		.finite(),
-	name: zod.string(),
-	fullName: zod.string(),
-	visibility: zod.enum(["public", "private"]),
-	status: zod.enum(["active", "archived"]),
-	pushedAt: zod.string().datetime().nullable(),
-	createdAt: zod.string().datetime().nullable(),
-	updatedAt: zod.string().datetime().nullable(),
-	readme: zod.string().optional(),
-	htmlUrl: zod.string(),
-	description: zod.string().nullable(),
-});
+// export const REPOSITORY_SCHEMA = zod.object({
+// 	id: zod
+// 		.number()
+// 		.int()
+// 		.nonnegative()
+// 		.safe()
+// 		.finite(),
+// 	name: zod.string(),
+// 	fullName: zod.string(),
+// 	visibility: zod.enum(["public", "private"]),
+// 	archived: zod.boolean(),
+// 	pushedAt: zod.string()| null(),
+// 	createdAt: zod.string()| null(),
+// 	updatedAt: zod.string()| null(),
+// 	readme: zod.string()| undefined(),
+// 	htmlUrl: zod.string(),
+// 	description: zod.string()| null(),
+// });
 
-export type Repository = zod.infer<
-	typeof REPOSITORY_SCHEMA
->;
+export type Repository = {
+	id: number;
+	name: string;
+	fullName: string;
+	visibility: string;
+	archived: boolean;
+	pushedAt: string | null;
+	createdAt: string | null;
+	updatedAt: string | null;
+	readme: string | undefined;
+	htmlUrl: string;
+	description: string | null;
+};
+export type Issue = {
+	id: number;
+	repoId: number;
+	repoFullName: string;
+	issueNumber: number;
+	title: string;
+	state: string;
+	ownerType: string | null;
+	createdAt: string;
+	updatedAt: string;
+	closedAt: string | null;
+	htmlUrl: string;
+	body: string | null | undefined;
+};
 
-export const ISSUE_SCHEMA = zod.object({
-	id: zod.number().int().nonnegative(),
-	repoId: zod
-		.number()
-		.int()
-		.nonnegative()
-		.safe()
-		.finite(),
-	repoFullName: zod.string(),
-	issueNumber: zod.number().int().nonnegative(),
-	title: zod.string(),
-	state: zod.string(),
-	ownerType: zod.string().nullable(),
-	createdAt: zod.string().datetime(),
-	updatedAt: zod.string().datetime(),
-	closedAt: zod.string().datetime().nullable(),
-	htmlUrl: zod.string(),
-	body: zod.string().nullable().optional(),
-});
 
-export type Issue = zod.infer<
-	typeof ISSUE_SCHEMA
->;
-
-export const COMMENT_SCHEMA = zod.object({
-	id: zod
-		.number()
-		.int()
-		.nonnegative()
-		.safe()
-		.finite(),
-	issueId: zod
-		.number()
-		.int()
-		.nonnegative()
-		.safe()
-		.finite(),
-	htmlUrl: zod.string(),
-	body: zod.string().optional(),
-	createdAt: zod.string().datetime(),
-	updatedAt: zod.string().datetime(),
-});
-
-export type Comment = zod.infer<
-	typeof COMMENT_SCHEMA
->;
+export type Comment = 	{id: zod
+.number()
+.int()
+.nonnegative()
+.safe()
+.finite(),
+issueId: zod
+.number()
+.int()
+.nonnegative()
+.safe()
+.finite(),
+htmlUrl: zod.string(),
+body: zod.string() | undefined(),
+createdAt: zod.string(),
+updatedAt: zod.string()},
 
 export type RepoQuery =
 	RepositoryQueryPreference & {
@@ -125,7 +120,7 @@ export type AutoUpdateSetting = zod.infer<
 >;
 
 export const USER_SETTING_SCHEMA = zod.object({
-	$schema: zod.string().optional(),
+	$schema: zod.string() | undefined(),
 	repository: REPOSITORY_QUERY_PREFERENCE_SCHEMA,
 	issue: ISSUE_QUERY_PREFERENCE_SCHEMA,
 	autoUpdate: AUTO_UPDATE_SETTING_SCHEMA,
@@ -148,18 +143,9 @@ export type IssueQuery = IssueQueryPreference & {
 };
 
 export const APP_DATA_SCHEMA = zod.object({
-	repoDataLastUpdate: zod
-		.string()
-		.datetime()
-		.nullable(),
-	issueDataLastUpdate: zod
-		.string()
-		.datetime()
-		.nullable(),
-	commentDataLastUpdate: zod
-		.string()
-		.datetime()
-		.nullable(),
+	repoDataLastUpdate: zod.string() | null(),
+	issueDataLastUpdate: zod.string() | null(),
+	commentDataLastUpdate: zod.string() | null(),
 });
 
 export type GenericAppData = zod.infer<

@@ -19,12 +19,14 @@ struct AppState {
 async fn main() {
     let app = tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            database::update_repository_table,
-            database::get_repositories,
+            database::update::update_repository_table,
+            database::get::get_repositories,
+            database::get::get_repository_with_full_name,
         ])
         .build(tauri::generate_context!())
         .unwrap();
-    let db = database::setup_db(&app).await;
+
+    let db = database::prep::setup_db(&app).await;
     let octocrab = github::get_octocrab(app.app_handle()).await;
     app.manage(AppState { db, octocrab });
     app.run(|_, _| {})

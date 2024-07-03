@@ -1,6 +1,10 @@
 import { Button, Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { FC } from "react";
+import {
+	getRepositories,
+	getRepositoryWithFullName,
+} from "~database/cached";
 
 export const SettingsPage: FC = () => {
 	// const items = useUpdateCached();
@@ -39,7 +43,11 @@ export const SettingsPage: FC = () => {
 				Hi
 			</Button>
 			<Button
-				onClick={() => invoke("get_repositories")}
+				onClick={() =>
+					getRepositoryWithFullName(
+						"Eurydia/practice-python",
+					)
+				}
 			>
 				Hi
 			</Button>
