@@ -7,10 +7,10 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import { useSubmit } from "react-router-dom";
-import { RepoSchema } from "~types/schema";
+import { Repository } from "~types/schema";
 
 type RepoCardProps = {
-	repo: RepoSchema;
+	repo: Repository;
 };
 export const RepoCard: FC<RepoCardProps> = (
 	props,

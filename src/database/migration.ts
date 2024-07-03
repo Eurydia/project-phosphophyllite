@@ -4,29 +4,29 @@ import {
 	openDB,
 } from "idb";
 import {
-	CommentSchema,
-	IssueSchema,
-	RepoSchema,
+	Comment,
+	Issue,
+	Repository,
 } from "~types/schema";
 
 interface Database extends DBSchema {
 	repos: {
 		key: string;
-		value: RepoSchema;
+		value: Repository;
 		indexes: {
 			"by-fullName": string;
 		};
 	};
 	issues: {
 		key: number;
-		value: IssueSchema;
+		value: Issue;
 		indexes: {
 			"by-repoId": number;
 		};
 	};
 	issueComments: {
 		key: number;
-		value: CommentSchema;
+		value: Comment;
 		indexes: {
 			"by-issueId": number;
 		};

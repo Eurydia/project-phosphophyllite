@@ -7,10 +7,10 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import { useSubmit } from "react-router-dom";
-import { IssueSchema } from "~types/schema";
+import { Issue } from "~types/schema";
 
 type IssueCardProps = {
-	issue: IssueSchema;
+	issue: Issue;
 };
 export const IssueCard: FC<IssueCardProps> = (
 	props,

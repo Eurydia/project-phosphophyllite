@@ -1,18 +1,18 @@
 import { matchSorter } from "match-sorter";
 import {
+	Issue,
 	IssueQuery,
-	IssueSchema,
 	RepoQuery,
-	RepoSchema,
+	Repository,
 } from "~types/schema";
 
 export const filterRepos = (
-	repos: RepoSchema[],
+	repos: Repository[],
 	query: RepoQuery,
 ) => {
 	const { fullName, visibility, status } = query;
 	const filterFns: ((
-		item: RepoSchema,
+		item: Repository,
 	) => boolean)[] = [];
 	if (visibility !== "all") {
 		filterFns.push(
@@ -41,13 +41,12 @@ export const filterRepos = (
 };
 
 export const filterIssues = (
-	issues: IssueSchema[],
+	issues: Issue[],
 	query: IssueQuery,
 ) => {
 	const { title, ownerType, state } = query;
-	const filterFns: ((
-		item: IssueSchema,
-	) => boolean)[] = [];
+	const filterFns: ((item: Issue) => boolean)[] =
+		[];
 
 	if (ownerType !== "all") {
 		filterFns.push(

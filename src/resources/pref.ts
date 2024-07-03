@@ -1,28 +1,28 @@
 import { invoke } from "@tauri-apps/api";
 import { tryParse } from "~core/parsing";
 import {
-	IssueQueryPref,
-	RepoQueryPref,
+	IssueQueryPreference,
+	RepositoryQueryPreference,
 } from "~types/schema";
 
 export const getPrefRepo =
-	async (): Promise<RepoQueryPref> => {
+	async (): Promise<RepositoryQueryPreference> => {
 		const jsonString: string = await invoke(
 			"get_preference",
 		);
 		const obj = tryParse(jsonString) as {
-			repository: RepoQueryPref;
+			repository: RepositoryQueryPreference;
 		};
 		return obj.repository;
 	};
 
 export const getPrefIssue =
-	async (): Promise<IssueQueryPref> => {
+	async (): Promise<IssueQueryPreference> => {
 		const jsonString: string = await invoke(
 			"get_preference",
 		);
 		const obj = tryParse(jsonString) as {
-			issue: IssueQueryPref;
+			issue: IssueQueryPreference;
 		};
 		return obj.issue;
 	};

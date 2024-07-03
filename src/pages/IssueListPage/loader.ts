@@ -3,13 +3,10 @@ import { filterIssues } from "~core/filtering";
 import { extractIssueQuery } from "~core/query";
 import { sortIssues } from "~core/sorting";
 import { getCachedIssues } from "~database/cached";
-import {
-	IssueQuery,
-	IssueSchema,
-} from "~types/schema";
+import { Issue, IssueQuery } from "~types/schema";
 
 export type LoaderData = {
-	issues: IssueSchema[];
+	issues: Issue[];
 	query: IssueQuery;
 };
 export const loader: LoaderFunction = async ({

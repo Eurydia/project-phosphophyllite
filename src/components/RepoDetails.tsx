@@ -2,11 +2,11 @@ import { Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { FC, ReactNode, useRef } from "react";
 import { normalizeDateString } from "~core/time";
-import { RepoSchema } from "~types/schema";
+import { Repository } from "~types/schema";
 import { StyledGrid } from "./StyledGrid";
 
 type RepoDetailsProps = {
-	repo: RepoSchema;
+	repo: Repository;
 };
 export const RepoDetails: FC<RepoDetailsProps> = (
 	props,

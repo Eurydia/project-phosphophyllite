@@ -3,14 +3,11 @@ import {
 	getCachedComments,
 	getCachedIssues,
 } from "~database/cached";
-import {
-	CommentSchema,
-	IssueSchema,
-} from "~types/schema";
+import { Comment, Issue } from "~types/schema";
 
 export type LoaderData = {
-	issue: IssueSchema;
-	comments: CommentSchema[];
+	issue: Issue;
+	comments: Comment[];
 };
 export const loader: LoaderFunction = async ({
 	params,

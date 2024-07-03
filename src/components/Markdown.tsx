@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
 import { FC, useEffect, useRef } from "react";
+import { parseMarkdown } from "~core/parsing";
 
 type MarkdownProps = {
 	markdownContent: string | undefined | null;
@@ -23,11 +23,8 @@ export const Markdown: FC<MarkdownProps> = (
 			) {
 				return;
 			}
-			const parsedHtml: string = await invoke(
-				"parse_markdown",
-				{
-					markdownString: markdownContent,
-				},
+			const parsedHtml = parseMarkdown(
+				markdownContent,
 			);
 			ref.current.innerHTML = parsedHtml;
 		})();

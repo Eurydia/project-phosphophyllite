@@ -6,13 +6,13 @@ import {
 import { invoke } from "@tauri-apps/api";
 import { FC, ReactNode, useRef } from "react";
 import { normalizeDateString } from "~core/time";
-import { IssueSchema } from "~types/schema";
+import { Issue } from "~types/schema";
 import { Markdown } from "./Markdown";
 import { PaddedPaper } from "./PaddedPaper";
 import { StyledGrid } from "./StyledGrid";
 
 type IssueDetailsProps = {
-	issue: IssueSchema;
+	issue: Issue;
 };
 export const IssueDetails: FC<
 	IssueDetailsProps

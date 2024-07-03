@@ -1,9 +1,9 @@
 import { LoaderFunction } from "react-router";
 import { getDataMisc } from "resources/data";
-import { MiscData } from "~types/schema";
+import { GenericAppData } from "~types/schema";
 
 export type LoaderData = {
-	miscData: MiscData;
+	miscData: GenericAppData;
 };
 export const loader: LoaderFunction =
 	async () => {

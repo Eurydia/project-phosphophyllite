@@ -1,39 +1,61 @@
-import { invoke } from "@tauri-apps/api";
-import { MiscData } from "~types/schema";
+import { fs } from "@tauri-apps/api";
+import { BaseDirectory } from "@tauri-apps/api/fs";
+import { tryParse } from "~core/parsing";
+import {
+	APP_DATA_SCHEMA,
+	GenericAppData,
+} from "~types/schema";
 
 export const getDataMisc =
-	async (): Promise<MiscData> => {
-		const fallback: MiscData = {
-			commentDataLastUpdate: undefined,
-			issueDataLastUpdate: undefined,
-			repoDataLastUpdate: undefined,
+	async (): Promise<GenericAppData> => {
+		const fallback: GenericAppData = {
+			commentDataLastUpdate: null,
+			issueDataLastUpdate: null,
+			repoDataLastUpdate: null,
 		};
-		try {
-			const jsonString: string = await invoke(
-				"get_data_misc",
+		const fileExists = await fs.exists(
+			"misc.json",
+			{
+				dir: BaseDirectory.AppData,
+			},
+		);
+		if (!fileExists) {
+			await fs.writeTextFile(
+				"misc.json",
+				JSON.stringify(fallback),
+				{
+					dir: BaseDirectory.AppData,
+				},
 			);
-			const jsonObj: Record<string, string> =
-				JSON.parse(jsonString);
-			const _q: Record<
-				string,
-				string | undefined
-			> = {};
-			for (const k in fallback) {
-				const _k = k as keyof MiscData;
-				_q[_k] = jsonObj[_k] || fallback[_k];
-			}
-			return _q as MiscData;
-		} catch (err) {
-			console.warn(err);
 			return fallback;
 		}
+		const jsonString: string =
+			await fs.readTextFile("misc.json", {
+				dir: BaseDirectory.AppData,
+			});
+		const jsonObj = tryParse(jsonString);
+		const pObj =
+			APP_DATA_SCHEMA.safeParse(jsonObj);
+		if (!pObj.success) {
+			await fs.writeTextFile(
+				"misc.json",
+				JSON.stringify(fallback),
+				{
+					dir: BaseDirectory.AppData,
+				},
+			);
+			return fallback;
+		}
+		return pObj.data;
 	};
 
 export const setDataMisc = async (
-	appData: MiscData,
-) => {
-	const jsonString = JSON.stringify(appData);
-	await invoke("set_data_misc", {
-		jsonString,
-	});
-};
+	appData: GenericAppData,
+) =>
+	fs.writeTextFile(
+		"misc.json",
+		JSON.stringify(appData),
+		{
+			dir: BaseDirectory.AppData,
+		},
+	);

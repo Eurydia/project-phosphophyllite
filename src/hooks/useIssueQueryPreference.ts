@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { IssueQueryPref } from "~types/schema";
+import { IssueQueryPreference } from "~types/schema";
 
 export const useIssueQueryPreference = (
-	initPref: IssueQueryPref,
+	initPref: IssueQueryPreference,
 ) => {
 	const [pref, setPref] =
-		useState<IssueQueryPref>(initPref);
+		useState<IssueQueryPreference>(initPref);
 	const setState = (
-		value: IssueQueryPref["state"],
+		value: IssueQueryPreference["state"],
 	) => {
 		setPref((prev) => {
 			const next = { ...prev };
@@ -16,7 +16,7 @@ export const useIssueQueryPreference = (
 		});
 	};
 	const setOwnerType = (
-		value: IssueQueryPref["ownerType"],
+		value: IssueQueryPreference["ownerType"],
 	) => {
 		setPref((prev) => {
 			const next = { ...prev };
@@ -25,7 +25,7 @@ export const useIssueQueryPreference = (
 		});
 	};
 	const setSortBy = (
-		value: IssueQueryPref["sortBy"],
+		value: IssueQueryPreference["sortBy"],
 	) => {
 		setPref((prev) => {
 			const next = { ...prev };
@@ -34,7 +34,7 @@ export const useIssueQueryPreference = (
 		});
 	};
 	const setSortOrder = (
-		value: IssueQueryPref["sortOrder"],
+		value: IssueQueryPreference["sortOrder"],
 	) => {
 		setPref((prev) => {
 			const next = { ...prev };

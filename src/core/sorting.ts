@@ -1,8 +1,8 @@
 import {
+	Issue,
 	IssueQuery,
-	IssueSchema,
 	RepoQuery,
-	RepoSchema,
+	Repository,
 } from "~types/schema";
 
 export const sortByString = (
@@ -38,9 +38,9 @@ export const sortByNumber = (
 };
 
 const getIssueSortFn = (
-	property: keyof IssueSchema,
+	property: keyof Issue,
 ):
-	| ((a: IssueSchema, b: IssueSchema) => number)
+	| ((a: Issue, b: Issue) => number)
 	| undefined => {
 	switch (property) {
 		case "issueNumber":
@@ -69,9 +69,9 @@ const getIssueSortFn = (
 };
 
 const getRepoSortFn = (
-	property: keyof RepoSchema,
+	property: keyof Repository,
 ):
-	| ((a: RepoSchema, b: RepoSchema) => number)
+	| ((a: Repository, b: Repository) => number)
 	| undefined => {
 	switch (property) {
 		case "fullName":
@@ -87,7 +87,7 @@ const getRepoSortFn = (
 };
 
 export const sortRepos = (
-	repos: RepoSchema[],
+	repos: Repository[],
 	query: RepoQuery,
 ): void => {
 	const { sortOrder, sortBy } = query;
@@ -102,7 +102,7 @@ export const sortRepos = (
 };
 
 export const sortIssues = (
-	issues: IssueSchema[],
+	issues: Issue[],
 	query: IssueQuery,
 ): void => {
 	const { sortOrder, sortBy } = query;

@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { RepoQueryPref } from "~types/schema";
+import { RepositoryQueryPreference } from "~types/schema";
 
 export const useRepoQueryPreference = (
-	init: RepoQueryPref,
+	init: RepositoryQueryPreference,
 ) => {
 	const [pref, setPref] =
-		useState<RepoQueryPref>(init);
+		useState<RepositoryQueryPreference>(init);
 
 	const setStatus = (
-		value: RepoQueryPref["status"],
+		value: RepositoryQueryPreference["status"],
 	) => {
 		setPref((prev) => {
 			const next = { ...prev };
@@ -17,7 +17,7 @@ export const useRepoQueryPreference = (
 		});
 	};
 	const setVisibility = (
-		value: RepoQueryPref["visibility"],
+		value: RepositoryQueryPreference["visibility"],
 	) => {
 		setPref((prev) => {
 			const next = { ...prev };
@@ -26,7 +26,7 @@ export const useRepoQueryPreference = (
 		});
 	};
 	const setSortBy = (
-		value: RepoQueryPref["sortBy"],
+		value: RepositoryQueryPreference["sortBy"],
 	) => {
 		setPref((prev) => {
 			const next = { ...prev };
@@ -35,7 +35,7 @@ export const useRepoQueryPreference = (
 		});
 	};
 	const setSortOrder = (
-		value: RepoQueryPref["sortOrder"],
+		value: RepositoryQueryPreference["sortOrder"],
 	) => {
 		setPref((prev) => {
 			const next = { ...prev };

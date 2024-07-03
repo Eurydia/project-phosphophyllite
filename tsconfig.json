@@ -9,6 +9,7 @@
 		"module": "ESNext",
 		"skipLibCheck": true,
 		"paths": {
+			"~api/*": ["./api/*"],
 			"~components/*": ["./components/*"],
 			"~pages/*": ["./pages/*"],
 			"~layouts/*": ["./layouts/*"],

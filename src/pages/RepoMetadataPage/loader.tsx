@@ -1,9 +1,9 @@
 import { LoaderFunction } from "react-router";
 import { getCachedRepo } from "~database/cached";
-import { RepoSchema } from "~types/schema";
+import { Repository } from "~types/schema";
 
 export type LoaderData = {
-	repo: RepoSchema;
+	repo: Repository;
 };
 export const loader: LoaderFunction = async ({
 	params,

@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@emotion/react";
 import { CssBaseline } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
+import { open as shellOpen } from "@tauri-apps/api/shell";
 import { SnackbarProvider } from "notistack";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -17,16 +17,12 @@ document.addEventListener(
 				if (target.tagName !== "A") {
 					return;
 				}
-
 				const href = target.getAttribute("href");
 				if (!href || !href.startsWith("http")) {
 					return;
 				}
 				event.preventDefault();
-				// Use the Tauri command to open the link in the default browser
-				invoke("open_url", {
-					url: href,
-				});
+				shellOpen(href);
 			},
 		);
 	},

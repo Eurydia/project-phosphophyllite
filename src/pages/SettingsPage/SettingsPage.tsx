@@ -2,36 +2,15 @@ import {
 	Box,
 	Button,
 	Stack,
-	Typography,
 } from "@mui/material";
 import { useUpdateCached } from "hooks/useUpdateCached";
 import { FC } from "react";
-import { useLoaderData } from "react-router";
-import {
-	normalizeDateString,
-	timeSince,
-} from "~core/time";
-import { LoaderData } from "./loader";
 
 export const SettingsPage: FC = () => {
-	const { miscData } =
-		useLoaderData() as LoaderData;
-	const items = useUpdateCached(miscData);
+	const items = useUpdateCached();
 
 	const renderedItems = items.map(
-		(
-			{ label, callback, isBusy, lastUpdated },
-			index,
-		) => {
-			const timeUpdated = normalizeDateString(
-				lastUpdated,
-				"Unknown",
-			);
-			const timeSinceUpdated = timeSince(
-				lastUpdated,
-				"Unknown",
-			);
-			const lastUpdatedMsg = `Last updated: ${timeUpdated} (${timeSinceUpdated})`;
+		({ label, callback, isBusy }, index) => {
 			const buttonText = isBusy
 				? "Working"
 				: label;
@@ -46,9 +25,6 @@ export const SettingsPage: FC = () => {
 					>
 						{buttonText}
 					</Button>
-					<Typography>
-						{lastUpdatedMsg}
-					</Typography>
 				</Box>
 			);
 		},

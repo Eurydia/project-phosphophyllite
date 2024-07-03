@@ -6,13 +6,13 @@ import {
 import { invoke } from "@tauri-apps/api";
 import { FC, ReactNode, useRef } from "react";
 import { normalizeDateString } from "~core/time";
-import { CommentSchema } from "~types/schema";
+import { Comment } from "~types/schema";
 import { Markdown } from "./Markdown";
 import { PaddedPaper } from "./PaddedPaper";
 import { StyledGrid } from "./StyledGrid";
 
 type CommentDetailsProps = {
-	comment: CommentSchema;
+	comment: Comment;
 };
 export const CommentDetails: FC<
 	CommentDetailsProps

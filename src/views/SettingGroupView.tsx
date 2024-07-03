@@ -6,7 +6,6 @@ import {
 	Tabs,
 	Toolbar,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
 import { useElementHeight } from "hooks/useElementHeight";
 import {
 	FC,
@@ -18,6 +17,8 @@ import {
 	Outlet,
 	useLocation,
 } from "react-router-dom";
+import { openSecretsDir } from "~api/secrets";
+import { openSettingFile } from "~api/setting";
 import { AppHeader } from "~components/AppHeader";
 
 export const SettingGroupView: FC = () => {
@@ -40,19 +41,19 @@ export const SettingGroupView: FC = () => {
 		useElementHeight();
 	const contentHeight = `calc(100svh - ${elemHeight})`;
 
-	const handleTabChange = (
+	const handleTabChange = async (
 		_: any,
 		value: number,
 	) => {
 		switch (value) {
 			case 1:
-				invoke("open_preference_file");
+				await openSettingFile();
 				return;
 			case 2:
-				invoke("open_secret_dir");
+				await openSecretsDir();
+
 				return;
 		}
-		setTab(value);
 	};
 
 	return (
@@ -79,7 +80,7 @@ export const SettingGroupView: FC = () => {
 						<Tab
 							disableRipple
 							value={1}
-							label="Preference settings"
+							label="Preferences"
 						/>
 						<Tab
 							disableRipple

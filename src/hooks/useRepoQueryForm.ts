@@ -1,12 +1,12 @@
 import { useState } from "react";
 import {
 	RepoQuery,
-	RepoQueryPref,
+	RepositoryQueryPreference,
 } from "~types/schema";
 import { useRepoQueryPreference } from "./useRepoQueryPreference";
 
 export const useRepoQueryForm = (
-	init: RepoQueryPref,
+	init: RepositoryQueryPreference,
 ) => {
 	const {
 		pref,

@@ -7,13 +7,10 @@ import {
 	getCachedIssues,
 	getCachedRepo,
 } from "~database/cached";
-import {
-	IssueQuery,
-	IssueSchema,
-} from "~types/schema";
+import { Issue, IssueQuery } from "~types/schema";
 
 export type LoaderData = {
-	issues: IssueSchema[];
+	issues: Issue[];
 	query: IssueQuery;
 };
 export const loader: LoaderFunction = async ({

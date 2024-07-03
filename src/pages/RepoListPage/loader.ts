@@ -5,11 +5,11 @@ import { sortRepos } from "~core/sorting";
 import { getCachedRepos } from "~database/cached";
 import {
 	RepoQuery,
-	RepoSchema,
+	Repository,
 } from "~types/schema";
 
 export type LoaderData = {
-	repos: RepoSchema[];
+	repos: Repository[];
 	query: RepoQuery;
 };
 export const loader: LoaderFunction = async ({

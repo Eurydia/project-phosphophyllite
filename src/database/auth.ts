@@ -1,23 +1,23 @@
 import { App } from "octokit";
 import {
-	getAppId,
-	getInstallationId,
-	getPrivateKey,
-} from "resources/secrets";
+	getAppID,
+	getInstallationID,
+	getPublicKey,
+} from "~api/secrets";
 import {
-	CommentSchema,
-	RepoSchema,
+	Comment,
+	Repository,
 } from "~types/schema";
 
 const getOctokit = async () => {
 	const installationId =
-		await getInstallationId();
-	const appId = await getAppId();
-	const privateKey = await getPrivateKey();
+		await getInstallationID();
+	const appId = await getAppID();
+	const publicKey = await getPublicKey();
 
 	const app = new App({
 		appId,
-		privateKey,
+		privateKey: publicKey,
 	});
 
 	const octokit =
@@ -32,7 +32,7 @@ export const getRepos = async () => {
 	const pages = await octokit.paginate(
 		"GET /installation/repositories",
 	);
-	const repos: Record<string, RepoSchema> = {};
+	const repos: Record<string, Repository> = {};
 	for (const item of pages) {
 		const {
 			id,
@@ -46,10 +46,10 @@ export const getRepos = async () => {
 			created_at,
 			updated_at,
 		} = item;
-		const status: RepoSchema["status"] = archived
+		const status: Repository["status"] = archived
 			? "archived"
 			: "active";
-		const visibility: RepoSchema["visibility"] =
+		const visibility: Repository["visibility"] =
 			isPrivate ? "private" : "public";
 		repos[full_name] = {
 			id,
@@ -159,7 +159,7 @@ export const getComments = async (
 			issue_number: issueNumber,
 		},
 	);
-	const comments: CommentSchema[] = response.map(
+	const comments: Comment[] = response.map(
 		({
 			id,
 			html_url,

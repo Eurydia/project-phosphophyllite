@@ -1,9 +1,12 @@
 import moment from "moment";
 
 export const timeSince = (
-	dateString: string | undefined,
+	dateString: string | null | undefined,
 	fallback: string,
 ) => {
+	if (!dateString) {
+		return fallback;
+	}
 	try {
 		return moment(dateString).fromNow();
 	} catch (err) {
