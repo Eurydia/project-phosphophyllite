@@ -22,6 +22,9 @@ async fn main() {
             database::update::update_repository_table,
             database::get::get_repositories,
             database::get::get_repository_with_full_name,
+            database::get::get_issues,
+            database::get::get_issues_in_repository,
+            database::get::get_comments_in_issue,
         ])
         .build(tauri::generate_context!())
         .unwrap();
