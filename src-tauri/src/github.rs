@@ -22,7 +22,7 @@ pub async fn get_octocrab(handle: tauri::AppHandle) -> Octocrab {
         .installation(InstallationId(installation_id))
 }
 
-pub async fn get_repositories(octocrab: Octocrab) -> Vec<Repository> {
+pub async fn get_repositories(octocrab: &Octocrab) -> Vec<Repository> {
     let mut items: Vec<Repository> = Vec::new();
     let mut page = 1;
     loop {
@@ -33,49 +33,75 @@ pub async fn get_repositories(octocrab: Octocrab) -> Vec<Repository> {
             )
             .await
             .unwrap();
-        items.extend(respond.repositories.into_iter());
         page += 1;
         if respond.total_count == items.len() as i64 {
             break;
         }
+        items.extend(respond.repositories.into_iter());
     }
     items
 }
 
-pub async fn get_repository_readme(octocrab: Octocrab, repository: Repository) -> String {
-    match octocrab
-        .repos(repository.owner.unwrap().login, repository.name)
+pub async fn get_repository_readme(octocrab: &Octocrab, repository: Repository) -> String {
+    octocrab
+        .repos(
+            repository.owner.map_or(String::default(), |dt| dt.login),
+            repository.name,
+        )
         .get_readme()
         .send()
         .await
-    {
-        Ok(readme) => readme.content.unwrap_or(String::default()),
-        Err(_) => String::default(),
-    }
+        .map_or(String::default(), |dt| {
+            dt.content.unwrap_or(String::default())
+        })
 }
 
-pub async fn get_issues(octocrab: Octocrab, repository: Repository) -> Vec<Issue> {
-    let crab = octocrab.clone();
-    let items = crab
-        .issues(repository.owner.unwrap().login, repository.name)
-        .list()
-        .send()
-        .await
-        .unwrap()
-        .into_iter()
-        .collect::<Vec<Issue>>();
+pub async fn get_issues(octocrab: &Octocrab, repository: &Repository) -> Vec<Issue> {
+    let mut items = Vec::new();
+    let mut page = 1u32;
+    loop {
+        let resp = octocrab
+            .issues(
+                repository.owner.as_ref().unwrap().login.to_string(),
+                repository.name.to_string(),
+            )
+            .list()
+            .page(page)
+            .send()
+            .await
+            .unwrap()
+            .into_iter()
+            .collect::<Vec<Issue>>();
+        if resp.len() == 0 {
+            break;
+        }
+        page += 1;
+        items.extend(resp)
+    }
     items
 }
 
-pub async fn get_comments(octocrab: Octocrab, repository: Repository) -> Vec<Comment> {
-    let crab = octocrab.clone();
-    let items = crab
-        .issues(repository.owner.unwrap().login, repository.name)
-        .list_issue_comments()
-        .send()
-        .await
-        .unwrap()
-        .into_iter()
-        .collect::<Vec<Comment>>();
+pub async fn get_comments(octocrab: &Octocrab, repository: &Repository) -> Vec<Comment> {
+    let mut items = Vec::new();
+    let mut page = 1u32;
+    loop {
+        let resp = octocrab
+            .issues(
+                repository.owner.as_ref().unwrap().login.to_string(),
+                repository.name.to_string(),
+            )
+            .list_issue_comments()
+            .page(page)
+            .send()
+            .await
+            .unwrap()
+            .into_iter()
+            .collect::<Vec<Comment>>();
+        if resp.len() == 0 {
+            break;
+        }
+        page += 1;
+        items.extend(resp)
+    }
     items
 }

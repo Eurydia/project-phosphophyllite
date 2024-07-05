@@ -21,25 +21,24 @@ pub struct AppRepository {
 #[serde(rename_all = "camelCase")]
 pub struct AppIssue {
     id: i64,
-    repo_id: i64,
-    repo_full_name: String,
-    number: i64,
+    issue_number: i64,
     title: String,
     state: String,
-    owner_type: String,
     created_at: String,
     updated_at: String,
     closed_at: String,
     html_url: String,
+    repository_url: String,
     body: String,
 }
 
-#[derive(sqlx::FromRow, Serialize, Deserialize)]
+#[derive(FromRow, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AppComment {
-    id: u64,
-    issue_id: u64,
-    html_url: String,
+    id: i64,
     body: String,
     created_at: String,
     updated_at: String,
+    issue_url: String,
+    html_url: String,
 }

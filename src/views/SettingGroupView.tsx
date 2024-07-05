@@ -15,8 +15,6 @@ import {
 	Outlet,
 	useLocation,
 } from "react-router-dom";
-import { openSecretsDir } from "~api/secrets";
-import { openSettingFile } from "~api/setting";
 import { AppHeader } from "~components/AppHeader";
 
 export const SettingGroupView: FC = () => {
@@ -42,10 +40,10 @@ export const SettingGroupView: FC = () => {
 	) => {
 		switch (value) {
 			case 1:
-				await openSettingFile();
+				// await openSettingFile();
 				return;
 			case 2:
-				await openSecretsDir();
+				// await openSecretsDir();
 				return;
 		}
 	};

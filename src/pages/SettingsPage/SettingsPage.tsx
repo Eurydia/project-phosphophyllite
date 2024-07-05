@@ -44,8 +44,8 @@ export const SettingsPage: FC = () => {
 			</Button>
 			<Button
 				onClick={() =>
-					getRepositoryWithFullName(
-						"Eurydia/practice-python",
+					invoke("update_tables").then(() =>
+						console.log("done"),
 					)
 				}
 			>

@@ -1,7 +1,4 @@
-use futures::TryStreamExt;
 use sqlx::{migrate::Migrator, Pool, Sqlite};
-
-use crate::model::AppRepository;
 
 async fn get_db(app: &tauri::App) -> Pool<Sqlite> {
     let mut path = app
