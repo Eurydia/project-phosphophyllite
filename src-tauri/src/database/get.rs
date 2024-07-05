@@ -8,7 +8,8 @@ pub async fn get_repositories(
     let items: Vec<AppRepository> = sqlx::query_as::<_, AppRepository>(
         r#"
         SELECT * 
-        FROM repositories"#,
+        FROM repositories
+        "#,
     )
     .fetch(&state.db)
     .try_collect()
@@ -23,11 +24,12 @@ pub async fn get_repository_with_full_name(
     full_name: String,
 ) -> Result<Option<AppRepository>, String> {
     let item: Option<AppRepository> = sqlx::query_as::<_, AppRepository>(
-        "
+        r#"
         SELECT *
         FROM repositories
         WHERE full_name = ?
-        LIMIT 1",
+        LIMIT 1
+        "#,
     )
     .bind(full_name)
     .fetch_optional(&state.db)
@@ -41,9 +43,9 @@ pub async fn get_repository_with_full_name(
 pub async fn get_issues(state: tauri::State<'_, crate::AppState>) -> Result<Vec<AppIssue>, String> {
     let items: Vec<AppIssue> = sqlx::query_as::<_, AppIssue>(
         r#"
-    SELECT *
-    FROM issues
-    "#,
+        SELECT *
+        FROM issues
+        "#,
     )
     .fetch(&state.db)
     .try_collect()
@@ -58,12 +60,13 @@ pub async fn get_issues_in_repository(
     repo_full_name: String,
 ) -> Result<Vec<AppIssue>, String> {
     let items: Vec<AppIssue> = sqlx::query_as::<_, AppIssue>(
-        "
-    SELECT *
-    FROM issues
-    WHERE repo_full_name = ?",
+        r#"
+        SELECT *
+        FROM issues
+        WHERE repo_full_name = ?
+        "#,
     )
-    .bind(&repo_full_name)
+    .bind(repo_full_name)
     .fetch(&state.db)
     .try_collect()
     .await
@@ -74,21 +77,21 @@ pub async fn get_issues_in_repository(
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_issue_in_repository_with_number(
     state: tauri::State<'_, crate::AppState>,
-    repo_full_name: String,
+    repo_url: String,
     number: i64,
 ) -> Result<Option<AppIssue>, String> {
     let items: Option<AppIssue> = sqlx::query_as::<_, AppIssue>(
         r#"
-    SELECT *
-    FROM issues
-    WHERE
-        repo_full_name = ? AND
-        number = ?
-    LIMIT 1
-    "#,
+        SELECT *
+        FROM issues
+        WHERE
+            repo_url = ? AND
+            number = ?
+        LIMIT 1
+        "#,
     )
-    .bind(&repo_full_name)
-    .bind(&number)
+    .bind(repo_url)
+    .bind(number)
     .fetch_optional(&state.db)
     .await
     .unwrap();
@@ -101,9 +104,9 @@ pub async fn get_comments(
 ) -> Result<Vec<AppComment>, String> {
     let items: Vec<AppComment> = sqlx::query_as::<_, AppComment>(
         r#"
-    SELECT *
-    FROM comments
-    "#,
+        SELECT *
+        FROM comments
+        "#,
     )
     .fetch(&state.db)
     .try_collect()
@@ -116,16 +119,16 @@ pub async fn get_comments(
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_comments_in_issues(
     state: tauri::State<'_, crate::AppState>,
-    issue_id: i64,
+    issue_url: String,
 ) -> Result<Vec<AppComment>, String> {
     let items: Vec<AppComment> = sqlx::query_as::<_, AppComment>(
         r#"
-    SELECT *
-    FROM comments
-    WHERE issue_id = ?
-    "#,
+        SELECT *
+        FROM comments
+        WHERE issue_url = ?
+        "#,
     )
-    .bind(issue_id)
+    .bind(issue_url)
     .fetch(&state.db)
     .try_collect()
     .await
