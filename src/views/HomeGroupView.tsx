@@ -1,11 +1,3 @@
-import {
-	AppBar,
-	Box,
-	Divider,
-	Tab,
-	Tabs,
-	Toolbar,
-} from "@mui/material";
 import { useElementHeight } from "hooks/useElementHeight";
 import {
 	FC,

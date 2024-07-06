@@ -2,7 +2,7 @@ import { LoaderFunction } from "react-router-dom";
 import { filterIssues } from "~core/filtering";
 import { extractIssueQuery } from "~core/query";
 import { sortIssues } from "~core/sorting";
-import { getCachedIssues } from "~database/cached";
+import { getCachedIssues } from "~database/index";
 import { Issue, IssueQuery } from "~types/schema";
 
 export type LoaderData = {

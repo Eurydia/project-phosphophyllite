@@ -13,17 +13,7 @@
 	},
 	"tauri": {
 		"allowlist": {
-			"path": {
-				"all": true
-			},
-			"shell": {
-				"all": false,
-				"open": ".+"
-			},
-			"fs": {
-				"all": true,
-				"scope": ["**", "**/*", "/**/*"]
-			}
+			"all": false
 		},
 		"bundle": {
 			"active": true,
@@ -49,7 +39,11 @@
 				"providerShortName": null,
 				"signingIdentity": null
 			},
-			"resources": ["resources/*"],
+			"resources": [
+				"resources/**/*",
+				"resources/**",
+				"resources/*"
+			],
 			"shortDescription": "A GitHub issue aggregator powered by Tauri and Octokit.",
 			"targets": "all",
 			"windows": {

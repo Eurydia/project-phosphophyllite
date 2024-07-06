@@ -1,4 +1,5 @@
-import { FC } from "react";
+import { useSnackbar } from "notistack";
+import { FC, useEffect } from "react";
 import { RouterProvider } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
 import { ErrorElement } from "~pages/ErrorElement";
@@ -6,6 +7,10 @@ import {
 	SettingsPage,
 	loaderSettingsPage,
 } from "~pages/SettingsPage";
+import {
+	shouldUpdateDB,
+	signalUpdateDB,
+} from "~signals/db";
 import { HomeGroupView } from "~views/HomeGroupView";
 import { SettingGroupView } from "~views/SettingGroupView";
 
@@ -82,5 +87,37 @@ const router = createBrowserRouter([
 ]);
 
 export const App: FC = () => {
+	const { enqueueSnackbar, closeSnackbar } =
+		useSnackbar();
+	useEffect(() => {
+		(async () => {
+			const shouldUpdate = await shouldUpdateDB();
+			if (!shouldUpdate) {
+				return;
+			}
+			const id = enqueueSnackbar(
+				"Updating database",
+				{
+					persist: true,
+					variant: "info",
+				},
+			);
+
+			await signalUpdateDB().then(
+				() =>
+					enqueueSnackbar("Update completed", {
+						variant: "success",
+					}),
+				() =>
+					enqueueSnackbar(
+						"An error occurred during update",
+						{
+							variant: "error",
+						},
+					),
+			);
+			closeSnackbar(id);
+		})();
+	}, []);
 	return <RouterProvider router={router} />;
 };

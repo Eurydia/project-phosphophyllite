@@ -1,7 +1,3 @@
-import {
-	Divider,
-	Typography,
-} from "@mui/material";
 import { FC, Fragment } from "react";
 import { useRouteError } from "react-router";
 import { AppHeader } from "~components/AppHeader";

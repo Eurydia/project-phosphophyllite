@@ -1,10 +1,3 @@
-use crate::github;
-use octocrab::{
-    models::{issues::Issue, IssueState, Repository},
-    Octocrab,
-};
-use sqlx::{Pool, Sqlite};
-
 macro_rules! unwrap_datetime {
     ($opt:expr) => {
         $opt.map_or(String::default(), |dt| dt.to_rfc3339())
@@ -12,11 +5,11 @@ macro_rules! unwrap_datetime {
 }
 
 async fn update_repository_table_entry(
-    db: &Pool<Sqlite>,
-    crab: &Octocrab,
-    repository: Repository,
+    db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
+    crab: &octocrab::Octocrab,
+    repository: octocrab::models::Repository,
 ) -> Result<(), String> {
-    let readme = github::get_repository_readme(crab, repository.clone()).await;
+    let readme = crate::github::get_repository_readme(crab, repository.clone()).await;
 
     sqlx::query(
         r#"
@@ -62,7 +55,10 @@ async fn update_repository_table_entry(
     Ok(())
 }
 
-async fn update_issue_table_entry(db: &Pool<Sqlite>, issue: Issue) -> Result<(), String> {
+async fn update_issue_table_entry(
+    db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
+    issue: octocrab::models::issues::Issue,
+) -> Result<(), String> {
     sqlx::query(
         r#"
         INSERT OR REPLACE INTO issues (
@@ -86,8 +82,8 @@ async fn update_issue_table_entry(db: &Pool<Sqlite>, issue: Issue) -> Result<(),
     .bind(issue.title)
     .bind(issue.body.unwrap_or(String::default()))
     .bind(match issue.state {
-        IssueState::Open => "open",
-        IssueState::Closed | _ => "closed",
+        octocrab::models::IssueState::Open => "open",
+        octocrab::models::IssueState::Closed | _ => "closed",
     })
     .bind(issue.number.to_string())
     .bind(issue.html_url.as_str())
@@ -103,7 +99,7 @@ async fn update_issue_table_entry(db: &Pool<Sqlite>, issue: Issue) -> Result<(),
 }
 
 async fn update_comment_table_entry(
-    db: &Pool<Sqlite>,
+    db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
     comment: octocrab::models::issues::Comment,
 ) -> Result<(), String> {
     sqlx::query(
@@ -139,26 +135,52 @@ async fn update_comment_table_entry(
 }
 
 #[tauri::command]
-pub async fn update_tables(state: tauri::State<'_, crate::AppState>) -> Result<(), String> {
+pub async fn update_db(
+    handle: tauri::AppHandle,
+    state: tauri::State<'_, crate::AppState>,
+    _: tauri::Window,
+) -> Result<(), String> {
     let crab = &state.octocrab;
     let db = &state.db;
-    let repos = github::get_repositories(crab).await;
+    let repos = crate::github::get_repositories(crab).await;
     for repo in repos.iter() {
         update_repository_table_entry(db, crab, repo.clone())
             .await
             .unwrap();
 
-        let issues = github::get_issues(crab, &repo).await;
+        let issues = crate::github::get_issues(crab, repo.clone()).await;
         for issue in issues.iter() {
             update_issue_table_entry(db, issue.clone()).await.unwrap();
         }
 
-        let comments = github::get_comments(crab, &repo).await;
+        let comments = crate::github::get_comments(crab, repo.clone()).await;
         for comment in comments.iter() {
             update_comment_table_entry(db, comment.clone())
                 .await
                 .unwrap()
         }
     }
+
+    let path = handle
+        .path_resolver()
+        .app_config_dir()
+        .unwrap()
+        .join("settings.json");
+
+    let mut settings = match path.try_exists() {
+        Ok(true) => {
+            let json_string = std::fs::read_to_string(&path).unwrap();
+            serde_json::from_str(&json_string).unwrap_or(crate::model::AppData::default())
+        }
+        Err(_) | Ok(false) => {
+            std::fs::File::create(&path).unwrap();
+            crate::model::AppData::default()
+        }
+    };
+
+    let dt_now = chrono::Utc::now();
+    settings.auto_update.last_updated = dt_now.to_rfc3339();
+    let json_string = serde_json::to_string(&settings).unwrap();
+    std::fs::write(path, json_string).unwrap();
     Ok(())
 }

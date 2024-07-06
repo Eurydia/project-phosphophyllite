@@ -16,6 +16,10 @@ import {
 	useLocation,
 } from "react-router-dom";
 import { AppHeader } from "~components/AppHeader";
+import {
+	signalOpenSecretDir,
+	singalOpenSettingFile,
+} from "~signals/open";
 
 export const SettingGroupView: FC = () => {
 	const { pathname: appPathname } = useLocation();
@@ -40,10 +44,10 @@ export const SettingGroupView: FC = () => {
 	) => {
 		switch (value) {
 			case 1:
-				// await openSettingFile();
+				await singalOpenSettingFile();
 				return;
 			case 2:
-				// await openSecretsDir();
+				await signalOpenSecretDir();
 				return;
 		}
 	};

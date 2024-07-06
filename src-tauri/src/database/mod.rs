@@ -1,3 +1,3 @@
 pub mod get;
-pub mod prep;
+pub mod setup;
 pub mod update;

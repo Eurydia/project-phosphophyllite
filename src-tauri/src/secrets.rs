@@ -1,19 +1,10 @@
-use std::fs::{create_dir_all, read_to_string, File};
-
 fn get_secret(handle: &tauri::AppHandle, file_path: &str) -> String {
-    let path = handle
-        .path_resolver()
-        .app_local_data_dir()
-        .unwrap()
-        .join("secrets");
-    if !path.try_exists().unwrap() {
-        create_dir_all(&path).unwrap();
-    }
+    let path = crate::paths::get_secret_path(handle);
     let file = path.join(file_path);
     if !file.try_exists().unwrap() {
-        File::create(&file).unwrap();
+        std::fs::File::create(&file).unwrap();
     }
-    read_to_string(file).unwrap_or(String::default())
+    std::fs::read_to_string(file).unwrap_or(String::default())
 }
 
 pub fn get_app_id(handle: &tauri::AppHandle) -> String {

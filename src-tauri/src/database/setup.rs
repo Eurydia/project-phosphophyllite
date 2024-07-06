@@ -24,7 +24,12 @@ async fn get_db(app: &tauri::App) -> Pool<Sqlite> {
 }
 
 pub async fn setup_db(app: &tauri::App) -> Pool<Sqlite> {
-    let migration_path = app.path_resolver().resolve_resource("migrations").unwrap();
+    let migration_path = app
+        .path_resolver()
+        .resource_dir()
+        .unwrap()
+        .join("resources")
+        .join("migrations");
 
     if !migration_path.try_exists().unwrap() {
         std::fs::create_dir_all(&migration_path).unwrap();

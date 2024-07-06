@@ -46,3 +46,33 @@ pub struct AppComment {
     r#created_at: String,
     r#updated_at: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct AutoUpdateSettings {
+    pub enabled: bool,
+    pub minimum_elasped_interval_second: i64,
+    pub last_updated: String,
+}
+
+impl Default for AutoUpdateSettings {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            minimum_elasped_interval_second: 24 * 60 * 60,
+            last_updated: String::default(),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct AppData {
+    pub auto_update: AutoUpdateSettings,
+}
+
+impl Default for AppData {
+    fn default() -> Self {
+        Self {
+            auto_update: AutoUpdateSettings::default(),
+        }
+    }
+}

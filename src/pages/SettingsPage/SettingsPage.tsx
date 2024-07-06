@@ -1,10 +1,6 @@
 import { Button, Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { FC } from "react";
-import {
-	getRepositories,
-	getRepositoryWithFullName,
-} from "~database/cached";
 
 export const SettingsPage: FC = () => {
 	// const items = useUpdateCached();
@@ -35,17 +31,13 @@ export const SettingsPage: FC = () => {
 			spacing={2}
 			padding={2}
 		>
-			<Button
-				onClick={() =>
-					invoke("update_repository_table")
-				}
-			>
+			<Button onClick={() => invoke("update_db")}>
 				Hi
 			</Button>
 			<Button
 				onClick={() =>
-					invoke("update_tables").then(() =>
-						console.log("done"),
+					invoke("should_update_db").then((res) =>
+						console.log(res),
 					)
 				}
 			>

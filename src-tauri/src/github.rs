@@ -24,84 +24,99 @@ pub async fn get_octocrab(handle: tauri::AppHandle) -> Octocrab {
 
 pub async fn get_repositories(octocrab: &Octocrab) -> Vec<Repository> {
     let mut items: Vec<Repository> = Vec::new();
-    let mut page = 1;
+    let mut page_number = 1;
     loop {
-        let respond: InstallationRepositories = octocrab
+        // https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28#list-repositories-accessible-to-the-app-installation
+        let respond: Result<InstallationRepositories, octocrab::Error> = octocrab
             .get(
-                format!("/installation/repositories?page={}", page),
+                format!("/installation/repositories?page={}", page_number),
                 None::<&()>,
             )
-            .await
-            .unwrap();
-        page += 1;
-        if respond.total_count == items.len() as i64 {
-            break;
+            .await;
+        match respond {
+            Err(_) => break,
+            Ok(result) => {
+                items.extend(result.repositories.into_iter());
+                page_number += 1;
+                if i64::try_from(items.len()).unwrap_or(result.total_count) == result.total_count {
+                    break;
+                }
+            }
         }
-        items.extend(respond.repositories.into_iter());
     }
     items
 }
 
 pub async fn get_repository_readme(octocrab: &Octocrab, repository: Repository) -> String {
+    // https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#get-a-repository-readme
     octocrab
-        .repos(
-            repository.owner.map_or(String::default(), |dt| dt.login),
-            repository.name,
+        .get(
+            format!(
+                "/repos/{}/readme",
+                repository.full_name.unwrap_or(String::from("!/!")),
+            ),
+            None::<&()>,
         )
-        .get_readme()
-        .send()
         .await
-        .map_or(String::default(), |dt| {
+        .map_or(String::default(), |dt: octocrab::models::repos::Content| {
             dt.content.unwrap_or(String::default())
         })
 }
 
-pub async fn get_issues(octocrab: &Octocrab, repository: &Repository) -> Vec<Issue> {
-    let mut items = Vec::new();
-    let mut page = 1u32;
+pub async fn get_issues(octocrab: &Octocrab, repository: Repository) -> Vec<Issue> {
+    let mut items: Vec<Issue> = Vec::new();
+    let mut page_number = 1;
     loop {
-        let resp = octocrab
-            .issues(
-                repository.owner.as_ref().unwrap().login.to_string(),
-                repository.name.to_string(),
+        // https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#list-repository-issues
+        let respond: Result<Vec<Issue>, octocrab::Error> = octocrab
+            .get(
+                format!(
+                    "/repos/{}/issues?page={}",
+                    repository.clone().full_name.unwrap_or(String::from("!/!")),
+                    page_number
+                ),
+                None::<&()>,
             )
-            .list()
-            .page(page)
-            .send()
-            .await
-            .unwrap()
-            .into_iter()
-            .collect::<Vec<Issue>>();
-        if resp.len() == 0 {
-            break;
+            .await;
+        match respond {
+            Err(_) => break,
+            Ok(result) => {
+                items.extend(result.clone());
+                page_number += 1;
+                if result.len() == 0 {
+                    break;
+                }
+            }
         }
-        page += 1;
-        items.extend(resp)
     }
     items
 }
 
-pub async fn get_comments(octocrab: &Octocrab, repository: &Repository) -> Vec<Comment> {
-    let mut items = Vec::new();
-    let mut page = 1u32;
+pub async fn get_comments(octocrab: &Octocrab, repository: Repository) -> Vec<Comment> {
+    let mut items: Vec<Comment> = Vec::new();
+    let mut page_number = 1u32;
+    // https://docs.github.com/en/rest/issues/comments?apiVersion=2022-11-28#list-issue-comments-for-a-repository
     loop {
-        let resp = octocrab
-            .issues(
-                repository.owner.as_ref().unwrap().login.to_string(),
-                repository.name.to_string(),
+        let resp: Result<Vec<Comment>, octocrab::Error> = octocrab
+            .get(
+                format!(
+                    "/repos/{}/issues/comments?page={}",
+                    repository.clone().full_name.unwrap_or(String::from("!/!")),
+                    page_number
+                ),
+                None::<&()>,
             )
-            .list_issue_comments()
-            .page(page)
-            .send()
-            .await
-            .unwrap()
-            .into_iter()
-            .collect::<Vec<Comment>>();
-        if resp.len() == 0 {
-            break;
+            .await;
+        match resp {
+            Err(_) => break,
+            Ok(result) => {
+                items.extend(result.clone());
+                page_number += 1;
+                if result.len() == 0 {
+                    break;
+                }
+            }
         }
-        page += 1;
-        items.extend(resp)
     }
     items
 }

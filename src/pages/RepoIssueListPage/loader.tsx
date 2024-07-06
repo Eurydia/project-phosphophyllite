@@ -6,7 +6,7 @@ import { sortIssues } from "~core/sorting";
 import {
 	getCachedIssues,
 	getRepositoryWithFullName,
-} from "~database/cached";
+} from "~database/index";
 import { Issue, IssueQuery } from "~types/schema";
 
 export type LoaderData = {

@@ -1,5 +1,5 @@
 import { LoaderFunction } from "react-router";
-import { getRepositoryWithFullName } from "~database/cached";
+import { getRepositoryWithFullName } from "~database/index";
 import { Repository } from "~types/schema";
 
 export type LoaderData = {
