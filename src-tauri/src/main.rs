@@ -38,6 +38,5 @@ async fn main() {
     let octocrab = crate::github::get_octocrab(app.app_handle()).await;
     app.manage(AppState { db, octocrab });
 
-    // update_tables(app.state()).await.unwrap();
     app.run(|_, _| {})
 }
