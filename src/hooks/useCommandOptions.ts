@@ -13,24 +13,27 @@ export const useCommandsOptions = () => {
 
 	const { current: commands } = useRef<
 		CommandOption[]
-	>([
-		{
-			label: "Open:path settings",
-			action: () => singalOpenSettingFile(),
-			description: null,
-		},
-		{
-			label: "Open:path secret directory",
-			action: () => signalOpenSecretDir(),
-			description: null,
-		},
-	]);
+	>([]);
 
 	useEffect(() => {
 		if (loaded.current) {
 			return;
 		}
 		loaded.current = true;
+		commands.push(
+			...[
+				{
+					label: "~settings",
+					action: () => singalOpenSettingFile(),
+					description: null,
+				},
+				{
+					label: "secrets",
+					action: () => signalOpenSecretDir(),
+					description: null,
+				},
+			],
+		);
 
 		commands.push({
 			label: "~",

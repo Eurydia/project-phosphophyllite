@@ -1,5 +1,5 @@
 import { useSnackbar } from "notistack";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useRef } from "react";
 import { RouterProvider } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
 import { ErrorElement } from "~pages/ErrorElement";
@@ -96,7 +96,13 @@ const router = createBrowserRouter([
 export const App: FC = () => {
 	const { enqueueSnackbar, closeSnackbar } =
 		useSnackbar();
+
+	const hasAutoUpdateTriggered = useRef(false);
 	useEffect(() => {
+		if (hasAutoUpdateTriggered.current) {
+			return;
+		}
+		hasAutoUpdateTriggered.current = true;
 		(async () => {
 			const shouldUpdate = await shouldUpdateDB();
 			if (!shouldUpdate) {
