@@ -28,7 +28,7 @@ export const Markdown: FC<MarkdownProps> = (
 			);
 			ref.current.innerHTML = parsedHtml;
 		})();
-	}, []);
+	}, [markdownContent]);
 
 	return (
 		<Typography

@@ -1,24 +1,28 @@
 import { invoke } from "@tauri-apps/api";
-import { Issue, Repository } from "~types/schema";
+import {
+	AppComment,
+	AppIssue,
+	AppRepository,
+} from "~types/models";
 
 export const getRepositories = async (): Promise<
-	Repository[]
+	AppRepository[]
 > => invoke("get_repositories");
 
 export const getRepositoryWithFullName = async (
 	fullName: string,
-): Promise<Repository> =>
+): Promise<AppRepository> =>
 	invoke("get_repository_with_full_name", {
 		fullName,
 	});
 
 export const getIssues = async (): Promise<
-	Issue[]
+	AppIssue[]
 > => invoke("get_issues");
 
 export const getIssuesInRepository = async (
 	repoFullName: string,
-): Promise<Issue[]> =>
+): Promise<AppIssue[]> =>
 	invoke("get_issue_in_repository", {
 		repoFullName,
 	});
@@ -26,19 +30,19 @@ export const getIssuesInRepository = async (
 export const getIssueInRepositoryWithNumber =
 	async (
 		repoFullName: string,
-		number_: number,
-	): Promise<Issue> =>
+		number: number,
+	): Promise<AppIssue> =>
 		invoke(
 			"get_issue_in_repository_with_number",
 			{
 				repoFullName,
-				number: number_,
+				number,
 			},
 		);
 
 export const getCachedComments = async (
 	issueId: number,
-): Promise<Issue> =>
+): Promise<AppComment[]> =>
 	invoke("get_comments_in_issue", {
 		issueId,
 	});

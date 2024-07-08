@@ -25,7 +25,7 @@ pub fn get_setting_path(handle: &tauri::AppHandle) -> std::path::PathBuf {
         Ok(true) => path,
         Err(_) | Ok(false) => {
             std::fs::File::create(&path).unwrap();
-            let data = crate::model::AppData::default();
+            let data = crate::models::AppData::default();
             let json_string = serde_json::to_string_pretty(&data).unwrap();
             std::fs::write(&path, json_string).unwrap();
             path

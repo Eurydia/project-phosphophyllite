@@ -1,4 +1,4 @@
-use crate::model::{AppComment, AppIssue, AppRepository};
+use crate::models::{AppComment, AppIssue, AppRepository};
 use futures::TryStreamExt;
 
 #[tauri::command]
@@ -9,6 +9,7 @@ pub async fn get_repositories(
         r#"
         SELECT * 
         FROM repositories
+        ORDER BY full_name ASC
         "#,
     )
     .fetch(&state.db)

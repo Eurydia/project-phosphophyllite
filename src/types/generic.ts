@@ -16,3 +16,9 @@ export type ColumnHeader<T> = {
 	label: string;
 	render: (item: T) => ReactNode;
 };
+
+export type CommandOption = {
+	label: string;
+	action: () => void;
+	description?: string | null;
+};

@@ -1,9 +1,9 @@
 import { LoaderFunction } from "react-router";
-import { getRepositoryWithFullName } from "~database/index";
-import { Repository } from "~types/schema";
+import { getRepositoryWithFullName } from "~database/get";
+import { AppRepository } from "~types/models";
 
 export type LoaderData = {
-	repo: Repository;
+	repository: AppRepository;
 };
 export const loader: LoaderFunction = async ({
 	params,
@@ -20,17 +20,17 @@ export const loader: LoaderFunction = async ({
 		});
 	}
 	const fullName = `${owner}/${repoName}`;
-	const repo = await getRepositoryWithFullName(
-		fullName,
-	);
-	if (repo === undefined) {
+	const repository =
+		await getRepositoryWithFullName(fullName);
+	if (repository === undefined) {
 		throw new Response("Not found", {
 			status: 404,
 			statusText: "Repository not found in cache",
 		});
 	}
-	const loaderData: LoaderData = {
-		repo,
+	console.log("Repository", fullName);
+	const data: LoaderData = {
+		repository,
 	};
-	return loaderData;
+	return data;
 };

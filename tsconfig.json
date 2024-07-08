@@ -10,6 +10,7 @@
 		"skipLibCheck": true,
 		"paths": {
 			"~signals/*": ["./signals/*"],
+			"~hooks/*": ["./hooks/*"],
 			"~components/*": ["./components/*"],
 			"~pages/*": ["./pages/*"],
 			"~layouts/*": ["./layouts/*"],

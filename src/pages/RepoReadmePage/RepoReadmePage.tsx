@@ -6,11 +6,14 @@ import { decodeBase64 } from "~core/encoding";
 import { LoaderData } from "./loader";
 
 export const RepoReadmePage: FC = () => {
-	const { repo } = useLoaderData() as LoaderData;
+	const { repository } =
+		useLoaderData() as LoaderData;
 
 	let decodedReadme: string | undefined;
-	if (repo.readme !== undefined) {
-		decodedReadme = decodeBase64(repo.readme);
+	if (repository.readme !== undefined) {
+		decodedReadme = decodeBase64(
+			repository.readme,
+		);
 	}
 
 	return (

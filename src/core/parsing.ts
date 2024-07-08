@@ -25,6 +25,6 @@ export const parseMarkdown = (
 		.use(remarkRehype)
 		.use(rehypeSanitize)
 		.use(rehypeStringify)
-		.parse(markdownString)
+		.processSync(markdownString)
 		.toString();
 };

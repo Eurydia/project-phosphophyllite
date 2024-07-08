@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
-#[serde(rename_all = "camelCase")]
 pub struct AppRepository {
     r#url: String,
     r#name: String,
@@ -20,7 +19,6 @@ pub struct AppRepository {
 }
 
 #[derive(FromRow, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct AppIssue {
     r#url: String,
     r#repository_url: String,
@@ -36,7 +34,6 @@ pub struct AppIssue {
 }
 
 #[derive(FromRow, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct AppComment {
     r#url: String,
     r#issue_url: String,

@@ -1,4 +1,7 @@
-import { ThemeProvider } from "@mui/material";
+import {
+	CssBaseline,
+	ThemeProvider,
+} from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -41,6 +44,7 @@ ReactDOM.createRoot(
 			}}
 		>
 			<ThemeProvider theme={themeComposed}>
+				<CssBaseline />
 				<App />
 			</ThemeProvider>
 		</SnackbarProvider>

@@ -5,34 +5,22 @@ import {
 	MenuItem,
 	TextField,
 } from "@mui/material";
+import { matchSorter } from "match-sorter";
 import { FC, useEffect, useState } from "react";
-import {
-	signalOpenSecretDir,
-	singalOpenSettingFile,
-} from "~signals/open";
+import { useSubmit } from "react-router-dom";
+import { useCommandsOptions } from "~hooks/useCommandOptions";
+import { CommandOption } from "~types/generic";
+
 type Command = {
 	label: string;
 	action: () => void;
 	description: string | null;
 };
 
-const COMMANDS: Command[] = [
-	{
-		label: "Open settings.json",
-		action: () => singalOpenSettingFile(),
-		description: null,
-	},
-	{
-		label: "Open secret directory",
-		action: () => signalOpenSecretDir(),
-		description: null,
-	},
-];
-
 export const CommandPalette: FC = () => {
 	const [open, setOpen] = useState(false);
-	const [value, setValue] =
-		useState<Command | null>(null);
+	const submit = useSubmit();
+	const commandsOptions = useCommandsOptions();
 
 	useEffect(() => {
 		const handler = (event: KeyboardEvent) => {
@@ -50,10 +38,20 @@ export const CommandPalette: FC = () => {
 				"keydown",
 				handler,
 			);
-	});
+	}, []);
+
+	const handleChange = async (
+		_: any,
+		newValue: NonNullable<string | CommandOption>,
+	) => {
+		const v = newValue as Command;
+		v.action();
+		setOpen(false);
+	};
+
 	return (
 		<Dialog
-			// hideBackdrop
+			hideBackdrop
 			fullWidth
 			maxWidth="md"
 			open={open}
@@ -66,39 +64,30 @@ export const CommandPalette: FC = () => {
 		>
 			<Autocomplete
 				clearOnEscape
-				autoFocus
 				freeSolo
 				fullWidth
-				openOnFocus
 				disableClearable
-				disableCloseOnSelect
 				onKeyDown={(event) => {
 					if (event.key === "Escape") {
 						setOpen(false);
 					}
 				}}
-				onChange={async (_, newValue) => {
-					setOpen(false);
-					const v = newValue as Command | null;
-					if (v) {
-						v.action();
-					}
-				}}
-				componentsProps={{
-					paper: {
-						square: true,
-						elevation: 0,
-					},
-				}}
+				filterOptions={(options, state) =>
+					matchSorter(options, state.inputValue, {
+						keys: ["label"],
+					})
+				}
+				onChange={handleChange}
 				renderInput={(props) => (
 					<TextField
 						{...props}
-						variant="filled"
+						size="small"
+						variant="outlined"
 						autoFocus
 						fullWidth
 					/>
 				)}
-				options={COMMANDS}
+				options={commandsOptions}
 				renderOption={(props, option) => (
 					<MenuItem
 						{...props}

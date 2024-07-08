@@ -170,11 +170,11 @@ pub async fn update_db(
     let mut settings = match path.try_exists() {
         Ok(true) => {
             let json_string = std::fs::read_to_string(&path).unwrap();
-            serde_json::from_str(&json_string).unwrap_or(crate::model::AppData::default())
+            serde_json::from_str(&json_string).unwrap_or(crate::models::AppData::default())
         }
         Err(_) | Ok(false) => {
             std::fs::File::create(&path).unwrap();
-            crate::model::AppData::default()
+            crate::models::AppData::default()
         }
     };
 

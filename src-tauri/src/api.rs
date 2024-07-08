@@ -6,7 +6,7 @@ pub fn should_update_db(
 ) -> bool {
     let path = crate::paths::get_setting_path(&handle);
     let json_string = std::fs::read_to_string(&path).unwrap();
-    let settings = serde_json::from_str(&json_string).unwrap_or(crate::model::AppData::default());
+    let settings = serde_json::from_str(&json_string).unwrap_or(crate::models::AppData::default());
     match settings.auto_update.enabled {
         false => false,
         true => {

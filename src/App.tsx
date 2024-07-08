@@ -1,11 +1,14 @@
-import {
-	Container,
-	Typography,
-} from "@mui/material";
 import { useSnackbar } from "notistack";
 import { FC, useEffect } from "react";
 import { RouterProvider } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
+import { ErrorElement } from "~pages/ErrorElement";
+import { HomePage } from "~pages/HomePage/HomePage";
+import { homePageLoader } from "~pages/HomePage/loader";
+import {
+	RepoReadmePage,
+	loaderRepoReadmePage,
+} from "~pages/RepoReadmePage";
 import {
 	shouldUpdateDB,
 	signalUpdateDB,
@@ -16,14 +19,17 @@ const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <HomeGroupView />,
+		errorElement: <ErrorElement />,
 		children: [
 			{
 				index: true,
-				element: (
-					<Container>
-						<Typography>Hi</Typography>
-					</Container>
-				),
+				element: <HomePage />,
+				loader: homePageLoader,
+			},
+			{
+				path: "repo/:owner/:repo",
+				element: <RepoReadmePage />,
+				loader: loaderRepoReadmePage,
 			},
 		],
 		// {

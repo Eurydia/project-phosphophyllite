@@ -5,7 +5,7 @@ use tauri::Manager;
 mod api;
 mod database;
 mod github;
-mod model;
+mod models;
 mod paths;
 mod secrets;
 
