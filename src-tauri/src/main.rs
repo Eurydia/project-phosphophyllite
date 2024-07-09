@@ -24,7 +24,7 @@ async fn main() {
             database::get::get_issues_in_repository,
             database::get::get_issue_in_repository_with_number,
             database::get::get_comments,
-            database::get::get_comments_in_issues,
+            database::get::get_comments_in_issue,
             database::update::update_db,
             paths::open_secret_path,
             paths::open_setting_path,

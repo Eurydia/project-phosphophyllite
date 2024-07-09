@@ -3,92 +3,78 @@ import {
 	Stack,
 	Typography,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
-import { FC, ReactNode, useRef } from "react";
+import { FC } from "react";
 import { normalizeDateString } from "~core/time";
-import { Issue } from "~types/schema";
-import { Markdown } from "./Markdown";
-import { PaddedPaper } from "./PaddedPaper";
-import { StyledGrid } from "./StyledGrid";
+import { AppIssue } from "~types/models";
+import { TerminalStyleList } from "./TerminalStyleList";
 
 type IssueDetailsProps = {
-	issue: Issue;
+	issue: AppIssue;
 };
 export const IssueDetails: FC<
 	IssueDetailsProps
 > = (props) => {
 	const { issue } = props;
 	const {
-		closedAt,
-		createdAt,
 		body,
-		htmlUrl,
-		id,
-		ownerType,
+		closed_at,
 		state,
 		title,
-		updatedAt,
+		updated_at,
+		created_at,
+		user_type,
 	} = issue;
 
-	const normCreated = normalizeDateString(
-		createdAt,
-		"Unknown",
-	);
-	const normClosed = normalizeDateString(
-		closedAt,
-		"Never",
-	);
-	const normUpdated =
-		normalizeDateString(updatedAt);
 	const content =
 		body ??
 		"This issue does not have a body or its body is not cached.";
 
-	const openIssue = () => {
-		invoke("open_url", { url: htmlUrl });
-	};
-	const link = (
-		<Typography
-			component="a"
-			onClick={openIssue}
-		>
-			{htmlUrl}
-		</Typography>
-	);
-	const { current: headers } = useRef([
-		"Issue ID",
-		"Title",
-		"State",
-		"Owner type",
-		"Created",
-		"Last updated",
-		"Closed",
-		"Issue URL",
-	]);
-	const { current: items } = useRef<ReactNode[]>([
-		id,
-		title,
-		state,
-		ownerType,
-		normCreated,
-		normUpdated,
-		normClosed,
-		link,
-	]);
+	const listItems: {
+		label: string;
+		value: string;
+	}[] = [
+		{
+			label: "Title",
+			value: title,
+		},
+		{
+			label: "State",
+			value: state,
+		},
+		{
+			label: "User type",
+			value: user_type,
+		},
+		{
+			label: "Created",
+			value: normalizeDateString(
+				created_at,
+				"Unknown",
+			),
+		},
+		{
+			label: "Last updated",
+			value: normalizeDateString(
+				updated_at,
+				"Unknown",
+			),
+		},
+		{
+			label: "Closed",
+			value: normalizeDateString(
+				closed_at,
+				"Never",
+			),
+		},
+	];
 
 	return (
-		<PaddedPaper
-			square
-			variant="outlined"
-		>
-			<Stack spacing={2}>
-				<StyledGrid
-					items={items}
-					headers={headers}
-				/>
-				<Divider flexItem />
-				<Markdown markdownContent={content} />
-			</Stack>
-		</PaddedPaper>
+		<Stack spacing={2}>
+			<TerminalStyleList items={listItems} />
+			<Divider flexItem />
+			<Typography whiteSpace="pre-wrap">
+				{content}
+			</Typography>
+		</Stack>
 	);
 };

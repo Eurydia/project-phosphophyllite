@@ -1,8 +1,11 @@
 fn get_secret(handle: &tauri::AppHandle, file_path: &str) -> String {
     let path = crate::paths::get_secret_path(handle);
     let file = path.join(file_path);
-    if !file.try_exists().unwrap() {
-        std::fs::File::create(&file).unwrap();
+    match file.try_exists() {
+        Ok(true) => (),
+        Err(_) | Ok(false) => {
+            std::fs::File::create(&file).unwrap();
+        }
     }
     std::fs::read_to_string(file).unwrap_or(String::default())
 }

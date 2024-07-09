@@ -11,7 +11,7 @@ export const getRepositories = async (): Promise<
 
 export const getRepositoryWithFullName = async (
 	fullName: string,
-): Promise<AppRepository> =>
+): Promise<AppRepository | null> =>
 	invoke("get_repository_with_full_name", {
 		fullName,
 	});
@@ -21,41 +21,28 @@ export const getIssues = async (): Promise<
 > => invoke("get_issues");
 
 export const getIssuesInRepository = async (
-	repoFullName: string,
+	repositoryUrl: string,
 ): Promise<AppIssue[]> =>
-	invoke("get_issue_in_repository", {
-		repoFullName,
+	invoke("get_issues_in_repository", {
+		repositoryUrl,
 	});
 
 export const getIssueInRepositoryWithNumber =
 	async (
-		repoFullName: string,
-		number: number,
-	): Promise<AppIssue> =>
+		repositoryUrl: string,
+		number: string,
+	): Promise<AppIssue | null> =>
 		invoke(
 			"get_issue_in_repository_with_number",
 			{
-				repoFullName,
+				repositoryUrl,
 				number,
 			},
 		);
 
-export const getCachedComments = async (
-	issueId: number,
+export const getCommentsInIssue = async (
+	issueUrl: string,
 ): Promise<AppComment[]> =>
 	invoke("get_comments_in_issue", {
-		issueId,
+		issueUrl,
 	});
-
-// export const getRepoOptions = async () => {
-// 	const repos = await getCachedRepos();
-// 	const repoNames = repos
-// 		.map((repo) => repo.fullName)
-// 		.sort();
-// 	const options: SelectOption<string>[] =
-// 		repoNames.map((name) => ({
-// 			label: name,
-// 			value: name,
-// 		}));
-// 	return options;
-// };

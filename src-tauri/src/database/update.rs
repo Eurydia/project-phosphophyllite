@@ -180,7 +180,7 @@ pub async fn update_db(
 
     let dt_now = chrono::Utc::now();
     settings.auto_update.last_updated = dt_now.to_rfc3339();
-    let json_string = serde_json::to_string(&settings).unwrap();
+    let json_string = serde_json::to_string_pretty(&settings).unwrap();
     std::fs::write(path, json_string).unwrap();
     Ok(())
 }

@@ -1,25 +1,26 @@
-import { useSnackbar } from "notistack";
 import { FC, useEffect, useRef } from "react";
 import { RouterProvider } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
-import { ErrorElement } from "~pages/ErrorElement";
-import { HomePage } from "~pages/HomePage/HomePage";
-import { homePageLoader } from "~pages/HomePage/loader";
+import { useUpdateDB } from "~hooks/useUpdateDB";
+import { ErrorPage } from "~pages/ErrorPage";
 import {
-	RepoReadmePage,
-	loaderRepoReadmePage,
-} from "~pages/RepoReadmePage";
+	HomePage,
+	homePageLoader,
+} from "~pages/HomePage";
+import { IssuePage } from "~pages/IssuePage";
+import { issuePageLoader } from "~pages/IssuePage/loader";
 import {
-	shouldUpdateDB,
-	signalUpdateDB,
-} from "~signals/db";
+	loaderRepositoryPage,
+	RepositoryPage,
+} from "~pages/RepositoryPage";
+import { shouldUpdateDB } from "~signals/db";
 import { HomeGroupView } from "~views/HomeGroupView";
 
 const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <HomeGroupView />,
-		errorElement: <ErrorElement />,
+		errorElement: <ErrorPage />,
 		children: [
 			{
 				index: true,
@@ -27,9 +28,19 @@ const router = createBrowserRouter([
 				loader: homePageLoader,
 			},
 			{
-				path: "repo/:owner/:repo",
-				element: <RepoReadmePage />,
-				loader: loaderRepoReadmePage,
+				path: ":ownerName/:repoName",
+				children: [
+					{
+						index: true,
+						element: <RepositoryPage />,
+						loader: loaderRepositoryPage,
+					},
+					{
+						path: ":issueNumber",
+						element: <IssuePage />,
+						loader: issuePageLoader,
+					},
+				],
 			},
 		],
 		// {
@@ -94,9 +105,7 @@ const router = createBrowserRouter([
 ]);
 
 export const App: FC = () => {
-	const { enqueueSnackbar, closeSnackbar } =
-		useSnackbar();
-
+	const updateDB = useUpdateDB();
 	const hasAutoUpdateTriggered = useRef(false);
 	useEffect(() => {
 		if (hasAutoUpdateTriggered.current) {
@@ -108,28 +117,7 @@ export const App: FC = () => {
 			if (!shouldUpdate) {
 				return;
 			}
-			const id = enqueueSnackbar(
-				"Updating database",
-				{
-					persist: true,
-					variant: "info",
-				},
-			);
-
-			await signalUpdateDB().then(
-				() =>
-					enqueueSnackbar("Update completed", {
-						variant: "success",
-					}),
-				() =>
-					enqueueSnackbar(
-						"An error occurred during update",
-						{
-							variant: "error",
-						},
-					),
-			);
-			closeSnackbar(id);
+			await updateDB();
 		})();
 	}, []);
 	return <RouterProvider router={router} />;

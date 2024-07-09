@@ -65,6 +65,7 @@ pub async fn get_issues_in_repository(
         SELECT *
         FROM issues
         WHERE repository_url = ?
+        ORDER BY number ASC
         "#,
     )
     .bind(repository_url)
@@ -79,7 +80,7 @@ pub async fn get_issues_in_repository(
 pub async fn get_issue_in_repository_with_number(
     state: tauri::State<'_, crate::AppState>,
     repository_url: String,
-    number: i64,
+    number: String,
 ) -> Result<Option<AppIssue>, String> {
     let items: Option<AppIssue> = sqlx::query_as::<_, AppIssue>(
         r#"
@@ -118,7 +119,7 @@ pub async fn get_comments(
 }
 
 #[tauri::command(rename_all = "camelCase")]
-pub async fn get_comments_in_issues(
+pub async fn get_comments_in_issue(
     state: tauri::State<'_, crate::AppState>,
     issue_url: String,
 ) -> Result<Vec<AppComment>, String> {

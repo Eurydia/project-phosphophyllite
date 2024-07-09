@@ -3,8 +3,9 @@ import {
 	ListItem,
 	ListItemText,
 } from "@mui/material";
-import { FC } from "react";
+import { FC, Fragment } from "react";
 import { useLoaderData } from "react-router";
+import { CommandPalette } from "~components/CommandPalette";
 import { HomePageLoaderData } from "./loader";
 
 export const HomePage: FC = () => {
@@ -12,15 +13,18 @@ export const HomePage: FC = () => {
 		useLoaderData() as HomePageLoaderData;
 
 	return (
-		<List>
-			{repositories.map((repository) => (
-				<ListItem key={repository.full_name}>
-					<ListItemText
-						primary={repository.full_name}
-						secondary={repository.description}
-					/>
-				</ListItem>
-			))}
-		</List>
+		<Fragment>
+			<CommandPalette localCommands={[]} />
+			<List>
+				{repositories.map((repository) => (
+					<ListItem key={repository.full_name}>
+						<ListItemText
+							primary={repository.full_name}
+							secondary={repository.description}
+						/>
+					</ListItem>
+				))}
+			</List>
+		</Fragment>
 	);
 };

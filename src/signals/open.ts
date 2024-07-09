@@ -8,4 +8,4 @@ export const singalOpenSettingFile = async () =>
 
 export const singalOpenHref = async (
 	href: string,
-) => invoke("open_link", { href });
+) => invoke("open_href", { href });

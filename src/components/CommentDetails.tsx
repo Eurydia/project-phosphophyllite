@@ -9,7 +9,7 @@ import { normalizeDateString } from "~core/time";
 import { Comment } from "~types/schema";
 import { Markdown } from "./Markdown";
 import { PaddedPaper } from "./PaddedPaper";
-import { StyledGrid } from "./StyledGrid";
+import { TerminalStyleList } from "./TerminalStyleList";
 
 type CommentDetailsProps = {
 	comment: Comment;
@@ -63,7 +63,7 @@ export const CommentDetails: FC<
 			variant="outlined"
 		>
 			<Stack spacing={2}>
-				<StyledGrid
+				<TerminalStyleList
 					items={items}
 					headers={headers}
 				/>

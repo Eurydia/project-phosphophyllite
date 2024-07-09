@@ -8,6 +8,7 @@ import ReactDOM from "react-dom/client";
 import { themeComposed } from "theme";
 import { singalOpenHref } from "~signals/open";
 import { App } from "./App";
+import "./main.css";
 
 document.addEventListener(
 	"DOMContentLoaded",

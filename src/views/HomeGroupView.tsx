@@ -6,7 +6,6 @@ import {
 import { FC, Fragment } from "react";
 import { Outlet } from "react-router";
 import { AppHeader } from "~components/AppHeader";
-import { CommandPalette } from "~components/CommandPalette";
 
 export const HomeGroupView: FC = () => {
 	return (
@@ -16,7 +15,6 @@ export const HomeGroupView: FC = () => {
 				<Divider flexItem />
 			</AppBar>
 			<Box marginTop={8}>
-				<CommandPalette />
 				<Outlet />
 			</Box>
 		</Fragment>
