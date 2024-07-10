@@ -4,5 +4,5 @@ export const shouldUpdateDB =
 	async (): Promise<boolean> =>
 		invoke("should_update_db");
 
-export const signalUpdateDB = async () =>
+export const forceUpdateDB = async () =>
 	invoke("update_db");

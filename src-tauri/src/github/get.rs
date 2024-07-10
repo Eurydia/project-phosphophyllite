@@ -1,19 +1,3 @@
-use crate::secrets::{get_app_id, get_installation_id, get_rsa_private_key};
-
-pub async fn get_octocrab(handle: tauri::AppHandle) -> octocrab::Octocrab {
-    let app_id = get_app_id(&handle).parse::<u64>().unwrap();
-    let rsa_private_key = get_rsa_private_key(&handle);
-    let installation_id = get_installation_id(&handle).parse::<u64>().unwrap();
-
-    let key = jsonwebtoken::EncodingKey::from_rsa_pem(rsa_private_key.as_bytes()).unwrap();
-
-    octocrab::Octocrab::builder()
-        .app(octocrab::models::AppId(app_id), key)
-        .build()
-        .unwrap()
-        .installation(octocrab::models::InstallationId(installation_id))
-}
-
 pub async fn get_repositories(octocrab: &octocrab::Octocrab) -> Vec<octocrab::models::Repository> {
     let mut items: Vec<octocrab::models::Repository> = Vec::new();
     let mut page_number = 1;
@@ -48,6 +32,7 @@ pub async fn get_repository_readme(
         None => return String::default(),
         Some(name) => name,
     };
+
     octocrab
         .get(format!("/repos/{}/readme", full_name), None::<&()>)
         .await

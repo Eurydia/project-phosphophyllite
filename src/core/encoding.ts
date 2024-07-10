@@ -1,12 +1,9 @@
-import { Buffer } from "buffer";
-
-export const decodeBase64 = (content: string) => {
-	if (content === "") {
-		return "";
+export const tryDecodeBase64 = (
+	content: string,
+): string | null => {
+	try {
+		return window.atob(content);
+	} catch (error) {
+		return null;
 	}
-	const decoded = Buffer.from(
-		content,
-		"base64",
-	).toString();
-	return decoded;
 };

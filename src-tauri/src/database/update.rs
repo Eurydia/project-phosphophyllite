@@ -8,8 +8,8 @@ async fn update_repository_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
     crab: &octocrab::Octocrab,
     repository: octocrab::models::Repository,
-) -> Result<(), String> {
-    let readme = crate::github::get_repository_readme(crab, repository.clone()).await;
+) {
+    let readme = crate::github::get::get_repository_readme(crab, repository.clone()).await;
 
     sqlx::query(
         r#"
@@ -51,14 +51,12 @@ async fn update_repository_table_entry(
     .execute(db)
     .await
     .unwrap();
-
-    Ok(())
 }
 
 async fn update_issue_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
     issue: octocrab::models::issues::Issue,
-) -> Result<(), String> {
+) {
     sqlx::query(
         r#"
         INSERT OR REPLACE INTO issues (
@@ -94,14 +92,12 @@ async fn update_issue_table_entry(
     .execute(db)
     .await
     .unwrap();
-
-    Ok(())
 }
 
 async fn update_comment_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
     comment: octocrab::models::issues::Comment,
-) -> Result<(), String> {
+) {
     sqlx::query(
         r#"
         INSERT OR REPLACE INTO comments (
@@ -130,8 +126,6 @@ async fn update_comment_table_entry(
     .execute(db)
     .await
     .unwrap();
-
-    Ok(())
 }
 
 #[tauri::command]
@@ -142,45 +136,28 @@ pub async fn update_db(
 ) -> Result<(), String> {
     let crab = &state.octocrab;
     let db = &state.db;
-    let repos = crate::github::get_repositories(crab).await;
+    let repos = crate::github::get::get_repositories(crab).await;
     for repo in repos.iter() {
-        update_repository_table_entry(db, crab, repo.clone())
-            .await
-            .unwrap();
+        update_repository_table_entry(db, crab, repo.clone()).await;
 
-        let issues = crate::github::get_issues(crab, repo.clone()).await;
+        let issues = crate::github::get::get_issues(crab, repo.clone()).await;
         for issue in issues.iter() {
-            update_issue_table_entry(db, issue.clone()).await.unwrap();
+            update_issue_table_entry(db, issue.clone()).await;
         }
 
-        let comments = crate::github::get_comments(crab, repo.clone()).await;
+        let comments = crate::github::get::get_comments(crab, repo.clone()).await;
         for comment in comments.iter() {
-            update_comment_table_entry(db, comment.clone())
-                .await
-                .unwrap()
+            update_comment_table_entry(db, comment.clone()).await
         }
     }
 
-    let path = handle
-        .path_resolver()
-        .app_config_dir()
-        .unwrap()
-        .join("settings.json");
-
-    let mut settings = match path.try_exists() {
-        Ok(true) => {
-            let json_string = std::fs::read_to_string(&path).unwrap();
-            serde_json::from_str(&json_string).unwrap_or(crate::models::AppData::default())
-        }
-        Err(_) | Ok(false) => {
-            std::fs::File::create(&path).unwrap();
-            crate::models::AppData::default()
-        }
-    };
-
+    let mut user_settings = crate::config::get_user_config(&handle);
     let dt_now = chrono::Utc::now();
-    settings.auto_update.last_updated = dt_now.to_rfc3339();
-    let json_string = serde_json::to_string_pretty(&settings).unwrap();
+    user_settings.auto_update.last_updated = dt_now.to_rfc3339();
+    let json_string = serde_json::to_string_pretty(&user_settings).unwrap();
+
+    let path = crate::paths::get_setting_path(&handle);
     std::fs::write(path, json_string).unwrap();
+
     Ok(())
 }

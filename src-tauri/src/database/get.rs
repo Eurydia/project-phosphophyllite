@@ -1,21 +1,47 @@
-use crate::models::{AppComment, AppIssue, AppRepository};
 use futures::TryStreamExt;
+
+use crate::config::get_user_config;
+
+#[tauri::command]
+pub fn should_update_db(
+    handle: tauri::AppHandle,
+    _: tauri::State<'_, crate::AppState>,
+    _: tauri::Window,
+) -> bool {
+    let user_config = get_user_config(&handle);
+    match user_config.auto_update.enabled {
+        false => false,
+        true => {
+            let dt_now = chrono::Utc::now();
+            let dt_last_updated =
+                match chrono::DateTime::parse_from_rfc3339(&user_config.auto_update.last_updated) {
+                    Ok(dt) => dt.with_timezone(&chrono::Utc),
+                    Err(_) => {
+                        return true;
+                    }
+                };
+            let dt_delta = dt_now - dt_last_updated;
+            dt_delta.num_seconds() > user_config.auto_update.minimum_elasped_interval_second
+        }
+    }
+}
 
 #[tauri::command]
 pub async fn get_repositories(
     state: tauri::State<'_, crate::AppState>,
-) -> Result<Vec<AppRepository>, String> {
-    let items: Vec<AppRepository> = sqlx::query_as::<_, AppRepository>(
-        r#"
+) -> Result<Vec<crate::models::AppRepository>, String> {
+    let items: Vec<crate::models::AppRepository> =
+        sqlx::query_as::<_, crate::models::AppRepository>(
+            r#"
         SELECT * 
         FROM repositories
         ORDER BY full_name ASC
         "#,
-    )
-    .fetch(&state.db)
-    .try_collect()
-    .await
-    .unwrap();
+        )
+        .fetch(&state.db)
+        .try_collect()
+        .await
+        .unwrap();
     Ok(items)
 }
 
@@ -23,26 +49,29 @@ pub async fn get_repositories(
 pub async fn get_repository_with_full_name(
     state: tauri::State<'_, crate::AppState>,
     full_name: String,
-) -> Result<Option<AppRepository>, String> {
-    let item: Option<AppRepository> = sqlx::query_as::<_, AppRepository>(
-        r#"
+) -> Result<Option<crate::models::AppRepository>, String> {
+    let item: Option<crate::models::AppRepository> =
+        sqlx::query_as::<_, crate::models::AppRepository>(
+            r#"
         SELECT *
         FROM repositories
         WHERE full_name = ?
         LIMIT 1
         "#,
-    )
-    .bind(full_name)
-    .fetch_optional(&state.db)
-    .await
-    .unwrap();
+        )
+        .bind(full_name)
+        .fetch_optional(&state.db)
+        .await
+        .unwrap();
 
     Ok(item)
 }
 
 #[tauri::command]
-pub async fn get_issues(state: tauri::State<'_, crate::AppState>) -> Result<Vec<AppIssue>, String> {
-    let items: Vec<AppIssue> = sqlx::query_as::<_, AppIssue>(
+pub async fn get_issues(
+    state: tauri::State<'_, crate::AppState>,
+) -> Result<Vec<crate::models::AppIssue>, String> {
+    let items: Vec<crate::models::AppIssue> = sqlx::query_as::<_, crate::models::AppIssue>(
         r#"
         SELECT *
         FROM issues
@@ -57,23 +86,38 @@ pub async fn get_issues(state: tauri::State<'_, crate::AppState>) -> Result<Vec<
 
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_issues_in_repository(
+    handle: tauri::AppHandle,
     state: tauri::State<'_, crate::AppState>,
+    _: tauri::Window,
     repository_url: String,
-) -> Result<Vec<AppIssue>, String> {
-    let items: Vec<AppIssue> = sqlx::query_as::<_, AppIssue>(
+) -> Result<Vec<crate::models::AppIssue>, String> {
+    let items: Vec<crate::models::AppIssue> = sqlx::query_as::<_, crate::models::AppIssue>(
         r#"
         SELECT *
         FROM issues
-        WHERE repository_url = ?
-        ORDER BY number ASC
+        WHERE 
+            repository_url = ?
+        ORDER BY number DESC
         "#,
     )
     .bind(repository_url)
     .fetch(&state.db)
     .try_collect()
     .await
-    .unwrap();
-    Ok(items)
+    .unwrap_or(Vec::new());
+
+    let user_config = get_user_config(&handle).user_config;
+    match user_config.index_bot_generated_issues {
+        true => Ok(items),
+        false => {
+            let filtered = items
+                .into_iter()
+                .filter(|item| item.user_type.ne("Bot"))
+                .collect();
+
+            Ok(filtered)
+        }
+    }
 }
 
 #[tauri::command(rename_all = "camelCase")]
@@ -81,8 +125,8 @@ pub async fn get_issue_in_repository_with_number(
     state: tauri::State<'_, crate::AppState>,
     repository_url: String,
     number: String,
-) -> Result<Option<AppIssue>, String> {
-    let items: Option<AppIssue> = sqlx::query_as::<_, AppIssue>(
+) -> Result<Option<crate::models::AppIssue>, String> {
+    let items: Option<crate::models::AppIssue> = sqlx::query_as::<_, crate::models::AppIssue>(
         r#"
         SELECT *
         FROM issues
@@ -103,8 +147,8 @@ pub async fn get_issue_in_repository_with_number(
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_comments(
     state: tauri::State<'_, crate::AppState>,
-) -> Result<Vec<AppComment>, String> {
-    let items: Vec<AppComment> = sqlx::query_as::<_, AppComment>(
+) -> Result<Vec<crate::models::AppComment>, String> {
+    let items: Vec<crate::models::AppComment> = sqlx::query_as::<_, crate::models::AppComment>(
         r#"
         SELECT *
         FROM comments
@@ -122,8 +166,8 @@ pub async fn get_comments(
 pub async fn get_comments_in_issue(
     state: tauri::State<'_, crate::AppState>,
     issue_url: String,
-) -> Result<Vec<AppComment>, String> {
-    let items: Vec<AppComment> = sqlx::query_as::<_, AppComment>(
+) -> Result<Vec<crate::models::AppComment>, String> {
+    let items: Vec<crate::models::AppComment> = sqlx::query_as::<_, crate::models::AppComment>(
         r#"
         SELECT *
         FROM comments

@@ -1,25 +1,26 @@
 import {
-	AppBar,
-	Divider,
-	Tab,
-	Tabs,
-	Toolbar,
+    AppBar,
+    Divider,
+    Tab,
+    Tabs,
+    Toolbar,
 } from "@mui/material";
 import {
-	FC,
-	Fragment,
-	useEffect,
-	useState,
+    FC,
+    Fragment,
+    useEffect,
+    useState,
 } from "react";
 import {
-	Outlet,
-	useLocation,
+    Outlet,
+    useLocation,
 } from "react-router-dom";
-import { AppHeader } from "~components/AppHeader";
 import {
-	signalOpenSecretDir,
-	singalOpenSettingFile,
-} from "~signals/open";
+    signalOpenSecretDir,
+    singalOpenSettingFile,
+} from "~api";
+import { AppHeader } from "~components/AppHeader";
+/open";
 
 export const SettingGroupView: FC = () => {
 	const { pathname: appPathname } = useLocation();

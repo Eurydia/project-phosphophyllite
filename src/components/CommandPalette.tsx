@@ -2,6 +2,8 @@ import {
 	Autocomplete,
 	Dialog,
 	FilterOptionsState,
+	ListItemText,
+	MenuItem,
 	TextField,
 } from "@mui/material";
 import { matchSorter } from "match-sorter";
@@ -71,7 +73,7 @@ export const CommandPalette: FC<
 			filteredOptions,
 			state.inputValue,
 			{
-				keys: ["label"],
+				keys: ["label", "description"],
 			},
 		);
 	};
@@ -112,9 +114,18 @@ export const CommandPalette: FC<
 						fullWidth
 					/>
 				)}
-				getOptionLabel={(option) =>
-					(option as CommandOption).label
-				}
+				renderOption={(props, option, state) => (
+					<MenuItem
+						{...props}
+						selected={state.selected}
+						key={`${option.label}-${state.index}`}
+					>
+						<ListItemText
+							primary={option.label}
+							secondary={option.description}
+						/>
+					</MenuItem>
+				)}
 			/>
 		</Dialog>
 	);

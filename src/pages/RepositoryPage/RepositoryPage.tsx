@@ -8,7 +8,7 @@ import { FC, Fragment } from "react";
 import { useLoaderData } from "react-router";
 import { CommandPalette } from "~components/CommandPalette";
 import { TerminalStyleList } from "~components/TerminalStyleList";
-import { decodeBase64 } from "~core/encoding";
+import { tryDecodeBase64 } from "~core/encoding";
 import { normalizeDateString } from "~core/time";
 import { useRepositoryCommands } from "~hooks/useRepositoryCommands";
 import { RepositoryPageLoaderData } from "./loader";
@@ -31,7 +31,7 @@ export const RepositoryPage: FC = () => {
 
 	const decodedReadme =
 		readme !== undefined
-			? decodeBase64(readme)
+			? tryDecodeBase64(readme)
 			: undefined;
 
 	const listItems: {

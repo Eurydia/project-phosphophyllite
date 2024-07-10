@@ -1,5 +1,5 @@
 import { useSnackbar } from "notistack";
-import { signalUpdateDB } from "~signals/db";
+import { forceUpdateDB } from "~api/db";
 
 export const useUpdateDB = () => {
 	const { enqueueSnackbar, closeSnackbar } =
@@ -12,7 +12,7 @@ export const useUpdateDB = () => {
 				variant: "info",
 			},
 		);
-		await signalUpdateDB().then(
+		await forceUpdateDB().then(
 			() =>
 				enqueueSnackbar("Update completed", {
 					variant: "success",

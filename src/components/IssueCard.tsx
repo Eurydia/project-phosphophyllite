@@ -7,7 +7,6 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import { useSubmit } from "react-router-dom";
-import { Issue } from "~types/schema";
 
 type IssueCardProps = {
 	issue: Issue;

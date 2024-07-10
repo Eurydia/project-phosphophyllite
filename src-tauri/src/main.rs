@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::Manager;
-mod api;
+mod config;
 mod database;
 mod github;
 mod models;
@@ -22,6 +22,7 @@ async fn main() {
             database::get::get_repository_with_full_name,
             database::get::get_issues,
             database::get::get_issues_in_repository,
+            database::get::should_update_db,
             database::get::get_issue_in_repository_with_number,
             database::get::get_comments,
             database::get::get_comments_in_issue,
@@ -29,13 +30,12 @@ async fn main() {
             paths::open_secret_path,
             paths::open_setting_path,
             paths::open_href,
-            api::should_update_db
         ])
         .build(tauri::generate_context!())
         .unwrap();
 
     let db = crate::database::setup::setup_db(&app).await;
-    let octocrab = crate::github::get_octocrab(app.app_handle()).await;
+    let octocrab = crate::github::setup::get_octocrab(app.app_handle()).await;
     app.manage(AppState { db, octocrab });
 
     app.run(|_, _| {})

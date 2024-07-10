@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useSubmit } from "react-router-dom";
-import { getRepositories } from "~database/get";
 import {
-	signalOpenSecretDir,
-	singalOpenSettingFile,
-} from "~signals/open";
+	openConfigFile,
+	openSecretDir,
+} from "~api/open";
+import { getRepositories } from "~database/get";
 import { CommandOption } from "~types/generic";
 import { useUpdateDB } from "./useUpdateDB";
 
@@ -27,13 +27,13 @@ export const useGlobalCommands = () => {
 			...[
 				{
 					label: "Reveal config file",
-					action: () => singalOpenSettingFile(),
+					action: () => openConfigFile(),
 					description: null,
 					system: true,
 				},
 				{
 					label: "Reveal credential directory",
-					action: () => signalOpenSecretDir(),
+					action: () => openSecretDir(),
 					description: null,
 					system: true,
 				},

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useSubmit } from "react-router-dom";
-import { singalOpenHref } from "~signals/open";
+import { openLink } from "~api/open";
 import { CommandOption } from "~types/generic";
 import {
 	AppIssue,
@@ -12,14 +12,12 @@ export const useRepositoryCommands = (
 	issues: AppIssue[],
 ) => {
 	const submit = useSubmit();
-	const commands = useMemo<
-		CommandOption[]
-	>(() => {
+	const commands = useMemo(() => {
 		const comms: CommandOption[] = [
 			{
 				label: "Reveal repository on GitHub",
 				action: () =>
-					singalOpenHref(repository.html_url),
+					openLink(repository.html_url),
 			},
 			{
 				label: "Mark repository as ...",
@@ -30,13 +28,13 @@ export const useRepositoryCommands = (
 				action: () => {},
 			},
 			{
-				label: "Edit readme file",
+				label: "Edit readme",
 				action: () => {},
 			},
 		];
 		for (const issue of issues) {
 			comms.push({
-				label: `Go to ${issue.title} (Issue #${issue.number})`,
+				label: `Go to ${issue.title}`,
 				action: () =>
 					submit(
 						{},
@@ -44,6 +42,7 @@ export const useRepositoryCommands = (
 							action: `/${repository.full_name}/${issue.number}`,
 						},
 					),
+				description: `Issue #${issue.number} ${issue.state}`,
 			});
 		}
 		return comms;
