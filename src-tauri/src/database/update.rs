@@ -4,7 +4,7 @@ macro_rules! unwrap_datetime {
     };
 }
 
-async fn update_repository_table_entry(
+pub async fn update_repository_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
     crab: &octocrab::Octocrab,
     repository: octocrab::models::Repository,
@@ -53,7 +53,7 @@ async fn update_repository_table_entry(
     .unwrap();
 }
 
-async fn update_issue_table_entry(
+pub async fn update_issue_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
     issue: octocrab::models::issues::Issue,
 ) {
@@ -94,7 +94,7 @@ async fn update_issue_table_entry(
     .unwrap();
 }
 
-async fn update_comment_table_entry(
+pub async fn update_comment_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
     comment: octocrab::models::issues::Comment,
 ) {
