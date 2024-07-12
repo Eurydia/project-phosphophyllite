@@ -1,7 +1,6 @@
 import { FC, useEffect, useRef } from "react";
 import { RouterProvider } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
-import { shouldUpdateDB } from "~api/db";
 import { useUpdateDB } from "~hooks/useUpdateDB";
 import { ErrorPage } from "~pages/ErrorPage";
 import {
@@ -14,6 +13,7 @@ import {
 	loaderRepositoryPage,
 	RepositoryPage,
 } from "~pages/RepositoryPage";
+import { shouldUpdateDB } from "~tauri/db/db";
 import { HomeGroupView } from "~views/HomeGroupView";
 
 const router = createBrowserRouter([

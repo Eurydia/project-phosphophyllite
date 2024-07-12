@@ -1,5 +1,5 @@
 import { LoaderFunction } from "react-router";
-import { getRepositories } from "~database/get";
+import { getRepositories } from "~tauri/db/get";
 import { AppRepository } from "~types/models";
 export type HomePageLoaderData = {
 	repositories: AppRepository[];

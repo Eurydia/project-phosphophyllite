@@ -6,7 +6,7 @@ import { SnackbarProvider } from "notistack";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { themeComposed } from "theme";
-import { openLink } from "~api/open";
+import { openLink } from "~tauri/open";
 import { App } from "./App";
 import "./main.css";
 
@@ -38,7 +38,7 @@ ReactDOM.createRoot(
 		<SnackbarProvider
 			preventDuplicate
 			maxSnack={3}
-			autoHideDuration={1250}
+			autoHideDuration={3500}
 			anchorOrigin={{
 				vertical: "bottom",
 				horizontal: "left",

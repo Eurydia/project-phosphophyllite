@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { openLink } from "~api/open";
+import { openLink } from "~tauri/open";
 import { CommandOption } from "~types/generic";
 import { AppIssue } from "~types/models";
 

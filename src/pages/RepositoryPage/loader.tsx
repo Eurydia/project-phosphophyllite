@@ -2,7 +2,7 @@ import { LoaderFunction } from "react-router";
 import {
 	getIssuesInRepository,
 	getRepositoryWithFullName,
-} from "~database/get";
+} from "~tauri/db/get";
 import {
 	AppIssue,
 	AppRepository,

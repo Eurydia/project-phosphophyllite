@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useSubmit } from "react-router-dom";
+import { getRepositories } from "~tauri/db/get";
 import {
 	openConfigFile,
 	openSecretDir,
-} from "~api/open";
-import { getRepositories } from "~database/get";
+} from "~tauri/open";
 import { CommandOption } from "~types/generic";
 import { useUpdateDB } from "./useUpdateDB";
 

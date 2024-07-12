@@ -4,7 +4,7 @@ import {
 	getIssueInRepositoryWithNumber,
 	getIssuesInRepository,
 	getRepositoryWithFullName,
-} from "~database/get";
+} from "~tauri/db/get";
 import {
 	AppComment,
 	AppIssue,

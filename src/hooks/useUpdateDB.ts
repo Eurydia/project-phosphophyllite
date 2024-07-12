@@ -1,5 +1,5 @@
 import { useSnackbar } from "notistack";
-import { forceUpdateDB } from "~api/db";
+import { forceUpdateDB } from "~tauri/db/db";
 
 export const useUpdateDB = () => {
 	const { enqueueSnackbar, closeSnackbar } =

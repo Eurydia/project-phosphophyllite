@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useSubmit } from "react-router-dom";
-import { openLink } from "~api/open";
+import { openLink } from "~tauri/open";
 import { CommandOption } from "~types/generic";
 import {
 	AppIssue,
@@ -25,10 +25,6 @@ export const useRepositoryCommands = (
 			},
 			{
 				label: "Add issue",
-				action: () => {},
-			},
-			{
-				label: "Edit readme",
 				action: () => {},
 			},
 		];

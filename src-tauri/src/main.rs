@@ -18,6 +18,7 @@ struct AppState {
 async fn main() {
     let app = tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
+            github::put::put_repository_readme,
             database::get::get_repositories,
             database::get::get_repository_with_full_name,
             database::get::get_issues,
