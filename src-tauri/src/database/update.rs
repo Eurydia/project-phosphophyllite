@@ -11,6 +11,8 @@ pub async fn update_repository_table_entry(
 ) {
     let readme = crate::github::get::get_repository_readme(crab, repository.clone()).await;
 
+    dbg!(&readme);
+
     sqlx::query(
         r#"
         INSERT OR REPLACE INTO repositories (

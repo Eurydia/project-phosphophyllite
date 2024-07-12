@@ -10,10 +10,12 @@ export const getRepositories = async (): Promise<
 > => invoke("get_repositories");
 
 export const getRepositoryWithFullName = async (
-	fullName: string,
+	ownerName: string,
+	repositoryName: string,
 ): Promise<AppRepository | null> =>
 	invoke("get_repository_with_full_name", {
-		fullName,
+		ownerName,
+		repositoryName,
 	});
 
 export const getIssues = async (): Promise<

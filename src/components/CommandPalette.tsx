@@ -86,6 +86,9 @@ export const CommandPalette: FC<
 			maxWidth="md"
 			open={open}
 			onClose={() => setOpen(false)}
+			PaperProps={{
+				elevation: 0,
+			}}
 			sx={{
 				"& .MuiDialog-container": {
 					alignItems: "flex-start",
@@ -96,6 +99,7 @@ export const CommandPalette: FC<
 				clearIcon={null}
 				popupIcon={null}
 				fullWidth
+				autoFocus
 				disableClearable
 				options={[
 					...globalCommands,
@@ -111,6 +115,7 @@ export const CommandPalette: FC<
 						size="small"
 						variant="outlined"
 						autoFocus
+						focused
 						fullWidth
 					/>
 				)}

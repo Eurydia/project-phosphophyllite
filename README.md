@@ -2,7 +2,7 @@
 
 > Too much to do, too little time.
 
-**Phosphophyllite** is a simple UI wrapper around GitHub's API, and its purpose is to an issue aggregrator.
+**Phosphophyllite** is a simple UI wrapper around GitHub's API, and its purpose is to an issue aggregator.
 
 ## Motivation
 

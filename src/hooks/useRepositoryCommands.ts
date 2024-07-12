@@ -27,6 +27,16 @@ export const useRepositoryCommands = (
 				label: "Add issue",
 				action: () => {},
 			},
+			{
+				label: "Edit readme",
+				action: () =>
+					submit(
+						{ editing: true },
+						{
+							action: `/${repository.full_name}/readme`,
+						},
+					),
+			},
 		];
 		for (const issue of issues) {
 			comms.push({

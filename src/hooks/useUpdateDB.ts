@@ -6,7 +6,7 @@ export const useUpdateDB = () => {
 		useSnackbar();
 	const updateDB = async () => {
 		const id = enqueueSnackbar(
-			"Updating database",
+			"Updating database...",
 			{
 				persist: true,
 				variant: "info",
@@ -14,12 +14,12 @@ export const useUpdateDB = () => {
 		);
 		await forceUpdateDB().then(
 			() =>
-				enqueueSnackbar("Update completed", {
+				enqueueSnackbar("Update completed!", {
 					variant: "success",
 				}),
 			(err) =>
 				enqueueSnackbar(
-					`An error occurred during update: ${String(
+					`Something went wrong during update: ${String(
 						err,
 					)}`,
 					{

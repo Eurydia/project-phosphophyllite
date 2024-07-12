@@ -10,6 +10,10 @@ import {
 import { IssuePage } from "~pages/IssuePage";
 import { issuePageLoader } from "~pages/IssuePage/loader";
 import {
+	ReadmeEditPage,
+	readmeEditPageLoader,
+} from "~pages/ReadmeEditPage";
+import {
 	loaderRepositoryPage,
 	RepositoryPage,
 } from "~pages/RepositoryPage";
@@ -34,6 +38,11 @@ const router = createBrowserRouter([
 						index: true,
 						element: <RepositoryPage />,
 						loader: loaderRepositoryPage,
+					},
+					{
+						path: "readme",
+						element: <ReadmeEditPage />,
+						loader: readmeEditPageLoader,
 					},
 					{
 						path: ":issueNumber",

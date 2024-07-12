@@ -48,7 +48,8 @@ pub async fn get_repositories(
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_repository_with_full_name(
     state: tauri::State<'_, crate::AppState>,
-    full_name: String,
+    owner_name: String,
+    repository_name: String,
 ) -> Result<Option<crate::models::AppRepository>, String> {
     let item: Option<crate::models::AppRepository> =
         sqlx::query_as::<_, crate::models::AppRepository>(
@@ -59,7 +60,7 @@ pub async fn get_repository_with_full_name(
         LIMIT 1
         "#,
         )
-        .bind(full_name)
+        .bind(format!("{}/{}", owner_name, repository_name))
         .fetch_optional(&state.db)
         .await
         .unwrap();

@@ -24,9 +24,12 @@ export const loaderRepositoryPage: LoaderFunction =
 				statusText: "Bad requeset",
 			});
 		}
-		const fullName = `${ownerName}/${repoName}`;
+
 		const repository =
-			await getRepositoryWithFullName(fullName);
+			await getRepositoryWithFullName(
+				ownerName,
+				repoName,
+			);
 
 		if (repository === null) {
 			throw new Response("", {
