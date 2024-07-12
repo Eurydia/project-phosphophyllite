@@ -10,9 +10,11 @@ pub async fn put_repository_readme(
 ) -> Result<(), String> {
     // https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents
     let octocrab = state.octocrab.repos(owner_name, repository_name);
-    let sha = octocrab.get_readme().send().await.unwrap().sha;
+    let octocrab::models::repos::Content { sha, path, .. } =
+        octocrab.get_readme().send().await.unwrap();
+
     octocrab
-        .update_file("readme.md", commit_message, content, sha)
+        .update_file(path, commit_message, content, sha)
         .send()
         .await
         .unwrap();
