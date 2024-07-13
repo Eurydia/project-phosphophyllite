@@ -1,9 +1,9 @@
 export const tryDecodeBase64 = (
 	content: string,
-): string | null => {
+): string => {
 	try {
 		return window.atob(content);
 	} catch (error) {
-		return null;
+		return "";
 	}
 };

@@ -14,7 +14,7 @@ export const ErrorPage: FC = () => {
 	};
 	return (
 		<Fragment>
-			<CommandPalette localCommands={[]} />
+			<CommandPalette commands={[]} />
 			<AppHeader />
 			<Divider flexItem />
 			<Typography variant="h1">

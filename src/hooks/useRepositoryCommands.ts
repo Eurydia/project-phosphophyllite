@@ -12,23 +12,28 @@ export const useRepositoryCommands = (
 	issues: AppIssue[],
 ) => {
 	const submit = useSubmit();
+
 	const commands = useMemo(() => {
-		const comms: CommandOption[] = [
+		const _commands: CommandOption[] = [
 			{
 				label: "Reveal repository on GitHub",
+				system: true,
 				action: () =>
 					openLink(repository.html_url),
 			},
 			{
 				label: "Mark repository as ...",
+				system: true,
 				action: () => {},
 			},
 			{
 				label: "Add issue",
+				system: true,
 				action: () => {},
 			},
 			{
 				label: "Edit readme",
+				system: true,
 				action: () =>
 					submit(
 						{ editing: true },
@@ -36,11 +41,16 @@ export const useRepositoryCommands = (
 							action: `/${repository.full_name}/readme`,
 						},
 					),
+				disabled: repository.archived,
+				description: repository.archived
+					? "Repository is archived"
+					: null,
 			},
 		];
 		for (const issue of issues) {
-			comms.push({
-				label: `Go to ${issue.title}`,
+			_commands.push({
+				label: `Issue #${issue.number} ${issue.title}`,
+				description: `~/${repository.full_name}/issue/${issue.number}`,
 				action: () =>
 					submit(
 						{},
@@ -48,10 +58,9 @@ export const useRepositoryCommands = (
 							action: `/${repository.full_name}/${issue.number}`,
 						},
 					),
-				description: `Issue #${issue.number} ${issue.state}`,
 			});
 		}
-		return comms;
+		return _commands;
 	}, [repository.url]);
 	return commands;
 };

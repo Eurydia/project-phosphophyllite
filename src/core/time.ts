@@ -2,7 +2,7 @@ import moment from "moment";
 
 export const timeSince = (
 	dateString: string | null | undefined,
-	fallback: string,
+	fallback: string = "unknown",
 ) => {
 	if (!dateString) {
 		return fallback;
@@ -17,7 +17,7 @@ export const timeSince = (
 
 export const normalizeDateString = (
 	dateString: string | undefined | null,
-	fallback: string = "-",
+	fallback: string = "unknown",
 ) => {
 	if (
 		dateString === undefined ||
@@ -31,3 +31,10 @@ export const normalizeDateString = (
 		"MMMM Do, YYYY",
 	);
 };
+
+export const normalizeDateStringWithTimestamp = (
+	dateString: string | undefined | null,
+) =>
+	`${normalizeDateString(
+		dateString,
+	)} (${timeSince(dateString)})`;

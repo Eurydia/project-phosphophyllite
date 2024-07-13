@@ -8,7 +8,7 @@ pub async fn update_repository_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
     crab: &octocrab::Octocrab,
     repository: octocrab::models::Repository,
-) {
+) -> Option<(), String> {
     let readme = crate::github::get::get_repository_readme(crab, repository.clone()).await;
 
     sqlx::query(
@@ -49,8 +49,7 @@ pub async fn update_repository_table_entry(
     .bind(repository.description.unwrap_or(String::default()))
     .bind(readme)
     .execute(db)
-    .await
-    .unwrap();
+    .await?
 }
 
 pub async fn update_issue_table_entry(
@@ -137,7 +136,7 @@ pub async fn update_db(
     let crab = &state.octocrab;
     let db = &state.db;
     let repos = crate::github::get::get_repositories(crab).await;
-    for repo in repos.iter() {
+    for repo in repos {
         update_repository_table_entry(db, crab, repo.clone()).await;
 
         let issues = crate::github::get::get_issues(crab, repo.clone()).await;
@@ -152,12 +151,16 @@ pub async fn update_db(
     }
 
     let mut user_settings = crate::config::get_user_config(&handle);
-    let dt_now = chrono::Utc::now();
-    user_settings.auto_update.last_updated = dt_now.to_rfc3339();
-    let json_string = serde_json::to_string_pretty(&user_settings).unwrap();
+    user_settings.auto_update.last_updated = chrono::Utc::now().to_rfc3339();
+
+    let json_string = match serde_json::to_string_pretty(&user_settings) {
+        Ok(s) => s,
+        Err(e) => return Err(e.to_string()),
+    };
 
     let path = crate::paths::get_setting_path(&handle);
-    std::fs::write(path, json_string).unwrap();
-
-    Ok(())
+    match std::fs::write(path, json_string) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e.to_string()),
+    }
 }

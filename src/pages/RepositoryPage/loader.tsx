@@ -1,6 +1,7 @@
 import { LoaderFunction } from "react-router";
 import {
 	getIssuesInRepository,
+	getRepositories,
 	getRepositoryWithFullName,
 } from "~tauri/db/get";
 import {
@@ -11,6 +12,7 @@ import {
 export type RepositoryPageLoaderData = {
 	repository: AppRepository;
 	issues: AppIssue[];
+	repositories: AppRepository[];
 };
 export const loaderRepositoryPage: LoaderFunction =
 	async ({ params }) => {
@@ -40,10 +42,12 @@ export const loaderRepositoryPage: LoaderFunction =
 		const issues = await getIssuesInRepository(
 			repository.url,
 		);
+		const repositories = await getRepositories();
 
 		const data: RepositoryPageLoaderData = {
 			repository,
 			issues,
+			repositories,
 		};
 		return data;
 	};

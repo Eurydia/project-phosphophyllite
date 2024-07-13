@@ -4,17 +4,19 @@ import {
 	Stack,
 	Typography,
 } from "@mui/material";
-import { FC, Fragment } from "react";
+import { FC } from "react";
 import { useLoaderData } from "react-router";
 import { CommandPalette } from "~components/CommandPalette";
 import { TerminalStyleList } from "~components/TerminalStyleList";
 import { tryDecodeBase64 } from "~core/encoding";
-import { normalizeDateString } from "~core/time";
+import { normalizeDateStringWithTimestamp } from "~core/time";
+import { useNavigationalCommands } from "~hooks/useNavigationalCommands";
 import { useRepositoryCommands } from "~hooks/useRepositoryCommands";
+import { useSystemCommands } from "~hooks/useSystemCommands";
 import { RepositoryPageLoaderData } from "./loader";
 
 export const RepositoryPage: FC = () => {
-	const { repository, issues } =
+	const { repository, issues, repositories } =
 		useLoaderData() as RepositoryPageLoaderData;
 
 	const {
@@ -27,18 +29,35 @@ export const RepositoryPage: FC = () => {
 		readme,
 	} = repository;
 
+	const systemCommands = useSystemCommands();
+	const navigationalCommands =
+		useNavigationalCommands(repositories);
 	const repositoryCommands =
 		useRepositoryCommands(repository, issues);
 
+	const commands = [
+		...systemCommands,
+		...navigationalCommands,
+		...repositoryCommands,
+	];
+
 	const decodedReadme =
 		readme !== undefined
-			? tryDecodeBase64(readme) ?? ""
+			? tryDecodeBase64(readme)
 			: "";
 
 	const listItems: {
 		label: string;
 		value: string;
 	}[] = [
+		{
+			label: "Owner",
+			value: repository.owner_login,
+		},
+		{
+			label: "Name",
+			value: repository.name,
+		},
 		{
 			label: "Description",
 			value: description,
@@ -53,23 +72,39 @@ export const RepositoryPage: FC = () => {
 		},
 		{
 			label: "Created",
-			value: normalizeDateString(created_at),
+			value:
+				normalizeDateStringWithTimestamp(
+					created_at,
+				),
 		},
 		{
 			label: "Last updated",
-			value: normalizeDateString(updated_at),
+			value:
+				normalizeDateStringWithTimestamp(
+					updated_at,
+				),
 		},
 		{
 			label: "Last pushed",
-			value: normalizeDateString(pushed_at),
+			value:
+				normalizeDateStringWithTimestamp(
+					pushed_at,
+				),
 		},
 	];
 
+	const issueItems = issues.map(
+		({ number, title, state }) => {
+			return {
+				label: `#${number}`,
+				value: `${title} (${state})`,
+			};
+		},
+	);
+
 	return (
-		<Container maxWidth="sm">
-			<CommandPalette
-				localCommands={repositoryCommands}
-			/>
+		<Container maxWidth="md">
+			<CommandPalette commands={commands} />
 			<Stack
 				spacing={2}
 				divider={<Divider />}
@@ -78,19 +113,7 @@ export const RepositoryPage: FC = () => {
 				<Typography whiteSpace="pre-wrap">
 					{decodedReadme}
 				</Typography>
-				<Fragment>
-					{issues.map(
-						({ number, title, state }) => (
-							<Fragment
-								key={`#${number} ${title}`}
-							>
-								<Typography>
-									#{number} ({state}) {title}
-								</Typography>
-							</Fragment>
-						),
-					)}
-				</Fragment>
+				<TerminalStyleList items={issueItems} />
 			</Stack>
 		</Container>
 	);

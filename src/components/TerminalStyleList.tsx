@@ -11,6 +11,15 @@ export const TerminalStyleList: FC<
 	TerminalStyleListProps
 > = (props) => {
 	const { items } = props;
+
+	if (items.length === 0) {
+		return (
+			<Typography>
+				Nothing item to display
+			</Typography>
+		);
+	}
+
 	const renderedRows = items.map(
 		({ label, value }, index) => {
 			return (

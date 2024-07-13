@@ -1,7 +1,13 @@
-import { createTheme } from "@mui/material";
+import {
+	createTheme,
+	responsiveFontSizes,
+} from "@mui/material";
 
-export const themeTypography = createTheme({
+const theme = createTheme({
 	typography: {
 		fontFamily: "monospace",
+		fontSize: 18,
 	},
 });
+export const themeTypography =
+	responsiveFontSizes(theme);

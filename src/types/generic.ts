@@ -22,4 +22,5 @@ export type CommandOption = {
 	action: () => void;
 	description?: string | null;
 	system?: boolean;
+	disabled?: boolean;
 };

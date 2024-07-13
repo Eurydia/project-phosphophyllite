@@ -1,14 +1,14 @@
-import {
-	Button,
-	Container,
-	TextField,
-} from "@mui/material";
+import ReactCodeMirror, {
+	EditorView,
+} from "@uiw/react-codemirror";
 import { useSnackbar } from "notistack";
-import { FC, useState } from "react";
+import { FC, Fragment, useState } from "react";
 import { useLoaderData } from "react-router";
 import { useSubmit } from "react-router-dom";
 import { CommandPalette } from "~components/CommandPalette";
 import { tryDecodeBase64 } from "~core/encoding";
+import { useEditorTheme } from "~hooks/useEditorTheme";
+import { useSystemCommands } from "~hooks/useSystemCommands";
 import { putRepositoryReadme } from "~tauri/db/put";
 import { ReadmeEditPageLoaderData } from "./loader";
 
@@ -20,14 +20,16 @@ export const ReadmeEditPage: FC = () => {
 	const { closeSnackbar, enqueueSnackbar } =
 		useSnackbar();
 	const submit = useSubmit();
+	const editorTheme = useEditorTheme();
 
-	const [content, setContent] = useState(() => {
-		if (readme === undefined) {
-			return "";
-		}
-		return tryDecodeBase64(readme) ?? "";
-	});
-	const handleSubmit = () => {
+	const [content, setContent] = useState(
+		readme === undefined
+			? ""
+			: tryDecodeBase64(readme),
+	);
+
+	const systemCommands = useSystemCommands();
+	const handleSubmit = async () => {
 		const id = enqueueSnackbar(
 			"Committing changes...",
 			{
@@ -35,27 +37,24 @@ export const ReadmeEditPage: FC = () => {
 				variant: "info",
 			},
 		);
-		putRepositoryReadme(
+		await putRepositoryReadme(
 			owner_login,
 			name,
 			content,
-		)
-			.then(
-				() =>
-					enqueueSnackbar("Commit success", {
-						variant: "success",
-					}),
-				(err: any) => {
-					enqueueSnackbar(
-						`Commit failed: ${String(err)}`,
-						{ variant: "error" },
-					);
-				},
-			)
-			.finally(() => {
-				closeSnackbar(id);
-				handleReturn();
-			});
+		).then(
+			() =>
+				enqueueSnackbar("Commit success", {
+					variant: "success",
+				}),
+			(err: any) => {
+				enqueueSnackbar(
+					`Commit failed: ${String(err)}`,
+					{ variant: "error" },
+				);
+			},
+		);
+		closeSnackbar(id);
+		handleReturn();
 	};
 	const handleReturn = () => {
 		submit(
@@ -66,36 +65,29 @@ export const ReadmeEditPage: FC = () => {
 			},
 		);
 	};
-
-	const handleContentChange = (
-		e: React.ChangeEvent<HTMLInputElement>,
-	) => {
-		setContent(e.target.value);
-	};
+	const commands = [
+		...systemCommands,
+		{
+			label: "Commit changes",
+			action: handleSubmit,
+		},
+		{
+			label: "Cancel",
+			action: handleReturn,
+		},
+	];
 
 	return (
-		<Container maxWidth="md">
-			<CommandPalette localCommands={[]} />
-			<TextField
-				multiline
-				fullWidth
+		<Fragment>
+			<ReactCodeMirror
+				height="90vh"
+				theme={editorTheme}
 				value={content}
-				onChange={handleContentChange}
+				lang="markdown"
+				onChange={setContent}
+				extensions={[EditorView.lineWrapping]}
 			/>
-			<Button
-				variant="contained"
-				disableElevation
-				onClick={handleSubmit}
-			>
-				Submit
-			</Button>
-			<Button
-				variant="outlined"
-				disableElevation
-				onClick={handleReturn}
-			>
-				Cancel
-			</Button>
-		</Container>
+			<CommandPalette commands={commands} />
+		</Fragment>
 	);
 };

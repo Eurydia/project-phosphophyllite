@@ -82,7 +82,7 @@ export const IssuePage: FC = () => {
 	return (
 		<Container maxWidth="sm">
 			<CommandPalette
-				localCommands={[
+				commands={[
 					...repositoryCommands,
 					...issueCommands,
 				]}

@@ -87,7 +87,7 @@ pub async fn get_issues(
 
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_issues_in_repository(
-    handle: tauri::AppHandle,
+    _: tauri::AppHandle,
     state: tauri::State<'_, crate::AppState>,
     _: tauri::Window,
     repository_url: String,
@@ -98,7 +98,7 @@ pub async fn get_issues_in_repository(
         FROM issues
         WHERE 
             repository_url = ?
-        ORDER BY number DESC
+        ORDER BY number ASC
         "#,
     )
     .bind(repository_url)
@@ -107,18 +107,7 @@ pub async fn get_issues_in_repository(
     .await
     .unwrap_or(Vec::new());
 
-    let user_config = get_user_config(&handle).user_config;
-    match user_config.index_bot_generated_issues {
-        true => Ok(items),
-        false => {
-            let filtered = items
-                .into_iter()
-                .filter(|item| item.user_type.ne("Bot"))
-                .collect();
-
-            Ok(filtered)
-        }
-    }
+    Ok(items)
 }
 
 #[tauri::command(rename_all = "camelCase")]
