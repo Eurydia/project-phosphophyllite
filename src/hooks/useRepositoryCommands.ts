@@ -46,6 +46,21 @@ export const useRepositoryCommands = (
 					? "Repository is archived"
 					: null,
 			},
+			{
+				label: "Edit description",
+				system: true,
+				action: () =>
+					submit(
+						{ editing: true },
+						{
+							action: `/${repository.full_name}/description`,
+						},
+					),
+				disabled: repository.archived,
+				description: repository.archived
+					? "Repository is archived"
+					: null,
+			},
 		];
 		for (const issue of issues) {
 			_commands.push({

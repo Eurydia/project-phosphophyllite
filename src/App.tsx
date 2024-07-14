@@ -2,6 +2,8 @@ import { FC, useEffect, useRef } from "react";
 import { RouterProvider } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
 import { useUpdateDB } from "~hooks/useUpdateDB";
+import { DescriptionEditPage } from "~pages/DescriptionEditPage/DescriptionEditPage";
+import { descriptionEditPageLoader } from "~pages/DescriptionEditPage/loader";
 import { ErrorPage } from "~pages/ErrorPage";
 import {
 	HomePage,
@@ -43,6 +45,11 @@ const router = createBrowserRouter([
 						path: "readme",
 						element: <ReadmeEditPage />,
 						loader: readmeEditPageLoader,
+					},
+					{
+						path: "description",
+						element: <DescriptionEditPage />,
+						loader: descriptionEditPageLoader,
 					},
 					{
 						path: ":issueNumber",

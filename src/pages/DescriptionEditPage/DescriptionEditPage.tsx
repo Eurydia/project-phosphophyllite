@@ -6,27 +6,23 @@ import { FC, Fragment, useState } from "react";
 import { useLoaderData } from "react-router";
 import { useSubmit } from "react-router-dom";
 import { CommandPalette } from "~components/CommandPalette";
-import { tryDecodeBase64 } from "~core/encoding";
 import { useEditorTheme } from "~hooks/useEditorTheme";
 import { useSystemCommands } from "~hooks/useSystemCommands";
-import { putRepositoryReadme } from "~tauri/db/put";
-import { ReadmeEditPageLoaderData } from "./loader";
+import { patchRepositoryDescription } from "~tauri/db/patch";
+import { DescriptionEditPageLoaderData } from "./loader";
 
-export const ReadmeEditPage: FC = () => {
+export const DescriptionEditPage: FC = () => {
 	const { repository } =
-		useLoaderData() as ReadmeEditPageLoaderData;
-	const { readme, name, owner_login } =
+		useLoaderData() as DescriptionEditPageLoaderData;
+	const { description, name, owner_login } =
 		repository;
 	const { closeSnackbar, enqueueSnackbar } =
 		useSnackbar();
 	const submit = useSubmit();
 	const editorTheme = useEditorTheme();
 
-	const [content, setContent] = useState(
-		readme === undefined
-			? ""
-			: tryDecodeBase64(readme),
-	);
+	const [content, setContent] =
+		useState(description);
 
 	const systemCommands = useSystemCommands();
 	const handleSubmit = async () => {
@@ -37,7 +33,7 @@ export const ReadmeEditPage: FC = () => {
 				variant: "info",
 			},
 		);
-		await putRepositoryReadme(
+		await patchRepositoryDescription(
 			owner_login,
 			name,
 			content,
