@@ -1,8 +1,14 @@
 import ReactCodeMirror, {
 	EditorView,
+	ReactCodeMirrorRef,
 } from "@uiw/react-codemirror";
 import { useSnackbar } from "notistack";
-import { FC, Fragment, useState } from "react";
+import {
+	FC,
+	Fragment,
+	useRef,
+	useState,
+} from "react";
 import { useLoaderData } from "react-router";
 import { useSubmit } from "react-router-dom";
 import { CommandPalette } from "~components/CommandPalette";
@@ -20,11 +26,10 @@ export const DescriptionEditPage: FC = () => {
 		useSnackbar();
 	const submit = useSubmit();
 	const editorTheme = useEditorTheme();
-
+	const editor = useRef<ReactCodeMirrorRef>(null);
 	const [content, setContent] =
 		useState(description);
 
-	const systemCommands = useSystemCommands();
 	const handleSubmit = async () => {
 		const id = enqueueSnackbar(
 			"Committing changes...",
@@ -52,6 +57,12 @@ export const DescriptionEditPage: FC = () => {
 		handleReturn();
 	};
 	const handleReturn = () => {
+		if (
+			editor.current !== null &&
+			editor.current.view !== undefined
+		) {
+			editor.current.view.destroy();
+		}
 		submit(
 			{},
 			{
@@ -60,6 +71,8 @@ export const DescriptionEditPage: FC = () => {
 			},
 		);
 	};
+
+	const systemCommands = useSystemCommands();
 	const commands = [
 		...systemCommands,
 		{
@@ -75,6 +88,7 @@ export const DescriptionEditPage: FC = () => {
 	return (
 		<Fragment>
 			<ReactCodeMirror
+				ref={editor}
 				height="90vh"
 				theme={editorTheme}
 				value={content}

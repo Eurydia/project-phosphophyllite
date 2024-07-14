@@ -21,6 +21,12 @@ export const CommandPalette: FC<
 	const [open, setOpen] = useState(false);
 
 	useEffect(() => {
+		const handleOpen = (event: KeyboardEvent) => {
+			if (event.ctrlKey && event.key === "p") {
+				event.preventDefault();
+				setOpen(true);
+			}
+		};
 		document.addEventListener(
 			"keydown",
 			handleOpen,
@@ -31,13 +37,6 @@ export const CommandPalette: FC<
 				handleOpen,
 			);
 	}, []);
-
-	const handleOpen = (event: KeyboardEvent) => {
-		if (event.ctrlKey && event.key === "p") {
-			event.preventDefault();
-			setOpen(true);
-		}
-	};
 
 	const handleChange = async (
 		_: any,
@@ -111,8 +110,10 @@ export const CommandPalette: FC<
 					renderInput={(props) => (
 						<TextField
 							{...props}
+							inputRef={(ref) =>
+								ref && ref.focus()
+							}
 							fullWidth
-							autoFocus
 							size="small"
 							variant="outlined"
 						/>
