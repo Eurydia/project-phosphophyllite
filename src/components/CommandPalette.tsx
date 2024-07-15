@@ -97,6 +97,7 @@ export const CommandPalette: FC<
 				<Autocomplete
 					fullWidth
 					disableClearable
+					autoComplete
 					clearIcon={null}
 					popupIcon={null}
 					options={commands}
@@ -110,6 +111,7 @@ export const CommandPalette: FC<
 					renderInput={(props) => (
 						<TextField
 							{...props}
+							autoComplete="on"
 							inputRef={(ref) =>
 								ref && ref.focus()
 							}

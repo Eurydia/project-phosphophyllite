@@ -105,16 +105,18 @@ export const RepositoryPage: FC = () => {
 	return (
 		<Container maxWidth="md">
 			<CommandPalette commands={commands} />
-			<Stack
-				spacing={2}
-				divider={<Divider />}
-			>
-				<TerminalStyleList items={listItems} />
-				<Typography whiteSpace="pre-wrap">
-					{decodedReadme}
-				</Typography>
-				<TerminalStyleList items={issueItems} />
-			</Stack>
+			<code>
+				<Stack
+					spacing={2}
+					divider={<Divider />}
+				>
+					<TerminalStyleList items={listItems} />
+					<Typography whiteSpace="pre-wrap">
+						{decodedReadme}
+					</Typography>
+					<TerminalStyleList items={issueItems} />
+				</Stack>
+			</code>
 		</Container>
 	);
 };

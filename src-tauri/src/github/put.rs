@@ -1,4 +1,5 @@
 #[tauri::command]
+#[allow(dead_code)]
 pub async fn put_repository_readme(
     _: tauri::AppHandle,
     state: tauri::State<'_, crate::AppState>,

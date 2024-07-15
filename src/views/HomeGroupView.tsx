@@ -1,15 +1,22 @@
-import { Box } from "@mui/material";
-import { FC } from "react";
+import {
+	AppBar,
+	Box,
+	Divider,
+} from "@mui/material";
+import { FC, Fragment } from "react";
 import { Outlet } from "react-router";
+import { AppHeader } from "~components/AppHeader";
 
 export const HomeGroupView: FC = () => {
 	return (
-		<Box paddingY={2}>
-			<Outlet />
-			{/* <AppBar elevation={0}>
-			// 	<AppHeader />
-			// 	<Divider flexItem />
-			// </AppBar> */}
-		</Box>
+		<Fragment>
+			<AppBar elevation={0}>
+				<AppHeader />
+				<Divider flexItem />
+			</AppBar>
+			<Box paddingTop={8}>
+				<Outlet />
+			</Box>
+		</Fragment>
 	);
 };

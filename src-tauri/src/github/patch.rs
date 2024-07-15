@@ -1,4 +1,5 @@
 #[tauri::command]
+#[allow(dead_code)]
 pub async fn patch_repository_description(
     _: tauri::AppHandle,
     state: tauri::State<'_, crate::AppState>,

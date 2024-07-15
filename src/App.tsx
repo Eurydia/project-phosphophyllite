@@ -2,8 +2,6 @@ import { FC, useEffect, useRef } from "react";
 import { RouterProvider } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
 import { useUpdateDB } from "~hooks/useUpdateDB";
-import { DescriptionEditPage } from "~pages/DescriptionEditPage/DescriptionEditPage";
-import { descriptionEditPageLoader } from "~pages/DescriptionEditPage/loader";
 import { ErrorPage } from "~pages/ErrorPage";
 import {
 	HomePage,
@@ -11,10 +9,6 @@ import {
 } from "~pages/HomePage";
 import { IssuePage } from "~pages/IssuePage";
 import { issuePageLoader } from "~pages/IssuePage/loader";
-import {
-	ReadmeEditPage,
-	readmeEditPageLoader,
-} from "~pages/ReadmeEditPage";
 import {
 	loaderRepositoryPage,
 	RepositoryPage,
@@ -42,16 +36,6 @@ const router = createBrowserRouter([
 						loader: loaderRepositoryPage,
 					},
 					{
-						path: "readme",
-						element: <ReadmeEditPage />,
-						loader: readmeEditPageLoader,
-					},
-					{
-						path: "description",
-						element: <DescriptionEditPage />,
-						loader: descriptionEditPageLoader,
-					},
-					{
 						path: ":issueNumber",
 						element: <IssuePage />,
 						loader: issuePageLoader,
@@ -59,64 +43,6 @@ const router = createBrowserRouter([
 				],
 			},
 		],
-		// {
-		// 	path: "Repositories",
-		// 	element: <RepoListPage />,
-		// 	loader: repoListLoader,
-		// },
-		// 		{
-		// 			path: "Repositories/:owner",
-		// 			loader: async ({ params }) =>
-		// 				redirect(
-		// 					`/Repositories?fullName=${params.owner}`,
-		// 					301,
-		// 				),
-		// 		},
-		// 		{
-		// 			path: "Issues",
-		// 			element: <IssueListPage />,
-		// 			loader: issueListLoader,
-		// 		},
-		// 	],
-		// },
-		// {
-		// 	path: "Repositories/:owner/:repo",
-		// 	element: <RepoGroupView />,
-		// 	errorElement: <ErrorElement />,
-		// 	children: [
-		// 		{
-		// 			index: true,
-		// 			element: <RepoReadmePage />,
-		// 			loader: loaderRepoReadmePage,
-		// 		},
-		// 		{
-		// 			path: "Metadata",
-		// 			element: <RepoMetadataPage />,
-		// 			loader: loaderRepoMetadataPage,
-		// 		},
-		// 		{
-		// 			path: "Issues",
-		// 			element: <RepoIssueListPage />,
-		// 			loader: loaderRepoIssueListPage,
-		// 		},
-		// 		{
-		// 			path: "Issues/:issueNumber",
-		// 			element: <IssueDetailsPage />,
-		// 			loader: loaderIssueDetailsPage,
-		// 		},
-		// 	],
-		// },
-		// {
-		// 	path: "/Settings",
-		// 	element: <SettingGroupView />,
-		// 	errorElement: <ErrorElement />,
-		// 	children: [
-		// 		{
-		// 			index: true,
-		// 			element: <SettingsPage />,
-		// 			loader: loaderSettingsPage,
-		// 		},
-		// 	],
 	},
 ]);
 

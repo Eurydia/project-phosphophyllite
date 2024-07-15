@@ -8,5 +8,5 @@ export const patchRepositoryDescription = async (
 	invoke("patch_repository_description", {
 		ownerName,
 		repositoryName,
-		// description,
+		description,
 	});
