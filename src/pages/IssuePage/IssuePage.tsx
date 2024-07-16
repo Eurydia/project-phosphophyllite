@@ -8,7 +8,7 @@ import { FC } from "react";
 import { useLoaderData } from "react-router";
 import { CommandPalette } from "~components/CommandPalette";
 import { TerminalStyleList } from "~components/TerminalStyleList";
-import { normalizeDateString } from "~core/time";
+import { formatTimestamp } from "~core/format";
 import { useIssueCommands } from "~hooks/useIssueCommands";
 import { useRepositoryCommands } from "~hooks/useRepositoryCommands";
 import { IssuePageLoaderData } from "./loader";
@@ -58,24 +58,15 @@ export const IssuePage: FC = () => {
 		},
 		{
 			label: "Created",
-			value: normalizeDateString(
-				created_at,
-				"Unknown",
-			),
+			value: formatTimestamp(created_at),
 		},
 		{
 			label: "Last updated",
-			value: normalizeDateString(
-				updated_at,
-				"Unknown",
-			),
+			value: formatTimestamp(updated_at),
 		},
 		{
 			label: "Closed",
-			value: normalizeDateString(
-				closed_at,
-				"Never",
-			),
+			value: formatTimestamp(closed_at),
 		},
 	];
 
@@ -117,16 +108,12 @@ export const IssuePage: FC = () => {
 									{
 										label: "Created",
 										value:
-											normalizeDateString(
-												created_at,
-											),
+											formatTimestamp(created_at),
 									},
 									{
 										label: "Last updated",
 										value:
-											normalizeDateString(
-												updated_at,
-											),
+											formatTimestamp(updated_at),
 									},
 								]}
 							/>

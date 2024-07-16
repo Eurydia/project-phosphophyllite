@@ -1,3 +1,5 @@
 body {
 	scrollbar-gutter: stable both-edges;
+	font-variant-ligatures: contextual;
+	font-feature-settings: "calt";
 }

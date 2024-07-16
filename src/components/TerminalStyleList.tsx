@@ -1,10 +1,10 @@
-import { Grid, Typography } from "@mui/material";
-import { FC, Fragment } from "react";
+import { Stack, Typography } from "@mui/material";
+import { FC, ReactNode } from "react";
 
 type TerminalStyleListProps = {
 	items: {
 		label: string;
-		value: string;
+		value: ReactNode;
 	}[];
 };
 export const TerminalStyleList: FC<
@@ -20,31 +20,26 @@ export const TerminalStyleList: FC<
 		);
 	}
 
+	const longestLabelLength = Math.max(
+		...items.map(({ label }) => label.length),
+	);
+
 	const renderedRows = items.map(
 		({ label, value }, index) => {
+			const paddedLabel = label.padEnd(
+				longestLabelLength + 3,
+				".",
+			);
 			return (
-				<Fragment key={`row-${index}`}>
-					<Grid
-						item
-						xs={3}
-					>
-						<Typography>{label}</Typography>
-					</Grid>
-					<Grid
-						item
-						xs={1}
-					>
-						<Typography>:</Typography>
-					</Grid>
-					<Grid
-						item
-						xs={8}
-					>
-						<Typography>{value}</Typography>
-					</Grid>
-				</Fragment>
+				<Stack
+					key={`${label}-${index}`}
+					direction="row"
+				>
+					<Typography>{paddedLabel}</Typography>
+					<Typography>{value}</Typography>
+				</Stack>
 			);
 		},
 	);
-	return <Grid container>{renderedRows}</Grid>;
+	return <Stack>{renderedRows}</Stack>;
 };

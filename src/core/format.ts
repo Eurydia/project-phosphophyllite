@@ -1,6 +1,7 @@
 import moment from "moment";
+import { AppIssue } from "~types/models";
 
-export const timeSince = (
+export const formatTimeSince = (
 	dateString: string | null | undefined,
 	fallback: string = "unknown",
 ) => {
@@ -15,7 +16,7 @@ export const timeSince = (
 	}
 };
 
-export const normalizeDateString = (
+export const formatDateString = (
 	dateString: string | undefined | null,
 	fallback: string = "unknown",
 ) => {
@@ -32,9 +33,22 @@ export const normalizeDateString = (
 	);
 };
 
-export const normalizeDateStringWithTimestamp = (
+export const formatTimestamp = (
 	dateString: string | undefined | null,
 ) =>
-	`${normalizeDateString(
+	`${formatDateString(
 		dateString,
-	)} (${timeSince(dateString)})`;
+	)} (${formatTimeSince(dateString)})`;
+
+export const formatAppIssueToListItem = (
+	issue: AppIssue,
+): { label: string; value: string } => {
+	const { number, title, user_type } = issue;
+
+	const automatedTag =
+		user_type === "Bot" ? "[Automated]" : "";
+	return {
+		label: `#${number}`,
+		value: `${title} ${automatedTag}`,
+	};
+};

@@ -5,7 +5,7 @@ import {
 
 const theme = createTheme({
 	typography: {
-		fontFamily: "monospace",
+		fontFamily: "'Fira code', monospace",
 		fontSize: 18,
 	},
 });

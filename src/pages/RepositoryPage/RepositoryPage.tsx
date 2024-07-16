@@ -4,12 +4,15 @@ import {
 	Stack,
 	Typography,
 } from "@mui/material";
-import { FC } from "react";
+import { FC, Fragment } from "react";
 import { useLoaderData } from "react-router";
 import { CommandPalette } from "~components/CommandPalette";
 import { TerminalStyleList } from "~components/TerminalStyleList";
 import { tryDecodeBase64 } from "~core/encoding";
-import { normalizeDateStringWithTimestamp } from "~core/time";
+import {
+	formatAppIssueToListItem,
+	formatTimestamp,
+} from "~core/format";
 import { useNavigationalCommands } from "~hooks/useNavigationalCommands";
 import { useRepositoryCommands } from "~hooks/useRepositoryCommands";
 import { useSystemCommands } from "~hooks/useSystemCommands";
@@ -46,6 +49,14 @@ export const RepositoryPage: FC = () => {
 			? tryDecodeBase64(readme)
 			: "";
 
+	const openIssueItems = issues
+		.filter((issue) => issue.state === "open")
+		.map(formatAppIssueToListItem);
+
+	const closedIssueItems = issues
+		.filter((issue) => issue.state === "closed")
+		.map(formatAppIssueToListItem);
+
 	const listItems: {
 		label: string;
 		value: string;
@@ -72,51 +83,46 @@ export const RepositoryPage: FC = () => {
 		},
 		{
 			label: "Created",
-			value:
-				normalizeDateStringWithTimestamp(
-					created_at,
-				),
+			value: formatTimestamp(created_at),
 		},
 		{
 			label: "Last updated",
-			value:
-				normalizeDateStringWithTimestamp(
-					updated_at,
-				),
+			value: formatTimestamp(updated_at),
 		},
 		{
 			label: "Last pushed",
-			value:
-				normalizeDateStringWithTimestamp(
-					pushed_at,
-				),
+			value: formatTimestamp(pushed_at),
+		},
+		{
+			label: "Issue count",
+			value: `${issues.length} total/${openIssueItems.length} open/${closedIssueItems.length} closed`,
 		},
 	];
-
-	const issueItems = issues.map(
-		({ number, title, state }) => {
-			return {
-				label: `#${number}`,
-				value: `${title} (${state})`,
-			};
-		},
-	);
 
 	return (
 		<Container maxWidth="md">
 			<CommandPalette commands={commands} />
-			<code>
-				<Stack
-					spacing={2}
-					divider={<Divider />}
-				>
-					<TerminalStyleList items={listItems} />
-					<Typography whiteSpace="pre-wrap">
-						{decodedReadme}
-					</Typography>
-					<TerminalStyleList items={issueItems} />
-				</Stack>
-			</code>
+			<Stack
+				spacing={2}
+				divider={<Divider />}
+			>
+				<TerminalStyleList items={listItems} />
+				<Typography whiteSpace="pre-wrap">
+					{decodedReadme}
+				</Typography>
+				<Fragment>
+					<Typography>Open issues</Typography>
+					<TerminalStyleList
+						items={openIssueItems}
+					/>
+				</Fragment>
+				<Fragment>
+					<Typography>Closed issues</Typography>
+					<TerminalStyleList
+						items={closedIssueItems}
+					/>
+				</Fragment>
+			</Stack>
 		</Container>
 	);
 };

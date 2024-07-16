@@ -21,16 +21,6 @@ export const useRepositoryCommands = (
 				action: () =>
 					openLink(repository.html_url),
 			},
-			{
-				label: "Mark repository as ...",
-				system: true,
-				action: () => {},
-			},
-			{
-				label: "Add issue",
-				system: true,
-				action: () => {},
-			},
 		];
 		for (const issue of issues) {
 			_commands.push({
