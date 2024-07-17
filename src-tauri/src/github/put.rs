@@ -6,7 +6,7 @@ pub async fn put_repository_readme(
     _: tauri::Window,
     owner_name: String,
     repository_name: String,
-    content: String,
+    unencoded_content: String,
     commit_message: String,
 ) -> Result<(), String> {
     // https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents
@@ -19,7 +19,7 @@ pub async fn put_repository_readme(
         .map_err(|err| err.to_string())?;
 
     octocrab
-        .update_file(path, commit_message, content, sha)
+        .update_file(path, commit_message, unencoded_content, sha)
         .send()
         .await
         .map_err(|err| err.to_string())?;

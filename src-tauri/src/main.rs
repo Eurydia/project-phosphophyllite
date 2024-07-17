@@ -39,7 +39,8 @@ async fn main() {
         .unwrap();
 
     let db = crate::database::setup::setup_db(&app).await;
-    let octocrab = crate::github::setup::get_octocrab(app.app_handle());
+    let octocrab = crate::github::setup::get_octocrab(app.app_handle())
+        .expect("Octocrab should prepared and ready to use");
     app.manage(AppState { db, octocrab });
     app.run(|_, _| {})
 }

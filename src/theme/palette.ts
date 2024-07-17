@@ -21,7 +21,7 @@ export const themePalette = createTheme({
 			secondary: alpha("#fff", 0.5),
 		},
 		success: {
-			main: "#487500",
+			main: "#3C7C4E",
 		},
 		error: {
 			main: "#800200",

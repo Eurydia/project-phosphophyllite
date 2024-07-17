@@ -1,3 +1,4 @@
+import { useSnackbar } from "notistack";
 import { useRef } from "react";
 import {
 	openConfigFile,
@@ -8,6 +9,7 @@ import { useUpdateDB } from "./useUpdateDB";
 
 export const useSystemCommands = () => {
 	const updateDB = useUpdateDB();
+	const { closeSnackbar } = useSnackbar();
 
 	const commands = useRef<CommandOption[]>([
 		{
@@ -23,6 +25,11 @@ export const useSystemCommands = () => {
 		{
 			label: "Update database",
 			action: updateDB,
+			system: true,
+		},
+		{
+			label: "Clear all notifications",
+			action: closeSnackbar,
 			system: true,
 		},
 	]);

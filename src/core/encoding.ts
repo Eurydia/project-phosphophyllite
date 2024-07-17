@@ -7,3 +7,7 @@ export const tryDecodeBase64 = (
 		return "";
 	}
 };
+
+export const encodeBase64 = (
+	content: string,
+): string => window.btoa(content);

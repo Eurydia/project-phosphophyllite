@@ -157,13 +157,13 @@ pub async fn update_db(
         }
     }
 
-    let mut user_settings = crate::config::get_user_config(&handle);
+    let mut user_settings = crate::config::get_user_config(&handle)?;
     user_settings.auto_update.last_updated = chrono::Utc::now().to_rfc3339();
 
     let json_string =
         serde_json::to_string_pretty(&user_settings).map_err(|err| err.to_string())?;
 
-    let path = crate::paths::get_setting_path(&handle);
+    let path = crate::paths::get_setting_path(&handle)?;
 
     std::fs::write(path, json_string).map_err(|err| err.to_string())
 }

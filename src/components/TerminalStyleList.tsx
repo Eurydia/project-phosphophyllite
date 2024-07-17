@@ -14,9 +14,7 @@ export const TerminalStyleList: FC<
 
 	if (items.length === 0) {
 		return (
-			<Typography>
-				Nothing item to display
-			</Typography>
+			<Typography>Nothing to display</Typography>
 		);
 	}
 

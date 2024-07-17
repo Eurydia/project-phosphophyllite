@@ -9,5 +9,6 @@ const theme = createTheme({
 		fontSize: 18,
 	},
 });
+
 export const themeTypography =
 	responsiveFontSizes(theme);

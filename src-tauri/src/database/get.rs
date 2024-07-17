@@ -1,29 +1,27 @@
 use futures::TryStreamExt;
 
-use crate::config::get_user_config;
-
 #[tauri::command]
 pub fn should_update_db(
     handle: tauri::AppHandle,
     _: tauri::State<'_, crate::AppState>,
     _: tauri::Window,
-) -> bool {
-    let user_config = get_user_config(&handle);
-    match user_config.auto_update.enabled {
-        false => false,
-        true => {
-            let dt_now = chrono::Utc::now();
-            let dt_last_updated =
-                match chrono::DateTime::parse_from_rfc3339(&user_config.auto_update.last_updated) {
-                    Ok(dt) => dt.with_timezone(&chrono::Utc),
-                    Err(_) => {
-                        return true;
-                    }
-                };
-            let dt_delta = dt_now - dt_last_updated;
-            dt_delta.num_seconds() > user_config.auto_update.minimum_elasped_interval_second
-        }
+) -> Result<bool, String> {
+    let user_config = crate::config::get_user_config(&handle)?;
+
+    if !user_config.auto_update.enabled {
+        return Ok(false);
     }
+
+    let dt_now = chrono::Utc::now();
+    let dt_last_updated =
+        chrono::DateTime::parse_from_rfc3339(&user_config.auto_update.last_updated)
+            .map_err(|err| err.to_string())?;
+
+    let dt_delta = dt_now - dt_last_updated.with_timezone(&chrono::Utc);
+    let should_update =
+        dt_delta.num_seconds() > user_config.auto_update.minimum_elasped_interval_second;
+
+    Ok(should_update)
 }
 
 #[tauri::command]

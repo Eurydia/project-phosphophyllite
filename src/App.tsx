@@ -7,8 +7,10 @@ import {
 	HomePage,
 	homePageLoader,
 } from "~pages/HomePage";
-import { IssuePage } from "~pages/IssuePage";
-import { issuePageLoader } from "~pages/IssuePage/loader";
+import {
+	IssuePage,
+	issuePageLoader,
+} from "~pages/IssuePage";
 import {
 	loaderRepositoryPage,
 	RepositoryPage,

@@ -11,9 +11,13 @@ pub async fn get_repositories(
 ) -> Result<Vec<octocrab::models::Repository>, String> {
     // https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28#list-repositories-accessible-to-the-app-installation
     let mut items: Vec<octocrab::models::Repository> = Vec::new();
-    let mut page_number = 1;
+    let mut page_number: i64 = 1;
     loop {
-        let response = octocrab
+        let octocrab::models::InstallationRepositories {
+            repositories,
+            total_count,
+            ..
+        } = octocrab
             .get::<octocrab::models::InstallationRepositories, _, _>(
                 format!("/installation/repositories?page={}", page_number),
                 None::<&()>,
@@ -21,16 +25,12 @@ pub async fn get_repositories(
             .await
             .map_err(|err| err.to_string())?;
 
-        items.extend(response.repositories.into_iter());
+        items.extend(repositories.into_iter());
         page_number += 1;
-        match i64::try_from(items.len()) {
-            Err(err) => return Err(err.to_string()),
-            Ok(curr_len) => {
-                if curr_len >= response.total_count {
-                    break;
-                }
-            }
-        };
+        let curr_size = i64::try_from(items.len()).map_err(|err| err.to_string())?;
+        if curr_size >= total_count {
+            break;
+        }
     }
     Ok(items)
 }
@@ -54,13 +54,7 @@ pub async fn get_repository_readme(
             octocrab::Error::GitHub {
                 source: octocrab::GitHubError { status_code, .. },
                 ..
-            } => {
-                if status_code == 404 {
-                    Ok(String::default())
-                } else {
-                    Err(err.to_string())
-                }
-            }
+            } if status_code == 404 => Ok(String::default()),
             _ => Err(err.to_string()),
         },
     }

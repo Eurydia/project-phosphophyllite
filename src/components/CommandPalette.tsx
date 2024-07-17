@@ -1,7 +1,6 @@
 import {
 	Autocomplete,
 	Dialog,
-	DialogContent,
 	FilterOptionsState,
 	ListItemText,
 	MenuItem,
@@ -93,51 +92,43 @@ export const CommandPalette: FC<
 				},
 			}}
 		>
-			<DialogContent>
-				<Autocomplete
-					fullWidth
-					disableClearable
-					autoComplete
-					clearIcon={null}
-					popupIcon={null}
-					options={commands}
-					onKeyDown={handleKeyDown}
-					filterOptions={filterOptions}
-					onChange={handleChange}
-					noOptionsText="No matching command"
-					getOptionDisabled={(option) =>
-						Boolean(option.disabled)
-					}
-					renderInput={(props) => (
-						<TextField
-							{...props}
-							autoComplete="on"
-							inputRef={(ref) =>
-								ref && ref.focus()
-							}
-							fullWidth
-							size="small"
-							variant="outlined"
+			<Autocomplete
+				fullWidth
+				disableClearable
+				autoComplete
+				clearIcon={null}
+				popupIcon={null}
+				options={commands}
+				onKeyDown={handleKeyDown}
+				filterOptions={filterOptions}
+				onChange={handleChange}
+				noOptionsText="No matching command"
+				getOptionDisabled={(option) =>
+					Boolean(option.disabled)
+				}
+				renderInput={(props) => (
+					<TextField
+						{...props}
+						autoComplete="on"
+						inputRef={(ref) => ref && ref.focus()}
+						fullWidth
+						size="small"
+						variant="outlined"
+					/>
+				)}
+				renderOption={(props, option, state) => (
+					<MenuItem
+						{...props}
+						selected={state.selected}
+						key={`${option.label}-${state.index}`}
+					>
+						<ListItemText
+							primary={option.label}
+							secondary={option.description}
 						/>
-					)}
-					renderOption={(
-						props,
-						option,
-						state,
-					) => (
-						<MenuItem
-							{...props}
-							selected={state.selected}
-							key={`${option.label}-${state.index}`}
-						>
-							<ListItemText
-								primary={option.label}
-								secondary={option.description}
-							/>
-						</MenuItem>
-					)}
-				/>
-			</DialogContent>
+					</MenuItem>
+				)}
+			/>
 		</Dialog>
 	);
 };

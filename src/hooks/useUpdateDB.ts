@@ -4,6 +4,7 @@ import { forceUpdateDB } from "~tauri/db/db";
 export const useUpdateDB = () => {
 	const { enqueueSnackbar, closeSnackbar } =
 		useSnackbar();
+
 	const updateDB = async () => {
 		const id = enqueueSnackbar(
 			"Updating database...",
@@ -18,14 +19,10 @@ export const useUpdateDB = () => {
 					variant: "success",
 				}),
 			(err) =>
-				enqueueSnackbar(
-					`Something went wrong during update: ${String(
-						err,
-					)}`,
-					{
-						variant: "error",
-					},
-				),
+				enqueueSnackbar(String(err), {
+					variant: "error",
+					persist: true,
+				}),
 		);
 		closeSnackbar(id);
 	};

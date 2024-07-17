@@ -1,23 +1,27 @@
-fn get_secret(handle: &tauri::AppHandle, file_path: &str) -> String {
-    let path = crate::paths::get_secret_path(handle);
-    let file = path.join(file_path);
-    match file.try_exists() {
-        Ok(true) => (),
+fn get_secret_file(handle: &tauri::AppHandle, file_path: &str) -> Result<String, String> {
+    let path = crate::paths::get_secret_path(handle)?;
+    let file_path = path.join(file_path);
+
+    match file_path.try_exists() {
+        Ok(true) => std::fs::read_to_string(&file_path)
+            .map_err(|_| String::from("Failed to read from a secret file")),
         Err(_) | Ok(false) => {
-            std::fs::File::create(&file).unwrap();
+            std::fs::File::create(&file_path)
+                .map_err(|_| String::from("Failed to create fallback for a secret file"))?;
+
+            Ok(String::default())
         }
     }
-    std::fs::read_to_string(file).unwrap_or(String::default())
 }
 
-pub fn get_app_id(handle: &tauri::AppHandle) -> String {
-    get_secret(handle, "APP_ID.txt")
+pub fn get_app_id(handle: &tauri::AppHandle) -> Result<String, String> {
+    get_secret_file(handle, "APP_ID.txt")
 }
 
-pub fn get_installation_id(handle: &tauri::AppHandle) -> String {
-    get_secret(handle, "INSTALLATION_ID.txt")
+pub fn get_installation_id(handle: &tauri::AppHandle) -> Result<String, String> {
+    get_secret_file(handle, "INSTALLATION_ID.txt")
 }
 
-pub fn get_rsa_private_key(handle: &tauri::AppHandle) -> String {
-    get_secret(handle, "RSA_PRIVATE_KEY.pem")
+pub fn get_rsa_private_key(handle: &tauri::AppHandle) -> Result<String, String> {
+    get_secret_file(handle, "RSA_PRIVATE_KEY.pem")
 }

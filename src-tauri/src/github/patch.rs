@@ -1,5 +1,4 @@
 #[tauri::command]
-#[allow(dead_code)]
 pub async fn patch_repository_description(
     _: tauri::AppHandle,
     state: tauri::State<'_, crate::AppState>,
@@ -10,20 +9,19 @@ pub async fn patch_repository_description(
 ) -> Result<(), String> {
     // https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#update-a-repository
 
-    let octocrab = state.octocrab.clone();
-
     let body = serde_json::json!({"description": description});
-    let response = octocrab
+    let response = state
+        .octocrab
         .patch::<octocrab::models::Repository, _, serde_json::value::Value>(
             format!("/repos/{}/{}", owner_name, repository_name),
             Some(&body),
         )
         .await
-        .map_err(|err| {
-            dbg!(&err, &body);
-            err.to_string()
+        .map_err(|err| match err {
+            octocrab::Error::GitHub { source, .. } => source.to_string(),
+            _ => err.to_string(),
         })?;
 
-    let db = &state.db;
-    crate::database::update::update_repository_table_entry(db, &octocrab, response).await
+    crate::database::update::update_repository_table_entry(&state.db, &state.octocrab, response)
+        .await
 }

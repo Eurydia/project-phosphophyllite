@@ -16,6 +16,8 @@ import {
 import { useNavigationalCommands } from "~hooks/useNavigationalCommands";
 import { useRepositoryCommands } from "~hooks/useRepositoryCommands";
 import { useSystemCommands } from "~hooks/useSystemCommands";
+import { useUpdateRepositoryDescription } from "~hooks/useUpdateRepositoryDescription";
+import { useUpdateRespositoryReadme } from "~hooks/useUpdateRespositoryReadme.ts";
 import { RepositoryPageLoaderData } from "./loader";
 
 export const RepositoryPage: FC = () => {
@@ -37,11 +39,33 @@ export const RepositoryPage: FC = () => {
 		useNavigationalCommands(repositories);
 	const repositoryCommands =
 		useRepositoryCommands(repository, issues);
+	const updateDescription =
+		useUpdateRepositoryDescription();
+	const updateReadme =
+		useUpdateRespositoryReadme();
 
 	const commands = [
 		...systemCommands,
 		...navigationalCommands,
 		...repositoryCommands,
+		{
+			label: "Edit repository description",
+			system: true,
+			action: () => updateDescription(repository),
+			disabled: repository.archived,
+			description: repository.archived
+				? "Only available for active repositories"
+				: null,
+		},
+		{
+			label: "Edit repository README",
+			system: true,
+			action: () => updateReadme(repository),
+			disabled: repository.archived,
+			description: repository.archived
+				? "Only available for active repositories"
+				: null,
+		},
 	];
 
 	const decodedReadme =
