@@ -8,6 +8,7 @@ mod github;
 mod models;
 mod paths;
 mod secrets;
+mod temp;
 
 struct AppState {
     db: sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
@@ -29,6 +30,7 @@ async fn main() {
             database::get::get_comments,
             database::get::get_comments_in_issue,
             database::update::update_db,
+            temp::open_in_editor,
             paths::open_secret_path,
             paths::open_setting_path,
             paths::open_href,
@@ -38,8 +40,6 @@ async fn main() {
 
     let db = crate::database::setup::setup_db(&app).await;
     let octocrab = crate::github::setup::get_octocrab(app.app_handle());
-
     app.manage(AppState { db, octocrab });
-
     app.run(|_, _| {})
 }

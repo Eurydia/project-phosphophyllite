@@ -19,7 +19,10 @@ pub async fn patch_repository_description(
             Some(&body),
         )
         .await
-        .map_err(|err| err.to_string())?;
+        .map_err(|err| {
+            dbg!(&err, &body);
+            err.to_string()
+        })?;
 
     let db = &state.db;
     crate::database::update::update_repository_table_entry(db, &octocrab, response).await

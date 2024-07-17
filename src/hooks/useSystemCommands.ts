@@ -2,7 +2,7 @@ import { useRef } from "react";
 import {
 	openConfigFile,
 	openSecretDir,
-} from "~tauri/open";
+} from "~tauri/path";
 import { CommandOption } from "~types/generic";
 import { useUpdateDB } from "./useUpdateDB";
 
