@@ -14,6 +14,7 @@
 			"~components/*": ["./components/*"],
 			"~pages/*": ["./pages/*"],
 			"~layouts/*": ["./layouts/*"],
+			"~theme/*": ["./theme/*"],
 			"~views/*": ["./views/*"],
 			"~types/*": ["./types/*"],
 			"~core/*": ["./core/*"]

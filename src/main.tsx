@@ -3,36 +3,29 @@ import {
 	styled,
 	ThemeProvider,
 } from "@mui/material";
+import { program } from "commander";
 import {
 	MaterialDesignContent,
 	SnackbarProvider,
 } from "notistack";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { themeComposed } from "theme";
-import { App } from "./App";
+import { themeComposed } from "~theme/composed";
 import "./main.css";
 
-// document.addEventListener(
-// 	"DOMContentLoaded",
-// 	() => {
-// 		document.body.addEventListener(
-// 			"click",
-// 			(event) => {
-// 				const target = event.target as Element;
-// 				if (target.tagName !== "A") {
-// 					return;
-// 				}
-// 				const href = target.getAttribute("href");
-// 				if (!href || !href.startsWith("http")) {
-// 					return;
-// 				}
-// 				event.preventDefault();
-// 				openLink(href);
-// 			},
-// 		);
-// 	},
-// );
+program
+	.option("-d, --debug", "output extra debugging")
+	.option("-s, --small", "small pizza size")
+	.option(
+		"-p, --pizza-type <type>",
+		"flavour of pizza",
+	);
+
+program.parse(["-d"], {
+	from: "user",
+});
+
+console.log(program.opts());
 
 const StyledSnackbarComponent = styled(
 	MaterialDesignContent,
@@ -71,7 +64,7 @@ ReactDOM.createRoot(
 		>
 			<ThemeProvider theme={themeComposed}>
 				<CssBaseline />
-				<App />
+				{/* <App /> */}
 			</ThemeProvider>
 		</SnackbarProvider>
 	</React.StrictMode>,
