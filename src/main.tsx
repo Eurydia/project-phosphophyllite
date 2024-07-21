@@ -3,7 +3,6 @@ import {
 	styled,
 	ThemeProvider,
 } from "@mui/material";
-import { program } from "commander";
 import {
 	MaterialDesignContent,
 	SnackbarProvider,
@@ -11,21 +10,8 @@ import {
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { themeComposed } from "~theme/composed";
+import { App } from "./App";
 import "./main.css";
-
-program
-	.option("-d, --debug", "output extra debugging")
-	.option("-s, --small", "small pizza size")
-	.option(
-		"-p, --pizza-type <type>",
-		"flavour of pizza",
-	);
-
-program.parse(["-d"], {
-	from: "user",
-});
-
-console.log(program.opts());
 
 const StyledSnackbarComponent = styled(
 	MaterialDesignContent,
@@ -64,7 +50,7 @@ ReactDOM.createRoot(
 		>
 			<ThemeProvider theme={themeComposed}>
 				<CssBaseline />
-				{/* <App /> */}
+				<App />
 			</ThemeProvider>
 		</SnackbarProvider>
 	</React.StrictMode>,
