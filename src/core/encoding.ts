@@ -1,10 +1,14 @@
 export const tryDecodeBase64 = (
 	content: string,
+	fallback: string = "",
 ): string => {
+	if (content.trim() === "") {
+		return fallback;
+	}
 	try {
 		return window.atob(content);
 	} catch (error) {
-		return "";
+		return fallback;
 	}
 };
 

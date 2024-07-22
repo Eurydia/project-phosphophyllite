@@ -71,10 +71,10 @@ export const RepositoryPage: FC = () => {
 		},
 	];
 
-	const decodedReadme =
-		readme !== undefined
-			? tryDecodeBase64(readme)
-			: "";
+	const decodedReadme = tryDecodeBase64(
+		readme,
+		"Repository has no README or README is empty ",
+	);
 
 	const openIssueItems = issues
 		.filter((issue) => issue.state === "open")
