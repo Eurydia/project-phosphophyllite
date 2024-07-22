@@ -6,6 +6,17 @@ import {
 	AppRepository,
 } from "~types/models";
 
+const tokenizeAppIssue = (
+	issue: AppIssue,
+): string[] => {
+	const tokens: string[] = [];
+	tokens.push(issue.title);
+	tokens.push(issue.user_type);
+	tokens.push(issue.state);
+	tokens.push(issue.number.toString());
+	return tokens;
+};
+
 export const useRepositoryCommands = (
 	repository: AppRepository,
 	issues: AppIssue[],
@@ -25,12 +36,18 @@ export const useRepositoryCommands = (
 			label: "Reveal repository on GitHub",
 			system: true,
 			action: () => openLink(repository.html_url),
+			searchTokens: [],
 		},
 	];
 	for (const issue of issues) {
+		const label = `Issue #${issue.number} ${issue.title}`;
+		const description = `~/${repository.full_name}/issue/${issue.number}`;
+		const searchTokens = tokenizeAppIssue(issue);
+
 		commands.push({
-			label: `Issue #${issue.number} ${issue.title}`,
-			description: `~/${repository.full_name}/issue/${issue.number}`,
+			label,
+			description,
+			searchTokens,
 			action: () => goToIssue(issue),
 		});
 	}

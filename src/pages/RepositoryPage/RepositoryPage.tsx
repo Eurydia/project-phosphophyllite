@@ -17,7 +17,8 @@ import { useNavigationalCommands } from "~hooks/useNavigationalCommands";
 import { useRepositoryCommands } from "~hooks/useRepositoryCommands";
 import { useSystemCommands } from "~hooks/useSystemCommands";
 import { useUpdateRepositoryDescription } from "~hooks/useUpdateRepositoryDescription";
-import { useUpdateRespositoryReadme } from "~hooks/useUpdateRespositoryReadme.ts";
+import { useUpdateRespositoryReadme } from "~hooks/useUpdateRepositoryReadme";
+import { CommandOption } from "~types/generic";
 import { RepositoryPageLoaderData } from "./loader";
 
 export const RepositoryPage: FC = () => {
@@ -44,7 +45,7 @@ export const RepositoryPage: FC = () => {
 	const updateReadme =
 		useUpdateRespositoryReadme();
 
-	const commands = [
+	const commands: CommandOption[] = [
 		...systemCommands,
 		...navigationalCommands,
 		...repositoryCommands,
@@ -56,6 +57,7 @@ export const RepositoryPage: FC = () => {
 			description: repository.archived
 				? "Only available for active repositories"
 				: null,
+			searchTokens: [],
 		},
 		{
 			label: "Edit repository README",
@@ -65,6 +67,7 @@ export const RepositoryPage: FC = () => {
 			description: repository.archived
 				? "Only available for active repositories"
 				: null,
+			searchTokens: [],
 		},
 	];
 

@@ -1,13 +1,12 @@
 import {
 	Autocomplete,
 	Dialog,
-	FilterOptionsState,
 	ListItemText,
 	MenuItem,
 	TextField,
 } from "@mui/material";
-import { matchSorter } from "match-sorter";
 import { FC, useEffect, useState } from "react";
+import { filterCommandPaletteOption } from "~core/filtering";
 import { CommandOption } from "~types/generic";
 
 type CommandPaletteProps = {
@@ -54,29 +53,6 @@ export const CommandPalette: FC<
 		}
 	};
 
-	const filterOptions = (
-		options: CommandOption[],
-		state: FilterOptionsState<CommandOption>,
-	) => {
-		const isSystemMode = state.inputValue
-			.trimStart()
-			.startsWith(">");
-
-		const filteredOptions = options.filter(
-			(option) =>
-				(!isSystemMode && !option.system) ||
-				(isSystemMode && option.system),
-		);
-
-		return matchSorter(
-			filteredOptions,
-			state.inputValue.replace(">", ""),
-			{
-				keys: ["label", "description"],
-			},
-		);
-	};
-
 	return (
 		<Dialog
 			fullWidth
@@ -95,12 +71,17 @@ export const CommandPalette: FC<
 			<Autocomplete
 				fullWidth
 				disableClearable
-				autoComplete
 				clearIcon={null}
 				popupIcon={null}
 				options={commands}
 				onKeyDown={handleKeyDown}
-				filterOptions={filterOptions}
+				filterOptions={(options, state) =>
+					filterCommandPaletteOption(
+						options,
+						state,
+						">",
+					)
+				}
 				onChange={handleChange}
 				noOptionsText="No matching command"
 				getOptionDisabled={(option) =>
@@ -119,8 +100,8 @@ export const CommandPalette: FC<
 				renderOption={(props, option, state) => (
 					<MenuItem
 						{...props}
+						key={option.label}
 						selected={state.selected}
-						key={`${option.label}-${state.index}`}
 					>
 						<ListItemText
 							primary={option.label}

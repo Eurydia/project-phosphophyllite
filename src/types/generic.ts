@@ -4,4 +4,5 @@ export type CommandOption = {
 	description?: string | null;
 	system?: boolean;
 	disabled?: boolean;
+	searchTokens: string[];
 };

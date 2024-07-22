@@ -1,75 +1,36 @@
+import { FilterOptionsState } from "@mui/material";
 import { matchSorter } from "match-sorter";
-import {
-	Issue,
-	IssueQuery,
-	RepoQuery,
-	Repository,
-} from "~types/schema";
+import { CommandOption } from "~types/generic";
 
-export const filterRepos = (
-	repos: Repository[],
-	query: RepoQuery,
+export const filterCommandPaletteOption = (
+	options: CommandOption[],
+	state: FilterOptionsState<CommandOption>,
+	systemTriggerPrefix: string = ">",
 ) => {
-	const { fullName, visibility, status } = query;
-	const filterFns: ((
-		item: Repository,
-	) => boolean)[] = [];
-	if (visibility !== "all") {
-		filterFns.push(
-			(item) => item.visibility === visibility,
+	const isInSystemMode = state.inputValue
+		.trimStart()
+		.startsWith(systemTriggerPrefix);
+
+	let filteredOptions: CommandOption[] = [];
+	if (isInSystemMode) {
+		filteredOptions = options.filter(
+			(option) => option.system,
+		);
+	} else {
+		filteredOptions = options.filter(
+			(option) => !option.system,
 		);
 	}
-	if (status !== "all") {
-		filterFns.push(
-			(item) => item.status === status,
-		);
-	}
-	let items = repos;
-	if (filterFns.length > 0) {
-		items = repos.filter((repo) =>
-			filterFns.every((fn) => fn(repo)),
-		);
-	}
-	const filteredItems = matchSorter(
-		items,
-		fullName,
+
+	const sortedOptions = matchSorter(
+		filteredOptions,
+		state.inputValue.slice(
+			systemTriggerPrefix.length,
+		),
 		{
-			keys: ["fullName"],
+			keys: ["searchTokens", "label"],
 		},
 	);
-	return filteredItems;
-};
 
-export const filterIssues = (
-	issues: Issue[],
-	query: IssueQuery,
-) => {
-	const { title, ownerType, state } = query;
-	const filterFns: ((item: Issue) => boolean)[] =
-		[];
-
-	if (ownerType !== "all") {
-		filterFns.push(
-			(item) =>
-				item.ownerType !== null &&
-				item.ownerType === ownerType,
-		);
-	}
-	if (state !== "all") {
-		filterFns.push(
-			(item) =>
-				item.state === state.toLowerCase(),
-		);
-	}
-	const items = issues.filter((item) =>
-		filterFns.every((fn) => fn(item)),
-	);
-	const filteredItems = matchSorter(
-		items,
-		title,
-		{
-			keys: ["title", "repoFullName"],
-		},
-	);
-	return filteredItems;
+	return sortedOptions;
 };
