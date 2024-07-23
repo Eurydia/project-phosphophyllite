@@ -73,6 +73,7 @@ pub async fn get_issues(
             .issues(&owner_name, &repository_name)
             .list()
             .page(page_number)
+            .state(octocrab::params::State::All)
             .send()
             .await
             .map_err(|err| err.to_string())?;

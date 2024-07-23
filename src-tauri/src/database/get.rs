@@ -129,6 +129,7 @@ pub async fn get_issue_in_repository_with_number(
     .fetch_optional(&state.db)
     .await
     .unwrap();
+
     Ok(items)
 }
 

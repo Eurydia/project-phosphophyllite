@@ -59,6 +59,14 @@ pub async fn update_issue_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
     issue: octocrab::models::issues::Issue,
 ) -> Result<(), String> {
+    let collected_labels = issue
+        .labels
+        .into_iter()
+        .map(|label| label.name.clone())
+        .collect::<Vec<String>>();
+
+    let label_json_string = serde_json::to_string(&collected_labels).unwrap();
+
     sqlx::query(
         r#"
         INSERT OR REPLACE INTO issues (
@@ -72,9 +80,10 @@ pub async fn update_issue_table_entry(
                 "created_at",
                 "updated_at",
                 "closed_at",
-                "user_type"
+                "user_type",
+                "issue_label"
             )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         "#,
     )
     .bind(issue.url.as_str())
@@ -91,6 +100,7 @@ pub async fn update_issue_table_entry(
     .bind(issue.updated_at.to_rfc3339())
     .bind(unwrap_datetime!(issue.closed_at))
     .bind(issue.user.r#type)
+    .bind(&label_json_string)
     .execute(db)
     .await
     .map_err(|err| err.to_string())?;

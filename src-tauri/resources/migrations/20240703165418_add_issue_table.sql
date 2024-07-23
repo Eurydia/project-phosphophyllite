@@ -29,7 +29,6 @@ CREATE TABLE IF NOT EXISTS issues (
     "created_at" TEXT NOT NULL,
     "updated_at" TEXT NOT NULL,
     "closed_at" TEXT,
-
-
-    "user_type" TEXT NOT NULL
+    "user_type" TEXT NOT NULL,
+    "issue_label" TEXT NOT NULL
 );
