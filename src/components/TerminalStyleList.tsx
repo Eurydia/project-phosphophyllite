@@ -33,8 +33,12 @@ export const TerminalStyleList: FC<
 					key={`${label}-${index}`}
 					direction="row"
 				>
-					<Typography>{paddedLabel}</Typography>
-					<Typography>{value}</Typography>
+					<Typography whiteSpace="pre">
+						{paddedLabel}
+					</Typography>
+					<Typography component="span">
+						{value}
+					</Typography>
 				</Stack>
 			);
 		},

@@ -1,6 +1,6 @@
-export const tryParse = (
+export const tryParse = <T>(
 	jsonString: string,
-): unknown | null => {
+): T | null => {
 	try {
 		return JSON.parse(jsonString);
 	} catch (err) {

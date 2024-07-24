@@ -33,10 +33,10 @@ export const issuePageLoader: LoaderFunction =
 			});
 		}
 
-		const repoFullName = `${ownerName}/${repoName}`;
 		const repository =
 			await getRepositoryWithFullName(
-				repoFullName,
+				ownerName,
+				repoName,
 			);
 		if (repository === null) {
 			throw new Response("", {

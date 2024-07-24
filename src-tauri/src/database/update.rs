@@ -64,8 +64,7 @@ pub async fn update_issue_table_entry(
         .into_iter()
         .map(|label| label.name.clone())
         .collect::<Vec<String>>();
-
-    let label_json_string = serde_json::to_string(&collected_labels).unwrap();
+    let collected_label_string = collected_labels.join(",");
 
     sqlx::query(
         r#"
@@ -100,7 +99,7 @@ pub async fn update_issue_table_entry(
     .bind(issue.updated_at.to_rfc3339())
     .bind(unwrap_datetime!(issue.closed_at))
     .bind(issue.user.r#type)
-    .bind(&label_json_string)
+    .bind(&collected_label_string)
     .execute(db)
     .await
     .map_err(|err| err.to_string())?;

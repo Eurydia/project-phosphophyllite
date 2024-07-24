@@ -26,6 +26,7 @@ export type AppIssue = {
 	updated_at: string;
 	closed_at: string;
 	user_type: string;
+	issue_label: string;
 };
 
 export type AppComment = {

@@ -4,13 +4,14 @@ import {
 	Stack,
 	Typography,
 } from "@mui/material";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { useLoaderData } from "react-router";
 import { CommandPalette } from "~components/CommandPalette";
 import { TerminalStyleList } from "~components/TerminalStyleList";
 import { formatTimestamp } from "~core/format";
 import { useIssueCommands } from "~hooks/useIssueCommands";
 import { useRepositoryCommands } from "~hooks/useRepositoryCommands";
+import { useSystemCommands } from "~hooks/useSystemCommands";
 import { IssuePageLoaderData } from "./loader";
 
 export const IssuePage: FC = () => {
@@ -21,6 +22,7 @@ export const IssuePage: FC = () => {
 		issues,
 	} = useLoaderData() as IssuePageLoaderData;
 
+	const systemCommands = useSystemCommands();
 	const repositoryCommands =
 		useRepositoryCommands(repository, issues);
 	const issueCommands =
@@ -42,7 +44,7 @@ export const IssuePage: FC = () => {
 
 	const listItems: {
 		label: string;
-		value: string;
+		value: ReactNode;
 	}[] = [
 		{
 			label: "Title",
@@ -68,16 +70,21 @@ export const IssuePage: FC = () => {
 			label: "Closed",
 			value: formatTimestamp(closed_at),
 		},
+		{
+			label: "Labels",
+			value: currentIssue.issue_label,
+		},
+	];
+
+	const commands = [
+		...repositoryCommands,
+		...issueCommands,
+		...systemCommands,
 	];
 
 	return (
 		<Container maxWidth="sm">
-			<CommandPalette
-				commands={[
-					...repositoryCommands,
-					...issueCommands,
-				]}
-			/>
+			<CommandPalette commands={commands} />
 			<Stack
 				spacing={2}
 				padding={2}
