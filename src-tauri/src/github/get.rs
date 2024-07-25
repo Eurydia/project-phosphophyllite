@@ -1,3 +1,5 @@
+use octocrab::params::repos::forks::Sort;
+
 fn get_repository_name_component(
     repository: octocrab::models::Repository,
 ) -> Result<(String, String), String> {
@@ -23,7 +25,10 @@ pub async fn get_repositories(
                 None::<&()>,
             )
             .await
-            .map_err(|err| err.to_string())?;
+            .map_err(|err| match err {
+                octocrab::Error::GitHub { source, .. } => source.message,
+                _ => err.to_string(),
+            })?;
 
         items.extend(repositories.into_iter());
         page_number += 1;
@@ -52,9 +57,12 @@ pub async fn get_repository_readme(
         Ok(respond) => respond.content.ok_or(String::default()),
         Err(err) => match err {
             octocrab::Error::GitHub {
-                source: octocrab::GitHubError { status_code, .. },
+                source:
+                    octocrab::GitHubError {
+                        status_code: 404, ..
+                    },
                 ..
-            } if status_code == 404 => Ok(String::default()),
+            } => Ok(String::default()),
             _ => Err(err.to_string()),
         },
     }
@@ -76,7 +84,10 @@ pub async fn get_issues(
             .state(octocrab::params::State::All)
             .send()
             .await
-            .map_err(|err| err.to_string())?;
+            .map_err(|err| match err {
+                octocrab::Error::GitHub { source, .. } => source.message,
+                _ => err.to_string(),
+            })?;
 
         items.extend(respond.take_items());
         match respond.next {
@@ -102,7 +113,10 @@ pub async fn get_comments(
             .page(page_number)
             .send()
             .await
-            .map_err(|err| err.to_string())?;
+            .map_err(|err| match err {
+                octocrab::Error::GitHub { source, .. } => source.message,
+                _ => err.to_string(),
+            })?;
 
         items.extend(respond.take_items());
         match respond.next {
@@ -110,5 +124,6 @@ pub async fn get_comments(
             Some(_) => page_number += 1,
         }
     }
+
     Ok(items)
 }
