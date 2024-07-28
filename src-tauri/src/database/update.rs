@@ -172,7 +172,7 @@ pub async fn update_db(
     let json_string =
         serde_json::to_string_pretty(&user_settings).map_err(|err| err.to_string())?;
 
-    let path = crate::paths::get_setting_path(&handle)?;
+    let path = crate::paths::get_setting_file(&handle)?;
 
     std::fs::write(path, json_string).map_err(|err| err.to_string())
 }

@@ -53,7 +53,7 @@ pub struct AutoUpdateSettings {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct UserConfig {
+pub struct UserSettings {
     pub index_bot_generated_issues: bool,
     pub custom_issue_label: Vec<String>,
 }
@@ -68,7 +68,7 @@ impl Default for AutoUpdateSettings {
     }
 }
 
-impl Default for UserConfig {
+impl Default for UserSettings {
     fn default() -> Self {
         Self {
             index_bot_generated_issues: false,
@@ -78,16 +78,16 @@ impl Default for UserConfig {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct AppData {
+pub struct AppSettings {
     pub auto_update: AutoUpdateSettings,
-    pub user_config: UserConfig,
+    pub user_config: UserSettings,
 }
 
-impl Default for AppData {
+impl Default for AppSettings {
     fn default() -> Self {
         Self {
             auto_update: AutoUpdateSettings::default(),
-            user_config: UserConfig::default(),
+            user_config: UserSettings::default(),
         }
     }
 }

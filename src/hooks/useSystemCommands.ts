@@ -1,7 +1,8 @@
 import { useSnackbar } from "notistack";
 import {
-	openConfigFile,
+	openLogDir,
 	openSecretDir,
+	openSettingFile,
 } from "~tauri/path";
 import { CommandOption } from "~types/generic";
 import { useUpdateDB } from "./useUpdateDB";
@@ -12,16 +13,22 @@ export const useSystemCommands = () => {
 
 	const commands: CommandOption[] = [
 		{
-			label: "Reveal config file",
+			label: "Reveal settings file",
 			system: true,
 			searchTokens: [],
-			action: openConfigFile,
+			action: openSettingFile,
 		},
 		{
 			label: "Reveal credential directory",
 			system: true,
 			searchTokens: [],
 			action: openSecretDir,
+		},
+		{
+			label: "Reveal log directory",
+			system: true,
+			searchTokens: [],
+			action: openLogDir,
 		},
 		{
 			label: "Update database",
