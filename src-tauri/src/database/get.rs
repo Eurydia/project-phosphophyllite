@@ -1,25 +1,24 @@
 use futures::TryStreamExt;
 
+/// Calls by the frontend to check whether the database should be updated.
 #[tauri::command]
 pub fn should_update_db(
     handle: tauri::AppHandle,
     _: tauri::State<'_, crate::AppState>,
     _: tauri::Window,
 ) -> Result<bool, String> {
-    let user_config = crate::config::get_user_config(&handle)?;
+    let crate::models::AppSettings { auto_update, .. } = crate::config::get_app_settings(&handle)?;
 
-    if !user_config.auto_update.enabled {
+    if !auto_update.enabled {
         return Ok(false);
     }
 
     let dt_now = chrono::Utc::now();
-    let dt_last_updated =
-        chrono::DateTime::parse_from_rfc3339(&user_config.auto_update.last_updated)
-            .map_err(|err| err.to_string())?;
+    let dt_last_updated = chrono::DateTime::parse_from_rfc3339(&auto_update.last_updated)
+        .map_err(|err| err.to_string())?;
 
     let dt_delta = dt_now - dt_last_updated.with_timezone(&chrono::Utc);
-    let should_update =
-        dt_delta.num_seconds() > user_config.auto_update.minimum_elasped_interval_second;
+    let should_update = dt_delta.num_seconds() > auto_update.minimum_elasped_interval_second;
 
     Ok(should_update)
 }

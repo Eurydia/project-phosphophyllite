@@ -4,7 +4,6 @@ export const tryParse = <T>(
 	try {
 		return JSON.parse(jsonString);
 	} catch (err) {
-		console.warn(err);
 		return null;
 	}
 };
