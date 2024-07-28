@@ -17,7 +17,7 @@ struct AppState {
 
 #[tokio::main]
 async fn main() {
-    let app = tauri::Builder::default()
+    let app = match tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::default()
                 .targets([
@@ -48,7 +48,13 @@ async fn main() {
             paths::open_href,
         ])
         .build(tauri::generate_context!())
-        .expect("App instance should be ready");
+    {
+        Ok(app) => app,
+        Err(err) => {
+            log::error!("Error found while trying to build app: {}", err);
+            return;
+        }
+    };
     log::trace!("App is ready");
 
     log::trace!("Adding state manager");
@@ -58,5 +64,5 @@ async fn main() {
     log::trace!("State manager is ready");
 
     log::trace!("Running app");
-    app.run(|_, _| {})
+    app.run(|_, _| {});
 }

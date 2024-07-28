@@ -1,9 +1,12 @@
+/// Extracts the owner and name from a repository.
 fn get_repository_name_component(
     repository: octocrab::models::Repository,
-) -> Result<(String, String), String> {
+) -> Result<(String, String), &'static str> {
     let octocrab::models::Repository { owner, name, .. } = repository;
-    let octocrab::models::Author { login, .. } = owner.ok_or("Missing owner information")?;
-
+    let octocrab::models::Author { login, .. } = match owner {
+        Some(owner) => owner,
+        None => return Err("Missing owner information"),
+    };
     Ok((login, name))
 }
 
@@ -12,57 +15,92 @@ fn get_repository_name_component(
 /// [API Documentation](https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28#list-repositories-accessible-to-the-app-installation)
 pub async fn get_repositories(
     octocrab: &octocrab::Octocrab,
-) -> Result<Vec<octocrab::models::Repository>, String> {
+) -> Result<Vec<octocrab::models::Repository>, &str> {
+    log::trace!("Getting repositories from GitHub");
     let mut items: Vec<octocrab::models::Repository> = Vec::new();
     let mut page_number: i64 = 1;
+    log::trace!("Fetching repositories");
     loop {
+        log::trace!("Fetching page {}", &page_number);
         let octocrab::models::InstallationRepositories {
             repositories,
             total_count,
             ..
-        } = octocrab
+        } = match octocrab
             .get::<octocrab::models::InstallationRepositories, _, _>(
                 format!("/installation/repositories?page={}", page_number),
                 None::<&()>,
             )
             .await
-            .map_err(|err| match err {
-                octocrab::Error::GitHub { source, .. } => source.message,
-                _ => err.to_string(),
-            })?;
+        {
+            Ok(installation_repositories) => installation_repositories,
+            Err(err) => {
+                log::error!("Error found while trying to get repositories: {}", err);
+                return Err("Something went wrong while fetching repositories");
+            }
+        };
 
+        log::trace!("Collecting repositories from respond");
         items.extend(repositories.into_iter());
-        let curr_size = i64::try_from(items.len()).map_err(|err| err.to_string())?;
-        if curr_size >= total_count {
-            break;
-        }
-
-        page_number += 1;
+        match i64::try_from(items.len()) {
+            Ok(curr_size) => {
+                if curr_size >= total_count {
+                    break;
+                }
+                page_number += 1;
+            }
+            Err(err) => {
+                log::error!("Error found while trying to convert size to i64: {}", err);
+                return Err("Something went wrong while trying to parse repository size");
+            }
+        };
     }
 
     Ok(items)
 }
 
 /// Get encoded README content from a repository.
-/// Returns an empty string if the repository does one.
+/// Returns an empty string if the repository does not have a README.
 ///
 /// [API Documentation](https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#get-a-repository-readme)
 pub async fn get_repository_readme(
     octocrab: &octocrab::Octocrab,
     repository: octocrab::models::Repository,
-) -> Result<String, String> {
+) -> Result<String, &str> {
     let (owner_name, repository_name) = get_repository_name_component(repository)?;
 
-    let octocrab::models::repos::Content { content, .. } = octocrab
-        .repos(owner_name, repository_name)
+    log::trace!(
+        "Trying to get README in repository: {}/{}",
+        &owner_name,
+        &repository_name
+    );
+
+    let octocrab::models::repos::Content { content, .. } = match octocrab
+        .repos(&owner_name, &repository_name)
         .get_readme()
         .send()
         .await
-        .map_err(|err| err.to_string())?;
+    {
+        Ok(repo_content) => repo_content,
+        Err(err) => match err {
+            octocrab::Error::GitHub { source, .. } if source.status_code == 404 => {
+                log::trace!(
+                    "No README found in repository: {}/{}",
+                    &owner_name,
+                    &repository_name
+                );
+                return Ok(String::default());
+            }
+            _ => {
+                log::error!("Error found while trying to fetch README: {}", err);
+                return Err("Something went wrong while fetching README");
+            }
+        },
+    };
 
     match content {
         Some(content) => Ok(content),
-        None => Ok(String::new()),
+        None => Ok(String::default()),
     }
 }
 
@@ -72,21 +110,36 @@ pub async fn get_repository_readme(
 pub async fn get_issues(
     octocrab: &octocrab::Octocrab,
     repository: octocrab::models::Repository,
-) -> Result<Vec<octocrab::models::issues::Issue>, String> {
+) -> Result<Vec<octocrab::models::issues::Issue>, &str> {
     let (owner_name, repository_name) = get_repository_name_component(repository)?;
+
+    log::trace!(
+        "Trying to get issues in repository: {}/{}",
+        &owner_name,
+        &repository_name
+    );
 
     let mut items: Vec<octocrab::models::issues::Issue> = Vec::new();
     let mut page_number = 1u32;
+    log::trace!("Fetching issues");
     loop {
-        let respond = octocrab
+        log::trace!("Fetching page {}", &page_number);
+        let respond = match octocrab
             .issues(&owner_name, &repository_name)
             .list()
             .state(octocrab::params::State::All)
             .page(page_number)
             .send()
             .await
-            .map_err(|err| err.to_string())?;
+        {
+            Ok(respond) => respond,
+            Err(err) => {
+                log::error!("Error found while trying to fetch issues: {}", err);
+                return Err("Someting went wrong while fetching issues");
+            }
+        };
 
+        log::trace!("Collecting issues from respond");
         items.extend(respond.items.into_iter());
 
         match respond.next {
@@ -104,21 +157,35 @@ pub async fn get_issues(
 pub async fn get_comments(
     octocrab: &octocrab::Octocrab,
     repository: octocrab::models::Repository,
-) -> Result<Vec<octocrab::models::issues::Comment>, String> {
+) -> Result<Vec<octocrab::models::issues::Comment>, &str> {
     let (owner_name, repository_name) = get_repository_name_component(repository)?;
+
+    log::trace!(
+        "Trying to get comments in repository: {}/{}",
+        &owner_name,
+        &repository_name
+    );
 
     let mut items: Vec<octocrab::models::issues::Comment> = Vec::new();
     let mut page_number = 1u32;
-
+    log::trace!("Fetching comments");
     loop {
-        let respond = octocrab
+        log::trace!("Fetching page {}", &page_number);
+        let respond = match octocrab
             .issues(&owner_name, &repository_name)
             .list_issue_comments()
             .page(page_number)
             .send()
             .await
-            .map_err(|err| err.to_string())?;
+        {
+            Ok(respond) => respond,
+            Err(err) => {
+                log::error!("Error found while trying to fetch comments: {}", err);
+                return Err("Something went wrong while fetching comments");
+            }
+        };
 
+        log::trace!("Collecting comments from respond");
         items.extend(respond.items.into_iter());
 
         match respond.next {

@@ -21,14 +21,12 @@ pub fn should_update_db(
             }
             Err(err) => {
                 log::error!("Error found while trying to get app settings: {}", &err);
-                log::info!("Should skip update");
                 return Ok(false);
             }
         };
 
     if !auto_update.enabled {
         log::info!("Auto update disabled");
-        log::info!("Should skip update");
         return Ok(false);
     }
 
@@ -44,7 +42,6 @@ pub fn should_update_db(
                 "Error found while trying to parse last updated time: {}",
                 &err
             );
-            log::info!("Should skip update");
             return Ok(false);
         }
     };
