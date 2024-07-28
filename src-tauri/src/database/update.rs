@@ -166,7 +166,7 @@ pub async fn update_db(
         }
     }
 
-    let mut user_settings = crate::config::get_app_settings(&handle)?;
+    let mut user_settings = crate::settings::get_app_settings(&handle)?;
     user_settings.auto_update.last_updated = chrono::Utc::now().to_rfc3339();
 
     let json_string =

@@ -4,6 +4,7 @@ import {
 	openSecretDir,
 	openSettingFile,
 } from "~tauri/path";
+import { revertAppSettings } from "~tauri/settings";
 import { CommandOption } from "~types/generic";
 import { useUpdateDB } from "./useUpdateDB";
 
@@ -12,6 +13,12 @@ export const useSystemCommands = () => {
 	const { closeSnackbar } = useSnackbar();
 
 	const commands: CommandOption[] = [
+		{
+			label: "Revert settings to default",
+			system: true,
+			searchTokens: [],
+			action: revertAppSettings,
+		},
 		{
 			label: "Reveal settings file",
 			system: true,

@@ -10,39 +10,41 @@ pub fn should_update_db(
     _: tauri::State<'_, crate::AppState>,
     _: tauri::Window,
 ) -> Result<bool, String> {
-    log::info!("Checking if database should be updated. Reading app settings.");
+    log::info!("Checking if database should be updated");
 
+    log::info!("Trying to get app settings");
     let crate::models::AppSettings { auto_update, .. } =
-        match crate::config::get_app_settings(&handle) {
+        match crate::settings::get_app_settings(&handle) {
             Ok(app_settings) => {
                 log::info!("Got app settings");
                 app_settings
             }
             Err(err) => {
-                log::error!(
-                "Error found while getting app settings: {}. Should skip updating the database.",
-                &err
-            );
+                log::error!("Error found while trying to get app settings: {}", &err);
+                log::info!("Should skip update");
                 return Ok(false);
             }
         };
 
     if !auto_update.enabled {
-        log::info!("Auto update is disabled. Should skip updating the database.");
+        log::info!("Auto update disabled");
+        log::info!("Should skip update");
         return Ok(false);
     }
 
-    log::info!("Auto update is enabled. Parsing the last updated time.");
+    log::info!("Auto update enabled");
+    log::info!("Trying to parse last updated time");
     let dt_last_updated = match chrono::DateTime::parse_from_rfc3339(&auto_update.last_updated) {
         Ok(dt_last_updated) => {
-            log::info!("Parsed the last updated time.");
+            log::info!("Parse successful");
             dt_last_updated
         }
         Err(err) => {
             log::error!(
-                    "Error found while parsing last updated time: {}. Should skip updating the database.",
-                    &err
-                );
+                "Error found while trying to parse last updated time: {}",
+                &err
+            );
+            log::info!("Should skip update");
             return Ok(false);
         }
     };
