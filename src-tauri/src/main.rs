@@ -40,6 +40,7 @@ async fn main() {
             database::get::get_comments,
             database::get::get_comments_in_issue,
             database::update::update_db,
+            config::revert_app_settings,
             temp::open_in_editor,
             paths::open_log_dir,
             paths::open_secret_dir,

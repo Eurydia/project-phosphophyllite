@@ -1,25 +1,63 @@
 use futures::TryStreamExt;
 
 /// Calls by the frontend to check whether the database should be updated.
+///
+/// Checks the delta between the last updated time and the current time. If the delta is greater than the minimum elapsed interval, the database should be updated.
+/// If an error occurs during the process, the update should be skipped.
 #[tauri::command]
 pub fn should_update_db(
     handle: tauri::AppHandle,
     _: tauri::State<'_, crate::AppState>,
     _: tauri::Window,
 ) -> Result<bool, String> {
-    let crate::models::AppSettings { auto_update, .. } = crate::config::get_app_settings(&handle)?;
+    log::info!("Checking if database should be updated. Reading app settings.");
+
+    let crate::models::AppSettings { auto_update, .. } =
+        match crate::config::get_app_settings(&handle) {
+            Ok(app_settings) => {
+                log::info!("Got app settings");
+                app_settings
+            }
+            Err(err) => {
+                log::error!(
+                "Error found while getting app settings: {}. Should skip updating the database.",
+                &err
+            );
+                return Ok(false);
+            }
+        };
 
     if !auto_update.enabled {
+        log::info!("Auto update is disabled. Should skip updating the database.");
         return Ok(false);
     }
 
+    log::info!("Auto update is enabled. Parsing the last updated time.");
+    let dt_last_updated = match chrono::DateTime::parse_from_rfc3339(&auto_update.last_updated) {
+        Ok(dt_last_updated) => {
+            log::info!("Parsed the last updated time.");
+            dt_last_updated
+        }
+        Err(err) => {
+            log::error!(
+                    "Error found while parsing last updated time: {}. Should skip updating the database.",
+                    &err
+                );
+            return Ok(false);
+        }
+    };
     let dt_now = chrono::Utc::now();
-    let dt_last_updated = chrono::DateTime::parse_from_rfc3339(&auto_update.last_updated)
-        .map_err(|err| err.to_string())?;
-
     let dt_delta = dt_now - dt_last_updated.with_timezone(&chrono::Utc);
     let should_update = dt_delta.num_seconds() > auto_update.minimum_elasped_interval_second;
 
+    log::info!(
+        "Should update the database: {}. Last updated: {:?}, Now: {:?}, Delta (seconds): {:?}, Minimum delta for update (seconds): {} ",
+        should_update,
+        dt_last_updated,
+        dt_now,
+        dt_delta,
+        auto_update.minimum_elasped_interval_second
+    );
     Ok(should_update)
 }
 

@@ -1,63 +1,89 @@
-/// Returns an `AppSettings` object.
-pub fn get_app_settings(handle: &tauri::AppHandle) -> Result<crate::models::AppSettings, String> {
-    log::info!("Preparing app settings");
+/// Fallback function to revert the app settings to default.
+///
+///  Should be called when the app settings file is corrupted, malformed or missing.
+#[tauri::command]
+pub fn revert_app_settings(handle: tauri::AppHandle) -> Result<(), String> {
+    log::info!("Trying to revert app settings");
 
-    log::info!("Getting file path");
+    log::info!("Trying to get file path");
     let path = match crate::paths::get_setting_file(&handle) {
-        Ok(path) => path,
+        Ok(path) => {
+            log::info!("Got file path");
+            path
+        }
         Err(err) => {
-            log::error!("Error found while getting path: {}", &err);
-            return Err(String::from(err));
+            log::error!("Error found while trying to get file path: {}", &err);
+            return Err(err.to_string());
         }
     };
-    log::info!("File opened. Reading content.");
+
+    log::info!("Trying to serialize default settings");
+    let default_app_settings_str =
+        match serde_json::to_string_pretty(&crate::models::AppSettings::default()) {
+            Ok(default_app_settings) => {
+                log::info!("Serialization successful");
+                default_app_settings
+            }
+            Err(err) => {
+                log::error!(
+                    "Error found while trying to serialize default settings: {}",
+                    err
+                );
+                return Err(err.to_string());
+            }
+        };
+
+    log::info!("Trying to write serialized settings to file");
+    match std::fs::write(&path, default_app_settings_str) {
+        Ok(_) => {
+            log::info!("Write successful");
+            log::info!("Settings reverted");
+            Ok(())
+        }
+        Err(err) => {
+            log::error!("Error found while trying to write to file: {}", err);
+            Err(err.to_string())
+        }
+    }
+}
+
+/// Returns an `AppSettings` object.
+/// In case of an error, it returns a default `AppSettings` object.
+pub fn get_app_settings(handle: &tauri::AppHandle) -> Result<crate::models::AppSettings, String> {
+    log::info!("Trying to prepare app settings");
+
+    log::info!("Trying to get file path");
+    let path = match crate::paths::get_setting_file(&handle) {
+        Ok(path) => {
+            log::info!("Got file path");
+            path
+        }
+        Err(err) => {
+            log::error!("Error found while trying to get file path: {}", &err);
+            return Ok(crate::models::AppSettings::default());
+        }
+    };
+    log::info!("Trying to read content");
     let file_content = match std::fs::read_to_string(&path) {
         Ok(file_content) => {
-            log::info!("Successfully read content.");
+            log::info!("Read successful");
             file_content
         }
         Err(err) => {
-            log::warn!("Error found while reading content: {}.", err);
-            log::info!("Failed to read content. Trying to recover by using default settings");
+            log::warn!("Error found while trying to read content: {}", err);
             return Ok(crate::models::AppSettings::default());
         }
     };
 
-    log::info!("Deserializing content.");
+    log::info!("Trying to deserialize content");
     match serde_json::from_str(&file_content) {
         Ok(app_settings) => {
-            log::info!("Successfully deserialized content.");
+            log::info!("Deserialization successful");
             Ok(app_settings)
         }
         Err(err) => {
-            log::warn!(
-                "Error found while deserializing content: {}. Trying to recover by overriding.",
-                err
-            );
-            let default_app_settings = match serde_json::to_string_pretty(
-                &crate::models::AppSettings::default(),
-            ) {
-                Ok(default_app_settings) => default_app_settings,
-                Err(err) => {
-                    log::error!(
-                        "Error found while trying to serialize default settings: {}. Default setting is not ready for override. Skipping.",
-                        err
-                    );
-                    return Ok(default_app_settings);
-                }
-            };
-            match std::fs::write(&path, default_app_settings) {
-                Ok(_) => {
-                    log::info!("Successfully override content.");
-                }
-                Err(err) => {
-                    log::error!(
-                        "Error found while trying to override content: {}. Cannot override content.Skipping.",
-                        err
-                    );
-                }
-            }
-            Ok(default_app_settings)
+            log::warn!("Error found while trying to deserialize content: {}", err);
+            Ok(crate::models::AppSettings::default())
         }
     }
 }
