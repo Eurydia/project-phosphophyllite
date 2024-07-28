@@ -18,6 +18,18 @@ struct AppState {
 #[tokio::main]
 async fn main() {
     let app = tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::default()
+                .targets([
+                    tauri_plugin_log::LogTarget::LogDir,
+                    tauri_plugin_log::LogTarget::Stdout,
+                    tauri_plugin_log::LogTarget::Webview,
+                ])
+                .log_name(dbg!(chrono::Utc::now()
+                    .format("%Y-%m-%dT%H-%M-%S")
+                    .to_string()))
+                .build(),
+        )
         .invoke_handler(tauri::generate_handler![
             github::put::put_repository_readme,
             github::patch::patch_repository_description,
@@ -36,11 +48,23 @@ async fn main() {
             paths::open_href,
         ])
         .build(tauri::generate_context!())
-        .unwrap();
+        .expect("Error while building Tauri application");
+    log::trace!("Application built");
 
+    log::trace!("Adding state manager");
     let db = crate::database::setup::setup_db(&app).await;
-    let octocrab = crate::github::setup::get_octocrab(app.app_handle())
-        .expect("Octocrab should prepared and ready to use");
+    let octocrab = crate::github::setup::setup_octocrab(app.app_handle())
+        .expect("Octocrab should be ready for the state manager.");
     app.manage(AppState { db, octocrab });
+    log::trace!("State manager added");
+
+    opener::open(
+        app.app_handle()
+            .path_resolver()
+            .app_log_dir()
+            .expect("Log dir should exist"),
+    )
+    .expect("Failed to open log dir");
+    log::trace!("Running app");
     app.run(|_, _| {})
 }

@@ -1,5 +1,7 @@
+/// Updates the README of a repository but also create one if there is none.
+///
+/// [API documentation](https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents)
 #[tauri::command]
-#[allow(dead_code)]
 pub async fn put_repository_readme(
     _: tauri::AppHandle,
     state: tauri::State<'_, crate::AppState>,
@@ -9,22 +11,20 @@ pub async fn put_repository_readme(
     unencoded_content: String,
     commit_message: String,
 ) -> Result<(), String> {
-    // https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents
-    let octocrab = state.octocrab.repos(owner_name, repository_name);
+    let crab = state.octocrab.repos(owner_name, repository_name);
 
-    let octocrab::models::repos::Content { sha, path, .. } = octocrab
+    let repository = crab.get().await.map_err(|err| err.to_string())?;
+    let octocrab::models::repos::Content { sha, path, .. } = crab
         .get_readme()
         .send()
         .await
         .map_err(|err| err.to_string())?;
 
-    octocrab
-        .update_file(path, commit_message, unencoded_content, sha)
+    crab.update_file(path, commit_message, unencoded_content, sha)
         .send()
         .await
         .map_err(|err| err.to_string())?;
 
-    let repository = octocrab.get().await.map_err(|err| err.to_string())?;
     crate::database::update::update_repository_table_entry(&state.db, &state.octocrab, repository)
         .await
 }

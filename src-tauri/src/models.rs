@@ -55,6 +55,7 @@ pub struct AutoUpdateSettings {
 #[derive(Serialize, Deserialize)]
 pub struct UserConfig {
     pub index_bot_generated_issues: bool,
+    pub custom_issue_label: Vec<String>,
 }
 
 impl Default for AutoUpdateSettings {
@@ -71,6 +72,7 @@ impl Default for UserConfig {
     fn default() -> Self {
         Self {
             index_bot_generated_issues: false,
+            custom_issue_label: Vec::new(),
         }
     }
 }

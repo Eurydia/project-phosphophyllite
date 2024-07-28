@@ -3,12 +3,15 @@ fn get_secret_file(handle: &tauri::AppHandle, file_path: &str) -> Result<String,
     let file_path = path.join(file_path);
 
     match file_path.try_exists() {
-        Ok(true) => std::fs::read_to_string(&file_path)
-            .map_err(|_| String::from("Failed to read from a secret file")),
+        Ok(true) => std::fs::read_to_string(&file_path).map_err(|err| {
+            log::error!("Failed to read secret file: {}", err);
+            err.to_string()
+        }),
         Err(_) | Ok(false) => {
-            std::fs::File::create(&file_path)
-                .map_err(|_| String::from("Failed to create fallback for a secret file"))?;
-
+            std::fs::File::create(&file_path).map_err(|err| {
+                log::error!("Failed to create secret file: {}", err);
+                err.to_string()
+            })?;
             Ok(String::default())
         }
     }
