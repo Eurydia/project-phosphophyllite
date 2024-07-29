@@ -25,6 +25,7 @@ async fn main() {
                     tauri_plugin_log::LogTarget::Stdout,
                     tauri_plugin_log::LogTarget::Webview,
                 ])
+                .level(log::LevelFilter::Debug)
                 .log_name(dbg!(chrono::Utc::now().format("%Y-%m-%d").to_string()))
                 .build(),
         )
@@ -55,13 +56,17 @@ async fn main() {
             return;
         }
     };
-    log::trace!("App is ready");
 
-    log::trace!("Adding state manager");
+    log::trace!("Preparing state manager");
     let db = crate::database::setup::setup_db(&app).await;
-    let octocrab = crate::github::setup::setup_octocrab(app.app_handle());
+    let octocrab = match crate::github::setup::setup_octocrab(app.app_handle()) {
+        Ok(octocrab) => octocrab,
+        Err(err) => {
+            log::error!("Error found while trying to setup octocrab: {}", err);
+            return;
+        }
+    };
     app.manage(AppState { db, octocrab });
-    log::trace!("State manager is ready");
 
     log::trace!("Running app");
     app.run(|_, _| {});

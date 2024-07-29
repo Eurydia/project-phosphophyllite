@@ -1,39 +1,80 @@
 /// Prepares octocrab instance
 ///
-pub fn setup_octocrab(handle: tauri::AppHandle) -> octocrab::Octocrab {
-    log::info!("Setting up octocrab");
+pub fn setup_octocrab(handle: tauri::AppHandle) -> Result<octocrab::Octocrab, &'static str> {
+    log::trace!("Setting up octocrab");
 
-    log::info!("Getting app_id");
-    let raw_app_id = crate::secrets::get_app_id(&handle).unwrap();
-    log::info!("Got app_id");
-    log::info!("Parsing");
-    let app_id = raw_app_id.parse::<u64>().unwrap();
-    log::info!("Parsed app_id");
+    log::trace!("Getting app_id");
+    let app_id = match crate::secrets::get_app_id(handle) {
+        Ok(raw_app_id) => {
+            log::trace!("Parsing");
+            match raw_app_id.parse::<u64>() {
+                Ok(app_id) => app_id,
+                Err(err) => {
+                    log::error!("Error found while trying to parse app_id: {}", err);
+                    return Err("Something went wrong while parsing app_id");
+                }
+            }
+        }
+        Err(err) => {
+            log::error!("Error found while trying to get app_id: {}", err);
+            return Err("Something went wrong while getting app_id");
+        }
+    };
 
-    log::info!("Getting installation_id");
-    let raw_installation_id = crate::secrets::get_installation_id(&handle).unwrap();
-    log::info!("Got installation_id");
-    log::info!("Parsing");
-    let installation_id = raw_installation_id.parse::<u64>().unwrap();
-    log::info!("Parsed installation_id");
+    log::trace!("Getting installation_id");
+    let installation_id = match crate::secrets::get_installation_id(handle) {
+        Ok(raw_installation_id) => {
+            log::trace!("Parsing");
+            match raw_installation_id.parse::<u64>() {
+                Ok(installation_id) => installation_id,
+                Err(err) => {
+                    log::error!("Error found while trying to parse installation_id: {}", err);
+                    return Err("Something went wrong while parsing installation_id");
+                }
+            }
+        }
+        Err(err) => {
+            log::error!("Error found while trying to get installation_id: {}", err);
+            return Err("Something went wrong while getting installation_id");
+        }
+    };
 
-    log::info!("Getting rsa_private_key");
-    let rsa_private_key = crate::secrets::get_rsa_private_key(&handle).unwrap();
-    log::info!("Got rsa_private_key");
-    log::info!("Parsing");
-    let key = jsonwebtoken::EncodingKey::from_rsa_pem(rsa_private_key.as_bytes()).unwrap();
-    log::info!("Parsed rsa_private_key");
+    log::trace!("Getting rsa_private_key");
+    let rsa_private_key = match crate::secrets::get_rsa_private_key(handle) {
+        Ok(rsa_private_key) => {
+            log::trace!("Decoding");
+            match jsonwebtoken::EncodingKey::from_rsa_pem(rsa_private_key.as_bytes()) {
+                Ok(key) => key,
+                Err(err) => {
+                    log::error!(
+                        "Error found while trying to decode rsa_private_key: {}",
+                        err
+                    );
+                    return Err("Something went wrong while decoding rsa_private_key");
+                }
+            }
+        }
+        Err(err) => {
+            log::error!("Error found while trying to get rsa_private_key: {}", err);
+            return Err("Something went wrong while getting rsa_private_key");
+        }
+    };
 
-    log::info!("Building octocrab instance");
-    let octocrab = octocrab::Octocrab::builder()
+    log::trace!("Building octocrab instance");
+    match octocrab::Octocrab::builder()
         .app(octocrab::models::AppId(app_id), key)
         .build()
-        .unwrap();
-    log::info!("Built octocrab instance");
-    log::info!("Restricting octocrab to specific installation");
-    let app = octocrab.installation(octocrab::models::InstallationId(installation_id));
-    log::info!("Restricted octocrab to specific installation");
-
-    log::info!("Octocrab is ready");
-    app
+    {
+        Ok(octocrab) => {
+            log::trace!("Restricting octocrab to specific installation");
+            Ok(octocrab.installation(octocrab::models::InstallationId(installation_id)))
+        }
+        Err(err) => {
+            log::error!(
+                "Error found while trying to build octocrab instance: {}",
+                err
+            );
+            Err("Something went wrong while building octocrab instance")
+        }
+    }
 }

@@ -7,7 +7,7 @@ use std::io::Write;
 ///
 /// I use `Result` here since a missing log directory is a recoverable error.
 /// Even though the log directory should be prepared by the logger, so it should always exist in practice.
-pub fn get_log_path(handle: &tauri::AppHandle) -> Result<std::path::PathBuf, &str> {
+pub fn get_log_path(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
     let path = match handle.path_resolver().app_log_dir() {
         Some(path) => path,
         None => {
@@ -36,7 +36,7 @@ pub fn get_log_path(handle: &tauri::AppHandle) -> Result<std::path::PathBuf, &st
 }
 
 /// Get `PathBuf` to the temp directory
-pub fn get_temp_path(handle: &tauri::AppHandle) -> Result<std::path::PathBuf, &str> {
+pub fn get_temp_path(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
     let path = match handle.path_resolver().app_local_data_dir() {
         Some(path) => path.join("temp"),
         None => {
@@ -58,7 +58,7 @@ pub fn get_temp_path(handle: &tauri::AppHandle) -> Result<std::path::PathBuf, &s
 }
 
 /// Get `PathBuf` to the secret directory
-pub fn get_secret_path(handle: &tauri::AppHandle) -> Result<std::path::PathBuf, &str> {
+pub fn get_secret_path(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
     let path = match handle.path_resolver().app_local_data_dir() {
         Some(path) => path.join("secrets"),
         None => {
@@ -79,7 +79,7 @@ pub fn get_secret_path(handle: &tauri::AppHandle) -> Result<std::path::PathBuf, 
     }
 }
 
-pub fn get_setting_file(handle: &tauri::AppHandle) -> Result<std::path::PathBuf, &str> {
+pub fn get_setting_file(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
     let path = match handle.path_resolver().app_config_dir() {
         Some(path) => {
             let mut path_ = path.join("settings");
@@ -141,52 +141,70 @@ pub fn get_setting_file(handle: &tauri::AppHandle) -> Result<std::path::PathBuf,
 }
 
 #[tauri::command]
-pub fn open_secret_dir(handle: tauri::AppHandle) -> Result<(), String> {
-    let path = get_secret_path(&handle).map_err(|err| err.to_string())?;
+pub fn open_secret_dir(handle: tauri::AppHandle) -> Result<(), &'static str> {
+    let path = match get_secret_path(handle) {
+        Ok(path) => path,
+        Err(err) => {
+            log::error!("Failed to get secret path: {}", err);
+            return Err("Failed to get secret path");
+        }
+    };
     log::info!("Opening secret dir");
     match opener::open(path) {
         Ok(_) => Ok(()),
         Err(err) => {
             log::error!("Failed to open secret dir: {}", err);
-            Err(err.to_string())
+            Err("Something went wront while trying to open secret directory")
         }
     }
 }
 
 #[tauri::command]
-pub fn open_setting_file(handle: tauri::AppHandle) -> Result<(), String> {
-    let path = get_setting_file(&handle).map_err(|err| err.to_string())?;
+pub fn open_setting_file(handle: tauri::AppHandle) -> Result<(), &'static str> {
+    let path = match get_setting_file(handle) {
+        Ok(path) => path,
+        Err(err) => {
+            log::error!("Failed to get setting file: {}", err);
+            return Err("Failed to get setting file");
+        }
+    };
     log::info!("Opening setting file");
     match opener::open(path) {
         Ok(_) => Ok(()),
         Err(err) => {
             log::error!("Failed to open setting file: {}", err);
-            Err(err.to_string())
+            Err("Something went wrong while trying to open setting file")
         }
     }
 }
 
 #[tauri::command]
-pub fn open_log_dir(handle: tauri::AppHandle) -> Result<(), String> {
-    let path = get_log_path(&handle).map_err(|err| err.to_string())?;
+pub fn open_log_dir(handle: tauri::AppHandle) -> Result<(), &'static str> {
+    let path = match get_log_path(handle) {
+        Ok(path) => path,
+        Err(err) => {
+            log::error!("Failed to get log path: {}", err);
+            return Err("Failed to get log path");
+        }
+    };
     log::info!("Opening log dir");
     match opener::open(path) {
         Ok(_) => Ok(()),
         Err(err) => {
             log::error!("Failed to open log dir: {}", err);
-            Err(err.to_string())
+            Err("Something went wrong while trying to open log directory")
         }
     }
 }
 
 #[tauri::command]
-pub fn open_href(href: String) -> Result<(), String> {
+pub fn open_href(href: String) -> Result<(), &'static str> {
     log::info!("Opening href: {}", href);
     match opener::open_browser(href) {
         Ok(()) => Ok(()),
         Err(err) => {
             log::error!("Failed to open href: {}", err);
-            Err(err.to_string())
+            Err("Something went wrong while trying to open href")
         }
     }
 }

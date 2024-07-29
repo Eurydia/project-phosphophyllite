@@ -14,7 +14,7 @@ pub fn should_update_db(
 
     log::info!("Trying to get app settings");
     let crate::models::AppSettings { auto_update, .. } =
-        match crate::settings::get_app_settings(&handle) {
+        match crate::settings::get_app_settings(handle) {
             Ok(app_settings) => {
                 log::info!("Got app settings");
                 app_settings

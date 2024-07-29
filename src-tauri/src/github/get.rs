@@ -14,8 +14,8 @@ fn get_repository_name_component(
 ///
 /// [API Documentation](https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28#list-repositories-accessible-to-the-app-installation)
 pub async fn get_repositories(
-    octocrab: &octocrab::Octocrab,
-) -> Result<Vec<octocrab::models::Repository>, &str> {
+    octocrab: octocrab::Octocrab,
+) -> Result<Vec<octocrab::models::Repository>, &'static str> {
     log::trace!("Getting repositories from GitHub");
     let mut items: Vec<octocrab::models::Repository> = Vec::new();
     let mut page_number: i64 = 1;
@@ -64,9 +64,9 @@ pub async fn get_repositories(
 ///
 /// [API Documentation](https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#get-a-repository-readme)
 pub async fn get_repository_readme(
-    octocrab: &octocrab::Octocrab,
+    octocrab: octocrab::Octocrab,
     repository: octocrab::models::Repository,
-) -> Result<String, &str> {
+) -> Result<String, &'static str> {
     let (owner_name, repository_name) = get_repository_name_component(repository)?;
 
     log::trace!(
@@ -108,9 +108,9 @@ pub async fn get_repository_readme(
 ///
 /// [API Documentation](https://docs.github.com/en/rest/issues?apiVersion=2022-11-28#list-repository-issues)
 pub async fn get_issues(
-    octocrab: &octocrab::Octocrab,
+    octocrab: octocrab::Octocrab,
     repository: octocrab::models::Repository,
-) -> Result<Vec<octocrab::models::issues::Issue>, &str> {
+) -> Result<Vec<octocrab::models::issues::Issue>, &'static str> {
     let (owner_name, repository_name) = get_repository_name_component(repository)?;
 
     log::trace!(
@@ -155,9 +155,9 @@ pub async fn get_issues(
 ///
 /// [API Documentation](https://docs.github.com/en/rest/issues/comments?apiVersion=2022-11-28#list-issue-comments-for-a-repository)
 pub async fn get_comments(
-    octocrab: &octocrab::Octocrab,
+    octocrab: octocrab::Octocrab,
     repository: octocrab::models::Repository,
-) -> Result<Vec<octocrab::models::issues::Comment>, &str> {
+) -> Result<Vec<octocrab::models::issues::Comment>, &'static str> {
     let (owner_name, repository_name) = get_repository_name_component(repository)?;
 
     log::trace!(

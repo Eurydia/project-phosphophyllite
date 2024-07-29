@@ -6,7 +6,7 @@ pub fn revert_app_settings(handle: tauri::AppHandle) -> Result<(), String> {
     log::info!("Trying to revert app settings");
 
     log::info!("Trying to get file path");
-    let path = match crate::paths::get_setting_file(&handle) {
+    let path = match crate::paths::get_setting_file(handle) {
         Ok(path) => {
             log::info!("Got file path");
             path
@@ -49,11 +49,13 @@ pub fn revert_app_settings(handle: tauri::AppHandle) -> Result<(), String> {
 
 /// Returns an `AppSettings` object.
 /// In case of an error, it returns a default `AppSettings` object.
-pub fn get_app_settings(handle: &tauri::AppHandle) -> Result<crate::models::AppSettings, String> {
+pub fn get_app_settings(
+    handle: tauri::AppHandle,
+) -> Result<crate::models::AppSettings, &'static str> {
     log::info!("Trying to prepare app settings");
 
     log::info!("Trying to get file path");
-    let path = match crate::paths::get_setting_file(&handle) {
+    let path = match crate::paths::get_setting_file(handle) {
         Ok(path) => {
             log::info!("Got file path");
             path

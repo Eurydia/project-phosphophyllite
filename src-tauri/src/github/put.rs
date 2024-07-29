@@ -10,21 +10,51 @@ pub async fn put_repository_readme(
     repository_name: String,
     unencoded_content: String,
     commit_message: String,
-) -> Result<(), String> {
+) -> Result<(), &'static str> {
+    log::trace!(
+        "Preparing octocrab instance for repository: {}/{}",
+        &owner_name,
+        &repository_name
+    );
     let crab = state.octocrab.repos(owner_name, repository_name);
 
-    let repository = crab.get().await.map_err(|err| err.to_string())?;
-    let octocrab::models::repos::Content { sha, path, .. } = crab
-        .get_readme()
+    log::trace!("Getting repository");
+    let repository = match crab.get().await {
+        Ok(repo) => repo,
+        Err(err) => {
+            log::error!("Error found while trying to get repository: {}", err);
+            return Err("Something went wrong while getting repository data");
+        }
+    };
+    log::trace!("Collecting SHA and path of README");
+    let octocrab::models::repos::Content { sha, path, .. } = match crab.get_readme().send().await {
+        Ok(readme) => readme,
+        Err(err) => {
+            log::error!(
+                "Error found while trying to collect README metadata: {}",
+                err
+            );
+            return Err("Something went wrong collecting README metadata");
+        }
+    };
+
+    log::trace!("Sending update request");
+    match crab
+        .update_file(path, commit_message, unencoded_content, sha)
         .send()
         .await
-        .map_err(|err| err.to_string())?;
+    {
+        Ok(_) => (),
+        Err(err) => {
+            log::error!("Error found while trying to update README: {}", err);
+            return Err("Something went wrong while updating README");
+        }
+    };
 
-    crab.update_file(path, commit_message, unencoded_content, sha)
-        .send()
-        .await
-        .map_err(|err| err.to_string())?;
-
-    crate::database::update::update_repository_table_entry(&state.db, &state.octocrab, repository)
-        .await
+    crate::database::update::update_repository_table_entry(
+        &state.db,
+        state.octocrab.clone(),
+        repository,
+    )
+    .await
 }
