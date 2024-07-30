@@ -21,7 +21,7 @@ pub async fn open_in_editor(
     };
 
     log::trace!("Creating temp file");
-    let mut file = match std::fs::File::create(&temp_file_path) {
+    let mut file = match std::fs::File::create(&path) {
         Ok(file) => file,
         Err(err) => {
             log::error!("Error found while trying to create temp file: {}", err);
@@ -43,17 +43,17 @@ pub async fn open_in_editor(
     // Open file with vscode on windows
     // everything else is unimplemented
     let _status = if cfg!(target_os = "windows") {
-        let mut proc = std::process::Command::new("cmd")
+        let proc = std::process::Command::new("cmd")
             .arg("/C")
             .arg("code")
             .arg("-w")
             .arg("-n")
-            .arg(&temp_file_path)
+            .arg(&path)
             .spawn();
 
         log::trace!("Waiting for subprocess to finish");
         match proc {
-            Ok(subproc) => match subproc.wait() {
+            Ok(mut subproc) => match subproc.wait() {
                 Ok(status) => status,
                 Err(err) => {
                     log::error!("Error found while trying to wait for subprocess: {}", err);
@@ -70,7 +70,7 @@ pub async fn open_in_editor(
     };
 
     log::trace!("Reading content from temp file");
-    let updated_content = match std::fs::read_to_string(&temp_file_path) {
+    let updated_content = match std::fs::read_to_string(&path) {
         Ok(content) => content,
         Err(err) => {
             log::error!(
@@ -82,7 +82,7 @@ pub async fn open_in_editor(
     };
 
     log::trace!("Removing temp file");
-    match std::fs::remove_file(&temp_file_path) {
+    match std::fs::remove_file(&path) {
         Ok(_) => (),
         Err(err) => {
             log::error!("Error found while trying to remove temp file: {}", err);

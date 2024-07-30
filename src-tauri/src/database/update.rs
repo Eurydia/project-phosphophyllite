@@ -1,5 +1,3 @@
-use futures::TryFutureExt;
-
 macro_rules! trace_field {
     ($field:expr, $field_name:literal) => {{
         log::trace!("Trying to prepare \"{}\" field", $field_name);
@@ -61,9 +59,9 @@ pub async fn update_repository_table_entry(
         pushed_at,
         created_at,
         updated_at,
-        private: r#private,
-        archived: r#archived,
-        visibility: r#visibility,
+        private,
+        archived,
+        visibility,
         html_url,
         description,
         url,
@@ -89,9 +87,9 @@ pub async fn update_repository_table_entry(
     let pushed_at_field = trace_datetime_field!(pushed_at, "pushed_at");
     let created_at_field = trace_datetime_field!(created_at, "created_at");
     let updated_at_field = trace_datetime_field!(updated_at, "updated_at");
-    let private_field = trace_mandatory_field!(r#private, "private");
-    let archived_field = trace_mandatory_field!(r#archived, "archived");
-    let visibility_field = trace_mandatory_field!(r#visibility, "visibility");
+    let private_field = trace_mandatory_field!(private, "private");
+    let archived_field = trace_mandatory_field!(archived, "archived");
+    let visibility_field = trace_mandatory_field!(visibility, "visibility");
     let description_field = trace_field!(
         match description {
             Some(description) => description,
@@ -149,7 +147,7 @@ pub async fn update_repository_table_entry(
     .execute(db);
 
     match query.await {
-        Ok(res) => {
+        Ok(_) => {
             log::trace!("Repository entry updated: {}", &full_name_field);
             Ok(())
         }
@@ -175,7 +173,7 @@ pub async fn update_issue_table_entry(
         title,
         body,
         state,
-        number: r#number,
+        number,
         html_url,
         created_at,
         updated_at,
@@ -195,8 +193,7 @@ pub async fn update_issue_table_entry(
             .into_iter()
             .map(|label| label.name)
             .collect::<Vec<String>>()
-            .join(",")
-            .as_str(),
+            .join(","),
         "issue_label"
     );
     let body_field = trace_field!(
@@ -216,10 +213,10 @@ pub async fn update_issue_table_entry(
         },
         "state"
     );
-    let number_field = trace_field!(r#number.to_string(), "number");
+    let number_field = trace_field!(number.to_string(), "number");
     let html_url_field = trace_field!(html_url.to_string(), "html_url");
-    let created_at_field = trace_datetime_field!(created_at.to_rfc3339(), "created_at");
-    let updated_at_field = trace_datetime_field!(updated_at.to_rfc3339(), "updated_at");
+    let created_at_field = trace_datetime_field!(Some(created_at), "created_at");
+    let updated_at_field = trace_datetime_field!(Some(updated_at), "updated_at");
     let closed_at_field = trace_datetime_field!(closed_at, "closed_at");
     let user_type_field = trace_field!(user.r#type, "user_type");
 
@@ -258,7 +255,7 @@ pub async fn update_issue_table_entry(
     .execute(db);
 
     match query.await {
-        Ok(res) => {
+        Ok(_) => {
             log::trace!("Issue entry updated: {}", &url_field,);
             Ok(())
         }
@@ -307,7 +304,7 @@ pub async fn update_comment_table_entry(
         "body"
     );
     let html_url_field = trace_field!(html_url.to_string(), "html_url");
-    let created_at_field = trace_datetime_field!(created_at, "created_at");
+    let created_at_field = trace_datetime_field!(Some(created_at), "created_at");
     let updated_at_field = trace_datetime_field!(updated_at, "updated_at");
 
     log::trace!("Executing query for comment entry {}", &url_field);
@@ -334,7 +331,7 @@ pub async fn update_comment_table_entry(
     .bind(&updated_at_field);
 
     match query.execute(db).await {
-        Ok(res) => {
+        Ok(_) => {
             log::trace!("Comment entry updated: {}", &url_field);
             Ok(())
         }
@@ -394,7 +391,7 @@ pub async fn update_db(
         }
     };
 
-    let path = crate::paths::get_setting_file(handle.clone())?;
+    let path = crate::paths::get_setting_path(handle.clone())?;
 
     log::trace!("Writing updated settings to file");
     match std::fs::write(path, json_string) {

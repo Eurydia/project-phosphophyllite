@@ -1,13 +1,10 @@
+macro_rules! log_and_return_err {
+    ($) => {};
+}
+
 async fn open_db(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
-    log::trace!("Resolving path to database directory");
-    let mut path = match handle.path_resolver().app_local_data_dir() {
-        Some(path) => path.join("database"),
-        None => {
-            log::error!("Cannot resolve path to app local data directory");
-            return Err("Something went wrong while trying to get app local data directory");
-        }
-    };
-    log::trace!("Ensuring database directory exists");
+    let path = crate::paths::get_db_path(handle);
+    log::trace!("Checking database directory");
     match &path.try_exists() {
         Ok(true) => (),
         Ok(false) => {
@@ -15,20 +12,14 @@ async fn open_db(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'stati
             match std::fs::create_dir_all(&path) {
                 Ok(_) => (),
                 Err(err) => {
-                    log::error!(
-                        "Error found while trying to create database directory: {}",
-                        err
-                    );
-                    return Err("Something went wrong while trying to create database directory");
+                    return Err(log::error!("Cannot create database directory: {}", err));
                 }
             }
         }
         Err(err) => {
-            log::error!(
-                "Error found while trying to check if database directory exists: {}",
-                err
-            );
-            return Err("Something went wrong while trying to check if database directory exists");
+            let msg = "Cannot check if database directory exists";
+            log::error!("{}: {}", &msg, err);
+            return Err(&msg);
         }
     }
     path.push("db");

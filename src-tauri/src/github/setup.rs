@@ -4,7 +4,7 @@ pub fn setup_octocrab(handle: tauri::AppHandle) -> Result<octocrab::Octocrab, &'
     log::trace!("Setting up octocrab");
 
     log::trace!("Getting app_id");
-    let app_id = match crate::secrets::get_app_id(handle) {
+    let app_id = match crate::secrets::get_app_id(handle.clone()) {
         Ok(raw_app_id) => {
             log::trace!("Parsing");
             match raw_app_id.parse::<u64>() {
@@ -22,7 +22,7 @@ pub fn setup_octocrab(handle: tauri::AppHandle) -> Result<octocrab::Octocrab, &'
     };
 
     log::trace!("Getting installation_id");
-    let installation_id = match crate::secrets::get_installation_id(handle) {
+    let installation_id = match crate::secrets::get_installation_id(handle.clone()) {
         Ok(raw_installation_id) => {
             log::trace!("Parsing");
             match raw_installation_id.parse::<u64>() {
@@ -40,7 +40,7 @@ pub fn setup_octocrab(handle: tauri::AppHandle) -> Result<octocrab::Octocrab, &'
     };
 
     log::trace!("Getting rsa_private_key");
-    let rsa_private_key = match crate::secrets::get_rsa_private_key(handle) {
+    let key = match crate::secrets::get_rsa_private_key(handle.clone()) {
         Ok(rsa_private_key) => {
             log::trace!("Decoding");
             match jsonwebtoken::EncodingKey::from_rsa_pem(rsa_private_key.as_bytes()) {

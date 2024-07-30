@@ -2,13 +2,21 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::Manager;
+mod app;
 mod database;
 mod github;
 mod models;
+mod open;
 mod paths;
 mod secrets;
 mod settings;
 mod temp;
+
+fn setup_paths(app: tauri::App) -> Result<(), &'static str> {
+    log::trace!("Setting up required directories and files");
+
+    Ok(())
+}
 
 struct AppState {
     db: sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
@@ -17,7 +25,7 @@ struct AppState {
 
 #[tokio::main]
 async fn main() {
-    let app = match tauri::Builder::default()
+    let builder = tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::default()
                 .targets([
@@ -29,6 +37,7 @@ async fn main() {
                 .log_name(dbg!(chrono::Utc::now().format("%Y-%m-%d").to_string()))
                 .build(),
         )
+        .setup(|app| Ok(()))
         .invoke_handler(tauri::generate_handler![
             github::put::put_repository_readme,
             github::patch::patch_repository_description,
@@ -43,13 +52,14 @@ async fn main() {
             database::update::update_db,
             settings::revert_app_settings,
             temp::open_in_editor,
-            paths::open_log_dir,
-            paths::open_secret_dir,
-            paths::open_setting_file,
-            paths::open_href,
+            open::open_log_dir,
+            open::open_secret_dir,
+            open::open_setting_file,
+            open::open_href,
         ])
-        .build(tauri::generate_context!())
-    {
+        .build(tauri::generate_context!());
+
+    let app = match builder {
         Ok(app) => app,
         Err(err) => {
             log::error!("Error found while trying to build app: {}", err);
@@ -58,7 +68,13 @@ async fn main() {
     };
 
     log::trace!("Preparing state manager");
-    let db = crate::database::setup::setup_db(&app).await;
+    let db = match crate::database::setup::setup_db(&app).await {
+        Ok(db) => db,
+        Err(err) => {
+            log::error!("Error found while trying to setup database: {}", err);
+            return;
+        }
+    };
     let octocrab = match crate::github::setup::setup_octocrab(app.app_handle()) {
         Ok(octocrab) => octocrab,
         Err(err) => {
