@@ -10,13 +10,6 @@ mod open;
 mod paths;
 mod secrets;
 mod settings;
-mod temp;
-
-fn setup_paths(app: tauri::App) -> Result<(), &'static str> {
-    log::trace!("Setting up required directories and files");
-
-    Ok(())
-}
 
 struct AppState {
     db: sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
@@ -24,7 +17,7 @@ struct AppState {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), &'static str> {
     let builder = tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::default()
@@ -33,8 +26,7 @@ async fn main() {
                     tauri_plugin_log::LogTarget::Stdout,
                     tauri_plugin_log::LogTarget::Webview,
                 ])
-                .level(log::LevelFilter::Debug)
-                .log_name(dbg!(chrono::Utc::now().format("%Y-%m-%d").to_string()))
+                .log_name(chrono::Utc::now().format("%Y-%m-%d").to_string())
                 .build(),
         )
         .setup(|app| Ok(()))
@@ -51,7 +43,7 @@ async fn main() {
             database::get::get_comments_in_issue,
             database::update::update_db,
             settings::revert_app_settings,
-            temp::open_in_editor,
+            open::open_in_editor,
             open::open_log_dir,
             open::open_secret_dir,
             open::open_setting_file,
@@ -62,28 +54,18 @@ async fn main() {
     let app = match builder {
         Ok(app) => app,
         Err(err) => {
-            log::error!("Error found while trying to build app: {}", err);
-            return;
+            log::error!("Cannot build app: {}", err);
+            return Err("Cannot build app");
         }
     };
 
     log::trace!("Preparing state manager");
-    let db = match crate::database::setup::setup_db(&app).await {
-        Ok(db) => db,
-        Err(err) => {
-            log::error!("Error found while trying to setup database: {}", err);
-            return;
-        }
-    };
-    let octocrab = match crate::github::setup::setup_octocrab(app.app_handle()) {
-        Ok(octocrab) => octocrab,
-        Err(err) => {
-            log::error!("Error found while trying to setup octocrab: {}", err);
-            return;
-        }
-    };
+    let db = crate::app::setup::prepare_db(&app).await?;
+    let octocrab = crate::github::setup::setup_octocrab(app.app_handle())?;
     app.manage(AppState { db, octocrab });
 
     log::trace!("Running app");
     app.run(|_, _| {});
+
+    Ok(())
 }

@@ -391,7 +391,7 @@ pub async fn update_db(
         }
     };
 
-    let path = crate::paths::get_setting_path(handle.clone())?;
+    let path = crate::paths::get_setting_dir(handle.clone())?;
 
     log::trace!("Writing updated settings to file");
     match std::fs::write(path, json_string) {

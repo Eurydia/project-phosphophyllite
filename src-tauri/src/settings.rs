@@ -2,7 +2,7 @@
 #[tauri::command]
 pub fn revert_app_settings(handle: tauri::AppHandle) -> Result<(), &'static str> {
     log::trace!("Getting path");
-    let path = match crate::paths::get_setting_path(handle) {
+    let path = match crate::paths::get_setting_dir(handle) {
         Ok(path) => path,
         Err(err) => {
             log::error!("Failed to get path: {}", err);
@@ -33,7 +33,7 @@ pub fn get_app_settings(
     handle: tauri::AppHandle,
 ) -> Result<crate::models::AppSettings, &'static str> {
     log::trace!("Getting path");
-    let path = match crate::paths::get_setting_path(handle) {
+    let path = match crate::paths::get_setting_dir(handle) {
         Ok(path) => path,
         Err(err) => {
             log::error!("Failed to get path: {}", err);

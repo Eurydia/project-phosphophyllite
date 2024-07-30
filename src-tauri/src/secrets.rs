@@ -1,5 +1,5 @@
 fn get_secret_file(handle: tauri::AppHandle, file_path: &str) -> Result<String, &'static str> {
-    let path = crate::paths::get_secret_path(handle)?;
+    let path = crate::paths::get_secret_dir(handle)?;
     let file_path = path.join(file_path);
 
     match file_path.try_exists() {
