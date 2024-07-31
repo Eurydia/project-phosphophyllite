@@ -1,65 +1,44 @@
-pub fn get_log_dir(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
-    log::trace!("Getting log dir");
-    match handle.path_resolver().app_log_dir() {
-        Some(path) => Ok(path),
-        None => {
-            log::error!("Cannot get log dir");
-            Err("Cannot get log dir")
+macro_rules! resolve_dir {
+    ($path:expr) => {{
+        log::trace!("Resolving dir: \"{}\"", stringify!($path));
+        match $path {
+            Some(path) => {
+                log::trace!("Ok");
+                Ok(path)
+            }
+            None => {
+                log::error!("Cannot resolve dir");
+                Err("Cannot resolve dir")
+            }
         }
-    }
+    }};
+}
+
+pub fn get_log_dir(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
+    resolve_dir!(handle.path_resolver().app_log_dir())
 }
 
 pub fn get_database_dir(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
-    log::trace!("Getting database dir");
-    match handle.path_resolver().app_local_data_dir() {
-        Some(path) => Ok(path.join("database")),
-        None => {
-            log::error!("Cannot get database dir");
-            Err("Cannot get database dir")
-        }
-    }
+    let path = resolve_dir!(handle.path_resolver().app_local_data_dir())?;
+    Ok(path.join("database"))
 }
 
 pub fn get_temp_dir(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
-    log::trace!("Getting temp dir");
-    match handle.path_resolver().app_local_data_dir() {
-        Some(path) => Ok(path.join("temp")),
-        None => {
-            log::error!("Cannot get temp dir");
-            Err("Cannot get temp dir")
-        }
-    }
+    let path = resolve_dir!(handle.path_resolver().app_local_data_dir())?;
+    Ok(path.join("temp"))
 }
 
 pub fn get_secret_dir(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
-    log::trace!("Getting secret dir");
-    match handle.path_resolver().app_local_data_dir() {
-        Some(path) => Ok(path.join("secret")),
-        None => {
-            log::error!("Cannot get secret dir");
-            Err("Cannot get secret dir")
-        }
-    }
+    let path = resolve_dir!(handle.path_resolver().app_local_data_dir())?;
+    Ok(path.join("secrets"))
 }
 
 pub fn get_setting_dir(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
-    log::trace!("Getting setting dir");
-    match handle.path_resolver().app_config_dir() {
-        Some(path) => Ok(path.join("settings")),
-        None => {
-            log::error!("Cannot get setting dir");
-            Err("Cannot get setting dir")
-        }
-    }
+    let path = resolve_dir!(handle.path_resolver().app_local_data_dir())?;
+    Ok(path.join("settings"))
 }
 
 pub fn get_migration_dir(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
-    log::trace!("Getting migration dir");
-    match handle.path_resolver().resource_dir() {
-        Some(path) => Ok(path.join("resources").join("migrations")),
-        None => {
-            log::error!("Cannot get migration dir");
-            Err("Cannot get migration dir")
-        }
-    }
+    let path = resolve_dir!(handle.path_resolver().resource_dir())?;
+    Ok(path.join("resources").join("migrations"))
 }
