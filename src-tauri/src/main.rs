@@ -29,7 +29,11 @@ async fn main() -> Result<(), &'static str> {
                 .log_name(chrono::Utc::now().format("%Y-%m-%d").to_string())
                 .build(),
         )
-        .setup(|app| Ok(()))
+        .setup(|app| {
+            crate::app::setup::paths::prepare_paths(app.handle())?;
+
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             github::put::put_repository_readme,
             github::patch::patch_repository_description,
@@ -60,8 +64,8 @@ async fn main() -> Result<(), &'static str> {
     };
 
     log::trace!("Preparing state manager");
-    let db = crate::app::setup::prepare_db(&app).await?;
-    let octocrab = crate::github::setup::setup_octocrab(app.app_handle())?;
+    let db = crate::app::setup::database::prepare_db(&app).await?;
+    let octocrab = crate::app::setup::octocrab::prepare_octocrab(app.app_handle())?;
     app.manage(AppState { db, octocrab });
 
     log::trace!("Running app");

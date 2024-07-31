@@ -3,10 +3,10 @@
 pub fn revert_app_settings(handle: tauri::AppHandle) -> Result<(), &'static str> {
     log::trace!("Getting path");
     let path = match crate::paths::get_setting_dir(handle) {
-        Ok(path) => path,
+        Ok(path) => path.join(crate::app::constants::SETTINGS_FILE_NAME),
         Err(err) => {
-            log::error!("Failed to get path: {}", err);
-            return Err("Failed to get path");
+            log::error!("Cannot get path: {}", err);
+            return Err("Cannot get path");
         }
     };
 
@@ -14,8 +14,8 @@ pub fn revert_app_settings(handle: tauri::AppHandle) -> Result<(), &'static str>
     let content = match serde_json::to_string_pretty(&crate::models::AppSettings::default()) {
         Ok(json_str) => json_str,
         Err(err) => {
-            log::error!("Failed to serialize: {}", err);
-            return Err("Failed to serialize settings");
+            log::error!("Cannot serialize settings: {}", err);
+            return Err("Cannot serialize settings");
         }
     };
 
@@ -23,8 +23,8 @@ pub fn revert_app_settings(handle: tauri::AppHandle) -> Result<(), &'static str>
     match std::fs::write(&path, content) {
         Ok(_) => Ok(()),
         Err(err) => {
-            log::error!("Failed to write content: {}", err);
-            Err("Failed to write content")
+            log::error!("Cannot write content: {}", err);
+            Err("Cannot write content")
         }
     }
 }
@@ -34,10 +34,10 @@ pub fn get_app_settings(
 ) -> Result<crate::models::AppSettings, &'static str> {
     log::trace!("Getting path");
     let path = match crate::paths::get_setting_dir(handle) {
-        Ok(path) => path,
+        Ok(path) => path.join(crate::app::constants::SETTINGS_FILE_NAME),
         Err(err) => {
-            log::error!("Failed to get path: {}", err);
-            return Err("Failed to get path");
+            log::error!("Cannot get path: {}", err);
+            return Err("Cannot get path");
         }
     };
 
@@ -45,8 +45,8 @@ pub fn get_app_settings(
     let content = match std::fs::read_to_string(&path) {
         Ok(file_content) => file_content,
         Err(err) => {
-            log::error!("Failed to read content: {}", err);
-            return Err("Failed to read content");
+            log::error!("Cannot read content: {}", err);
+            return Err("Cannot read content");
         }
     };
 
@@ -54,8 +54,8 @@ pub fn get_app_settings(
     match serde_json::from_str(&content) {
         Ok(app_settings) => Ok(app_settings),
         Err(err) => {
-            log::error!("Failed to deserialize: {}", err);
-            Err("Failed to deserialize settings")
+            log::error!("Cannot deserialize settings: {}", err);
+            Err("Cannot deserialize settings")
         }
     }
 }

@@ -13,7 +13,7 @@ fn open_path(path: std::path::PathBuf) -> Result<(), &'static str> {
 #[tauri::command]
 pub fn open_secret_dir(handle: tauri::AppHandle) -> Result<(), &'static str> {
     let path = crate::paths::get_secret_dir(handle)?;
-    log::trace!("Opening secret");
+    log::trace!("Opening secret dir");
     open_path(path)
 }
 
@@ -27,7 +27,7 @@ pub fn open_setting_file(handle: tauri::AppHandle) -> Result<(), &'static str> {
 #[tauri::command]
 pub fn open_log_dir(handle: tauri::AppHandle) -> Result<(), &'static str> {
     let path = crate::paths::get_log_dir(handle)?;
-    log::trace!("Opening log");
+    log::trace!("Opening log dir");
     open_path(path)
 }
 
