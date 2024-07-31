@@ -1,12 +1,12 @@
 macro_rules! create_dir_if_needed {
     ($dir_path:expr) => {{
-        log::trace!("Creating dir: {}", $dir_path.display());
+        log::trace!("Creating dir: \"{}\"", $dir_path.display());
         match std::fs::create_dir_all($dir_path) {
             Ok(_) => {
                 log::trace!("Ok");
             }
             Err(err) => {
-                log::error!("Cannot create dir: {}", err);
+                log::error!("Cannot create dir: \"{}\"", err);
                 return Err("Cannot create dir");
             }
         }
@@ -18,24 +18,28 @@ macro_rules! create_dir_if_needed {
 /// Returns `Result<bool>` if file already exists
 macro_rules! create_file_if_needed {
     ($file_path:expr) => {{
-        log::trace!("Checking if file exists: {}", $file_path.display());
+        log::trace!("Checking if file exists: \"{}\"", $file_path.display());
         match $file_path.try_exists() {
             Ok(true) => {
                 log::trace!("Ok");
                 Ok(true)
             }
             Ok(false) => {
+                log::trace!("File missing");
                 log::trace!("Creating file");
                 match std::fs::File::create($file_path) {
-                    Ok(_) => Ok(false),
+                    Ok(_) => {
+                        log::trace!("Ok");
+                        Ok(false)
+                    }
                     Err(err) => {
-                        log::error!("Cannot create file: {}", err);
+                        log::error!("Cannot create file: \"{}\"", err);
                         Err("Cannot create file")
                     }
                 }
             }
             Err(err) => {
-                log::error!("Cannot check if file exists: {}", err);
+                log::error!("Cannot check if file exists: \"{}\"", err);
                 Err("Cannot check if file exists")
             }
         }
@@ -74,15 +78,17 @@ fn create_setting_files(handle: tauri::AppHandle) -> Result<(), &'static str> {
 
     let file_path = dir_path.join(crate::app::constants::SETTINGS_FILE_NAME);
     match create_file_if_needed!(file_path) {
-        Ok(true) => (),
-        Ok(false) => {
-            log::trace!("Populating initial settings");
-            crate::settings::revert_app_settings(handle)?;
+        Ok(true) => {
+            log::trace!("Ok");
+            Ok(())
         }
-        Err(err) => return Err(err),
-    };
-
-    Ok(())
+        Ok(false) => {
+            log::trace!("Writing initial settings");
+            crate::settings::revert_app_settings(handle)?;
+            Ok(())
+        }
+        Err(err) => Err(err),
+    }
 }
 
 pub fn prepare_paths(handle: tauri::AppHandle) -> Result<(), &'static str> {
