@@ -1,43 +1,61 @@
 use std::io::Write;
 
+/// Opens target path.
+///
+/// This function captures code duplication in other functions of this crate.
+///
+/// # Error
+/// - [`opener`] cannot open path
 fn open_path(path: std::path::PathBuf) -> Result<(), &'static str> {
-    match opener::open(path) {
+    match opener::open(&path) {
         Ok(()) => Ok(()),
         Err(err) => {
-            log::error!("Cannot open path: {}", err);
+            log::error!(
+                "opener cannot open path \"{}\": \"{}\"",
+                &path.display(),
+                err
+            );
             Err("Cannot open path")
         }
     }
 }
 
+/// Opens the secret directory.
+///
+/// This command is a wrapper around [`open_path`] that opens the secret directory.
 #[tauri::command]
 pub fn open_secret_dir(handle: tauri::AppHandle) -> Result<(), &'static str> {
     let path = crate::paths::get_secret_dir(handle)?;
-    log::trace!("Opening secret dir");
     open_path(path)
 }
 
+/// Opens the database directory.
+///
+/// This command is a wrapper around [`open_path`] that opens the database directory.
 #[tauri::command]
 pub fn open_setting_file(handle: tauri::AppHandle) -> Result<(), &'static str> {
     let path = crate::paths::get_setting_dir(handle)?;
-    log::trace!("Opening setting");
     open_path(path)
 }
 
+/// Opens the log directory.
+///
+/// This command is a wrapper around [`open_path`] that opens the log directory.
 #[tauri::command]
 pub fn open_log_dir(handle: tauri::AppHandle) -> Result<(), &'static str> {
     let path = crate::paths::get_log_dir(handle)?;
-    log::trace!("Opening log dir");
     open_path(path)
 }
 
+/// Opens the database directory.
+///
+/// This command is a wrapper around [`open_path`] that opens the database directory.
 #[tauri::command]
 pub fn open_href(href: String) -> Result<(), &'static str> {
-    log::trace!("Opening link: {}", href);
-    match opener::open_browser(href) {
+    match opener::open_browser(&href) {
         Ok(()) => Ok(()),
         Err(err) => {
-            log::error!("Cannot open link: {}", err);
+            log::error!("opener cannot open link \"{}\": \"{}\"", &href, err);
             Err("Cannot open link")
         }
     }
@@ -56,27 +74,28 @@ pub async fn open_in_editor(
     let dir_path = crate::paths::get_temp_dir(handle)?;
     let file_path = dir_path.join(file_name);
 
-    log::trace!("Creating temp file");
     let mut file = match std::fs::File::create(&file_path) {
         Ok(file) => file,
         Err(err) => {
-            log::error!("Cannot create temp file: {}", err);
-            return Err("Cannot create temp file");
+            log::error!(
+                "System cannot create temp file at \"{}\": \"{}\"",
+                &file_path.display(),
+                err
+            );
+            return Err("Cannot create file");
         }
     };
 
-    log::trace!("Writing initial content");
     match file.write_all(content.as_bytes()) {
         Ok(()) => (),
         Err(err) => {
-            log::error!("Cannot write content: {}", err);
+            log::error!("System cannot write content: \"{}\"", err);
             return Err("Cannot write content");
         }
     };
 
     // Open file with vscode on windows
     // everything else is unimplemented
-    log::trace!("Spawning subprocess");
     if cfg!(target_os = "windows") {
         let cmd = std::process::Command::new("cmd")
             .arg("/C")
@@ -86,17 +105,16 @@ pub async fn open_in_editor(
             .arg(&file_path)
             .spawn();
 
-        log::trace!("Waiting for subprocess");
         match cmd {
             Ok(mut subproc) => match subproc.wait() {
                 Ok(status) => status,
                 Err(err) => {
-                    log::error!("Cannot wait for subprocess: {}", err);
+                    log::error!("System cannot wait for subprocess: \"{}\"", err);
                     return Err("Cannot wait for subprocess");
                 }
             },
             Err(err) => {
-                log::error!("Cannot spawn subprocess: {}", err);
+                log::error!("System cannot spawn subprocess: \"{}\"", err);
                 return Err("Cannot spawn subprocess");
             }
         };
@@ -104,20 +122,18 @@ pub async fn open_in_editor(
         unimplemented!()
     };
 
-    log::trace!("Reading edited content");
     let updated_content = match std::fs::read_to_string(&file_path) {
         Ok(content) => content,
         Err(err) => {
-            log::error!("Cannot read content: {}", err);
+            log::error!("System cannot read content: \"{}\"", err);
             return Err("Cannot read content");
         }
     };
 
-    log::trace!("Removing temp file");
     match std::fs::remove_file(&file_path) {
         Ok(_) => (),
         Err(err) => {
-            log::error!("Cannot remove file: {}", err);
+            log::error!("System cannot remove file: \"{}\"", err);
             return Err("Cannot remove file");
         }
     };
