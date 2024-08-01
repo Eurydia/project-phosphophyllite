@@ -27,7 +27,7 @@ pub fn revert_app_settings(handle: tauri::AppHandle) -> Result<(), &'static str>
         }
     };
 
-    match std::fs::write(&path, content) {
+    match std::fs::write(&path, &content) {
         Ok(_) => Ok(()),
         Err(err) => {
             log::error!("System cannot write settings to file: \"{}\"", err);

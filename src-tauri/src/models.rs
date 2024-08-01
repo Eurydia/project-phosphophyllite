@@ -21,7 +21,7 @@ pub struct AppRepository {
 /// A struct for the `AppIssue` table.
 ///
 /// The fields are collected from [`octocrab::models::Issue`] with a few additional fields.
-#[derive(FromRow, Serialize, Deserialize)]
+#[derive(sqlx::FromRow, serde::Serialize, serde::Deserialize)]
 pub struct AppIssue {
     pub r#url: String,
     pub r#repository_url: String,
@@ -40,7 +40,7 @@ pub struct AppIssue {
 /// A struct for the `AppComment` table.
 ///
 /// The fields are collected from [`octocrab::models::Comment`] with a few additional fields.
-#[derive(FromRow, Serialize, Deserialize)]
+#[derive(sqlx::FromRow, serde::Serialize, serde::Deserialize)]
 pub struct AppComment {
     pub r#url: String,
     pub r#issue_url: String,
@@ -54,7 +54,7 @@ pub struct AppComment {
 /// Stores settings related to auto-updating the database on app startup.
 ///
 /// It is a part of  [`AppSettings`] struct.
-#[derive(Serialize, Deserialize)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct AutoUpdateSettings {
     pub enabled: bool,
     pub minimum_elasped_interval_second: i64,
@@ -64,7 +64,7 @@ pub struct AutoUpdateSettings {
 /// Stores user settings and preferences for the application.
 ///
 /// It is a part of  [`AppSettings`] struct.
-#[derive(Serialize, Deserialize)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct UserSettings {
     pub index_bot_generated_issues: bool,
     pub custom_issue_label: Vec<String>,
@@ -92,7 +92,8 @@ impl Default for UserSettings {
 /// Stores all settings and preferences for the application.
 ///
 /// Composed of [`AutoUpdateSettings`] and [`UserSettings`].
-#[derive(Serialize, Deserialize)]
+
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct AppSettings {
     pub auto_update: AutoUpdateSettings,
     pub user_config: UserSettings,

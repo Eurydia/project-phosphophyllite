@@ -191,8 +191,8 @@ pub async fn get_comments(
 pub async fn get_comments_in_issue(
     state: tauri::State<'_, crate::AppState>,
     issue_url: String,
-) -> Result<Vec<crate::models::AppComment>, String> {
-    let items: Vec<crate::models::AppComment> = sqlx::query_as::<_, crate::models::AppComment>(
+) -> Result<Vec<crate::models::AppComment>, &'static str> {
+    let query = sqlx::query_as::<_, crate::models::AppComment>(
         r#"
         SELECT *
         FROM comments
@@ -201,9 +201,13 @@ pub async fn get_comments_in_issue(
     )
     .bind(issue_url)
     .fetch(&state.db)
-    .try_collect()
-    .await
-    .unwrap();
+    .try_collect::<Vec<crate::models::AppComment>>();
 
-    Ok(items)
+    match query.await {
+        Ok(items) => Ok(items),
+        Err(err) => {
+            log::error!("Cannot get comments in issue: \"{}\"", err);
+            Err("Cannot get comments in issue")
+        }
+    }
 }

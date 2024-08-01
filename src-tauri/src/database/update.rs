@@ -1,57 +1,53 @@
-macro_rules! trace_field {
-    ($field:expr, $field_name:literal) => {{
-        log::trace!("Trying to prepare \"{}\" field", $field_name);
-        $field
+macro_rules! log_error_and_return_missing_field {
+    ($field_name:expr) => {{
+        log::error!("Missing field \"{}\"", $field_name);
+        return Err(format!("Missing field \"{}\"", $field_name).as_str());
     }};
 }
 
-macro_rules! log_error_and_return {
-    ($field_name:literal) => {{
-        log::error!(
-            "Cannot continue since repository is missing \"{}\"",
-            $field_name
-        );
-        return Err(concat!("Repository is missing \"", $field_name, "\""));
-    }};
-}
-
-macro_rules! trace_mandatory_field {
-    ($field:expr, $field_name:literal) => {
-        trace_field!(
-            match $field {
-                Some(field) => field,
-                None => log_error_and_return!($field_name),
-            },
-            $field_name
-        )
+macro_rules! unwrap_mandatory_field {
+    ($field:expr) => {
+        match $field {
+            Some(field) => field,
+            None => log_error_and_return_missing_field!(stringify!($field)),
+        }
     };
 }
 
-macro_rules! trace_datetime_field {
-    ($field:expr, $field_name:literal) => {
-        trace_field!(
-            match $field {
-                Some(datetime) => datetime.to_rfc3339(),
-                None => {
-                    log::trace!(
-                        "Using empty string since repository is missing \"{}\"",
-                        $field_name
-                    );
-                    String::default()
-                }
-            },
-            $field_name
-        )
+macro_rules! unwrap_optional_field {
+    ($field:expr) => {
+        match $field {
+            Some(field) => field,
+            None => String::default(),
+        }
     };
 }
 
+macro_rules! unwrap_optional_field_datetime {
+    ($raw_datetime:expr) => {
+        match $raw_datetime {
+            Some(datetime) => datetime.to_rfc3339(),
+            None => String::default(),
+        }
+    };
+}
+
+/// Update the repository table entry in the database.
+///
+/// This function accepts a [`octocrab::models::Repository`] as an argument. The fields are extracted from the struct and inserted into the database.
+/// Some fields in the struct are of type `Option<T>`. Some of these fields are mandatory, while others are optional.
+///
+/// This function also make a request to GitHub for README, since it is not included in the [`octocrab::models::Repository`] struct. As such, the request is located after other field are prepared to prevent unnecessary requests when the struct is malformed.
+///
+/// # Errors
+///
+/// - Mandatory fields are missing
+/// - [`sqlx`] cannot execute the query
 pub async fn update_repository_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
     octocrab: octocrab::Octocrab,
     repository: octocrab::models::Repository,
 ) -> Result<(), &'static str> {
-    log::trace!("Trying to update repository entry");
-
     let octocrab::models::Repository {
         name,
         full_name,
@@ -68,65 +64,37 @@ pub async fn update_repository_table_entry(
         ..
     } = repository.clone();
 
-    log::trace!("Preparing query");
+    let url_field = &url.to_string();
+    let name_field = &name;
+    let full_name_field = unwrap_mandatory_field!(full_name);
+    let owner_login_field = unwrap_mandatory_field!(owner).login;
+    let private_field = unwrap_mandatory_field!(private);
+    let archived_field = unwrap_mandatory_field!(archived);
+    let visibility_field = unwrap_mandatory_field!(visibility);
+    let pushed_at_field = unwrap_optional_field_datetime!(pushed_at);
+    let created_at_field = unwrap_optional_field_datetime!(created_at);
+    let updated_at_field = unwrap_optional_field_datetime!(updated_at);
+    let description_field = unwrap_optional_field!(description);
+    let html_url_field = unwrap_optional_field!(html_url).to_string();
+    let readme_field =
+        crate::github::get::get_repository_readme(octocrab, repository.clone()).await?;
 
-    let url_field = trace_field!(url.to_string(), "url");
-    let name_field = trace_field!(name, "name");
-    let readme_field = trace_field!(
-        crate::github::get::get_repository_readme(octocrab, repository.clone()).await?,
-        "readme"
-    );
-    let full_name_field = trace_mandatory_field!(full_name, "full_name");
-    let owner_login_field = trace_field!(
-        match owner {
-            Some(owner) => owner.login,
-            None => log_error_and_return!("owner"),
-        },
-        "owner_login"
-    );
-    let pushed_at_field = trace_datetime_field!(pushed_at, "pushed_at");
-    let created_at_field = trace_datetime_field!(created_at, "created_at");
-    let updated_at_field = trace_datetime_field!(updated_at, "updated_at");
-    let private_field = trace_mandatory_field!(private, "private");
-    let archived_field = trace_mandatory_field!(archived, "archived");
-    let visibility_field = trace_mandatory_field!(visibility, "visibility");
-    let description_field = trace_field!(
-        match description {
-            Some(description) => description,
-            None => {
-                log::trace!("Using empty string since repository is missing \"description\"");
-                String::default()
-            }
-        },
-        "description"
-    );
-    let html_url_field = trace_field!(
-        match html_url {
-            Some(html_url) => html_url.to_string(),
-            None => {
-                log::trace!("Using empty string since repository is missing \"html_url\"");
-                String::default()
-            }
-        },
-        "html_url"
-    );
-    log::trace!("Executing query for repository entry {}", &full_name_field);
     let query = sqlx::query(
         r#"
         INSERT OR REPLACE INTO repositories (
-                "url",
-                "name" ,
-                "full_name",
-                "owner_login",
-                "pushed_at",
-                "created_at",
-                "updated_at",
-                "private" ,
-                "archived" ,
-                "visibility",
-                "html_url",
-                "description",
-                "readme"
+            "url",
+            "name" ,
+            "full_name",
+            "owner_login",
+            "pushed_at",
+            "created_at",
+            "updated_at",
+            "private" ,
+            "archived" ,
+            "visibility",
+            "html_url",
+            "description",
+            "readme"
             )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
         "#,
@@ -147,26 +115,27 @@ pub async fn update_repository_table_entry(
     .execute(db);
 
     match query.await {
-        Ok(_) => {
-            log::trace!("Repository entry updated: {}", &full_name_field);
-            Ok(())
-        }
+        Ok(_) => Ok(()),
         Err(err) => {
-            log::error!(
-                "Error found while trying to update repository entry: {}",
-                err
-            );
-            Err("Something went wrong while updting repository entry")
+            log::error!("sqlx cannot execute query: \"{}\"", err);
+            Err("Cannot execute query")
         }
     }
 }
 
+/// Update the issue table entry in the database.
+///
+/// This function accepts a [`octocrab::models::issues::Issue`] as an argument. The fields are extracted from the struct and inserted into the database.
+///
+/// Some fields in the struct are of type `Option<T>`. Some of these fields are mandatory, while others are optional.
+///
+/// # Errors
+/// - Mandatory fields are missing
+/// - [`sqlx`] cannot execute the query
 pub async fn update_issue_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
     issue: octocrab::models::issues::Issue,
 ) -> Result<(), &'static str> {
-    log::trace!("Trying to update issue entry");
-
     let octocrab::models::issues::Issue {
         url,
         repository_url,
@@ -181,46 +150,28 @@ pub async fn update_issue_table_entry(
         user,
         labels,
         ..
-    } = issue.clone();
+    } = issue;
 
-    log::trace!("Preparing query fields");
+    let title_field = title;
+    let user_type_field = user.r#type;
+    let url_field = url.to_string();
+    let number_field = number.to_string();
+    let html_url_field = html_url.to_string();
+    let repository_url_field = repository_url.to_string();
+    let created_at_field = created_at.to_rfc3339();
+    let updated_at_field = updated_at.to_rfc3339();
+    let body_field = unwrap_optional_field!(body);
+    let closed_at_field = unwrap_optional_field_datetime!(closed_at);
+    let state_field = match state {
+        octocrab::models::IssueState::Open => "open",
+        octocrab::models::IssueState::Closed | _ => "closed",
+    };
+    let label = labels
+        .into_iter()
+        .map(|label| label.name)
+        .collect::<Vec<String>>()
+        .join(",");
 
-    let url_field = trace_field!(url.to_string(), "url");
-    let repository_url_field = trace_field!(repository_url.to_string(), "repository_url");
-    let title_field = trace_field!(title, "title");
-    let label_field = trace_field!(
-        labels
-            .into_iter()
-            .map(|label| label.name)
-            .collect::<Vec<String>>()
-            .join(","),
-        "issue_label"
-    );
-    let body_field = trace_field!(
-        match body {
-            Some(body) => body,
-            None => {
-                log::trace!("Using empty string since issue is missing \"body\"");
-                String::default()
-            }
-        },
-        "body"
-    );
-    let state_field = trace_field!(
-        match state {
-            octocrab::models::IssueState::Open => "open",
-            octocrab::models::IssueState::Closed | _ => "closed",
-        },
-        "state"
-    );
-    let number_field = trace_field!(number.to_string(), "number");
-    let html_url_field = trace_field!(html_url.to_string(), "html_url");
-    let created_at_field = trace_datetime_field!(Some(created_at), "created_at");
-    let updated_at_field = trace_datetime_field!(Some(updated_at), "updated_at");
-    let closed_at_field = trace_datetime_field!(closed_at, "closed_at");
-    let user_type_field = trace_field!(user.r#type, "user_type");
-
-    log::trace!("Executing query for issue entry {}", &url_field);
     let query = sqlx::query(
         r#"
         INSERT OR REPLACE INTO issues (
@@ -255,23 +206,27 @@ pub async fn update_issue_table_entry(
     .execute(db);
 
     match query.await {
-        Ok(_) => {
-            log::trace!("Issue entry updated: {}", &url_field,);
-            Ok(())
-        }
+        Ok(_) => Ok(()),
         Err(err) => {
-            log::error!("Error found while trying to update issue entry: {}", err);
-            Err("Something went wrong while updating issue entry")
+            log::error!("sqlx cannot execute query: \"{}\"", err);
+            Err("Cannot execute query")
         }
     }
 }
 
+/// Update the comment table entry in the database.
+///
+/// This function accepts a [`octocrab::models::issues::Comment`] as an argument. The fields are extracted from the struct and inserted into the database.
+///
+/// Some fields in the struct are of type `Option<T>`. Some of these fields are mandatory, while others are optional.
+///
+/// # Errors
+/// - Mandatory fields are missing
+/// - [`sqlx`] cannot execute the query
 pub async fn update_comment_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
     comment: octocrab::models::issues::Comment,
 ) -> Result<(), &'static str> {
-    log::trace!("Trying to update comment entry");
-
     let octocrab::models::issues::Comment {
         url,
         issue_url,
@@ -283,31 +238,14 @@ pub async fn update_comment_table_entry(
         ..
     } = comment.clone();
 
-    log::trace!("Preparing query fields");
-    let url_field = trace_field!(url.to_string(), "url");
-    let issue_url_field = trace_field!(
-        match issue_url {
-            Some(issue_url) => issue_url.to_string(),
-            None => log_error_and_return!("issue_url"),
-        },
-        "issue_url"
-    );
-    let id_field = trace_field!(id.to_string(), "id");
-    let body_field = trace_field!(
-        match body {
-            Some(body) => body,
-            None => {
-                log::trace!("Using empty string since comment is missing \"body\"");
-                String::default()
-            }
-        },
-        "body"
-    );
-    let html_url_field = trace_field!(html_url.to_string(), "html_url");
-    let created_at_field = trace_datetime_field!(Some(created_at), "created_at");
-    let updated_at_field = trace_datetime_field!(updated_at, "updated_at");
+    let issue_url_field = unwrap_mandatory_field!(issue_url);
+    let body_field = unwrap_optional_field!(body);
+    let updated_at_field = unwrap_optional_field_datetime!(updated_at);
+    let id_field = id.to_string();
+    let url_field = url.to_string();
+    let html_url_field = html_url.to_string();
+    let created_at_field = created_at.to_rfc3339();
 
-    log::trace!("Executing query for comment entry {}", &url_field);
     let query = sqlx::query(
         r#"
         INSERT OR REPLACE INTO comments (
@@ -328,20 +266,33 @@ pub async fn update_comment_table_entry(
     .bind(&body_field)
     .bind(&html_url_field)
     .bind(&created_at_field)
-    .bind(&updated_at_field);
-
-    match query.execute(db).await {
-        Ok(_) => {
-            log::trace!("Comment entry updated: {}", &url_field);
-            Ok(())
-        }
+    .bind(&updated_at_field)
+    .execute(db);
+    match query.await {
+        Ok(_) => Ok(()),
         Err(err) => {
-            log::error!("Error found while trying to update comment entry: {}", err);
-            Err("Something went wrong while updating comment entry")
+            log::error!("sqlx cannot execute query: \"{}\"", err);
+            Err("Cannot execute query")
         }
     }
 }
 
+/// Update the database.
+///
+/// This function updates the database with the latest information from GitHub. It fetches all repositories, issues, and comments from GitHub and updates the database accordingly.
+///
+/// This function also updates the last updated field in the settings file.
+///
+/// # Errors
+/// - [`octocrab`] cannot get repositories
+/// - [`octocrab`] cannot get issues
+/// - [`octocrab`] cannot get comments
+/// - [`sqlx`] cannot execute the query to update repositories
+/// - [`sqlx`] cannot execute the query to update issues
+/// - [`sqlx`] cannot execute the query to update comments
+/// - [`tauri`] cannot resolve path to settings
+/// - [`serde_json`] cannot serialize settings
+/// - System cannot write to file
 #[tauri::command]
 pub async fn update_db(
     handle: tauri::AppHandle,
@@ -350,61 +301,41 @@ pub async fn update_db(
 ) -> Result<(), &'static str> {
     let db = &state.db;
     let crab = state.octocrab.clone();
-    log::trace!("Trying to update database");
 
-    log::trace!("Fetching available repositories from GitHub");
     let repos = crate::github::get::get_repositories(crab.clone()).await?;
     for repo in repos {
-        log::trace!("Updating repository table entry for {}", &repo.url.as_str());
         update_repository_table_entry(db, crab.clone(), repo.clone()).await?;
 
-        log::trace!("Fetching issues from GitHub");
         let issues = crate::github::get::get_issues(crab.clone(), repo.clone()).await?;
         for issue in issues.into_iter() {
-            log::trace!("Updating issue table entry for {}", &issue.url.as_str());
             update_issue_table_entry(db, issue.clone()).await?;
         }
 
-        log::trace!("Fetching comments from GitHub");
         let comments = crate::github::get::get_comments(crab.clone(), repo.clone()).await?;
         for comment in comments.into_iter() {
-            log::trace!("Updating comment table entry for {}", &comment.url.as_str());
             update_comment_table_entry(db, comment.clone()).await?
         }
     }
 
-    log::trace!("Getting user settings");
     let mut user_settings = crate::settings::get_app_settings(handle.clone())?;
 
-    log::trace!("Updating user settings");
     user_settings.auto_update.last_updated = chrono::Utc::now().to_rfc3339();
 
-    log::trace!("Serializing updated settings");
     let json_string = match serde_json::to_string_pretty(&user_settings) {
         Ok(json_string) => json_string,
         Err(err) => {
-            log::error!(
-                "Error found while trying to serialize updated user settings: {}",
-                err
-            );
-            return Err("Something went wrong while serializing user settings");
+            log::error!("serde_json cannot serialize settings: \"{}\"", err);
+            return Err("Cannot serialize settings");
         }
     };
 
     let path = crate::paths::get_setting_dir(handle.clone())?;
 
-    log::trace!("Writing updated settings to file");
     match std::fs::write(path, json_string) {
-        Ok(()) => {
-            log::trace!("Settings updated successfully");
-            Ok(())
-        }
+        Ok(()) => Ok(()),
         Err(err) => {
-            log::error!(
-                "Error found while trying to write updated user settings: {}",
-                err
-            );
-            Err("Something went wrong while writing user settings")
+            log::error!("System cannot write to file: \"{}\"", err);
+            Err("Cannot write to file")
         }
     }
 }

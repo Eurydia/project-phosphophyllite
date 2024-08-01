@@ -1,18 +1,18 @@
-/// Unwraps [`Option<PathBuf>`] into [`Result<_, &'static str>`].
+/// Unwraps [`Option<PathBuf>`] into [`Result<PathBuf, &'static str>`].
 ///
 /// # Error
 ///
 /// - Tauri cannot resolve the base directory
 macro_rules! resolve_dir {
-    ($path:expr) => {
+    ($path:expr) => {{
         match $path {
             Some(path) => Ok(path),
             None => {
                 log::error!("Tauri cannot resolve dir \"{}\"", stringify!($path));
-                return Err("Cannot resolve dir");
+                Err("Cannot resolve dir")
             }
         }
-    };
+    }};
 }
 
 /// Returns the path to the log directory.
