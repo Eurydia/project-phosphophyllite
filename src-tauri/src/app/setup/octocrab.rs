@@ -1,15 +1,11 @@
 /// Build octocrab instance from credentials in secrets directory
 pub fn prepare_octocrab(handle: tauri::AppHandle) -> Result<octocrab::Octocrab, &'static str> {
-    log::trace!("Preparing octocrab");
-
-    log::trace!("Reading app_id");
     let raw_app_id = crate::secrets::get_app_id(handle.clone())?;
-    log::trace!("Parsing");
     let app_id = match raw_app_id.parse::<u64>() {
         Ok(app_id) => app_id,
         Err(err) => {
-            log::error!("Cannot parse app_id: {}", err);
-            return Err("Cannot parse app_id");
+            log::error!("Rust cannot parse String to u64: \"{}\"", err);
+            return Err("Cannot parse String to u64");
         }
     };
 

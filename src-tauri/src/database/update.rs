@@ -1,15 +1,11 @@
-macro_rules! log_error_and_return_missing_field {
-    ($field_name:expr) => {{
-        log::error!("Missing field \"{}\"", $field_name);
-        return Err(format!("Missing field \"{}\"", $field_name).as_str());
-    }};
-}
-
 macro_rules! unwrap_mandatory_field {
     ($field:expr) => {
         match $field {
             Some(field) => field,
-            None => log_error_and_return_missing_field!(stringify!($field)),
+            None => {
+                log::error!("Missing field \"{}\"", stringify!($field));
+                return Err("Missing field");
+            }
         }
     };
 }
@@ -75,7 +71,10 @@ pub async fn update_repository_table_entry(
     let created_at_field = unwrap_optional_field_datetime!(created_at);
     let updated_at_field = unwrap_optional_field_datetime!(updated_at);
     let description_field = unwrap_optional_field!(description);
-    let html_url_field = unwrap_optional_field!(html_url).to_string();
+    let html_url_field = match html_url {
+        Some(html_url) => html_url.to_string(),
+        None => String::default(),
+    };
     let readme_field =
         crate::github::get::get_repository_readme(octocrab, repository.clone()).await?;
 
@@ -166,7 +165,7 @@ pub async fn update_issue_table_entry(
         octocrab::models::IssueState::Open => "open",
         octocrab::models::IssueState::Closed | _ => "closed",
     };
-    let label = labels
+    let label_field = labels
         .into_iter()
         .map(|label| label.name)
         .collect::<Vec<String>>()
@@ -238,7 +237,7 @@ pub async fn update_comment_table_entry(
         ..
     } = comment.clone();
 
-    let issue_url_field = unwrap_mandatory_field!(issue_url);
+    let issue_url_field = unwrap_mandatory_field!(issue_url).to_string();
     let body_field = unwrap_optional_field!(body);
     let updated_at_field = unwrap_optional_field_datetime!(updated_at);
     let id_field = id.to_string();

@@ -1,132 +1,146 @@
 use futures::TryStreamExt;
 
-/// Calls by the frontend to check whether the database should be updated.
+macro_rules! unwrap_query_option {
+    ($query:expr) => {
+        match $query.await {
+            Ok(item) => Ok(item),
+            Err(err) => {
+                log::warn!("sqlx cannot execute query: \"{}\"", err);
+                Ok(None)
+            }
+        }
+    };
+}
+
+macro_rules! unwrap_query_vec {
+    ($query:expr) => {
+        match $query.await {
+            Ok(items) => Ok(items),
+            Err(err) => {
+                log::warn!("sqlx cannot execute query: \"{}\"", err);
+                Ok(Vec::new())
+            }
+        }
+    };
+}
+
+/// Checks whether the database should be updated.
 ///
-/// Checks the delta between the last updated time and the current time. If the delta is greater than the minimum elapsed interval, the database should be updated.
-/// If an error occurs during the process, the update should be skipped.
+/// This function read the settings and checks whether the auto update is enabled.
+/// If it is enabled, it checks whether enough time has passed since the last update.
+///
+/// This function is called by the front-end once upon startup.
+///
+/// # Error
+///
+/// ## Path
+///
+/// The function has to use the user settings. If the function cannot access the settings, it returns an error, but retuning `Ok(false)` is also a valid choice.
+///
+/// ## By Chrono
+///
+/// The time of the last update is stored as a string in rfc3339 format, so this function uses chrono to parse it. When chrono fails to parse the string, it returns an error, but practically, returning `Ok(false)` could be a better choice.
 #[tauri::command]
 pub fn should_update_db(
     handle: tauri::AppHandle,
     _: tauri::State<'_, crate::AppState>,
     _: tauri::Window,
-) -> Result<bool, String> {
-    log::info!("Checking if database should be updated");
-
-    log::info!("Trying to get app settings");
-    let crate::models::AppSettings { auto_update, .. } =
-        match crate::settings::get_app_settings(handle) {
-            Ok(app_settings) => {
-                log::info!("Got app settings");
-                app_settings
-            }
-            Err(err) => {
-                log::error!("Error found while trying to get app settings: {}", &err);
-                return Ok(false);
-            }
-        };
+) -> Result<bool, &'static str> {
+    let crate::models::AppSettings { auto_update, .. } = crate::settings::get_app_settings(handle)?;
 
     if !auto_update.enabled {
-        log::info!("Auto update disabled");
         return Ok(false);
     }
 
-    log::info!("Auto update enabled");
-    log::info!("Trying to parse last updated time");
     let dt_last_updated = match chrono::DateTime::parse_from_rfc3339(&auto_update.last_updated) {
-        Ok(dt_last_updated) => {
-            log::info!("Parse successful");
-            dt_last_updated
-        }
+        Ok(dt_last_updated) => dt_last_updated,
         Err(err) => {
-            log::error!(
-                "Error found while trying to parse last updated time: {}",
-                &err
-            );
-            return Ok(false);
+            log::error!("chrono cannor parse datetime string:\"{}\"", err);
+            return Error("Cannot parse datetime string");
         }
     };
     let dt_now = chrono::Utc::now();
     let dt_delta = dt_now - dt_last_updated.with_timezone(&chrono::Utc);
     let should_update = dt_delta.num_seconds() > auto_update.minimum_elasped_interval_second;
-
-    log::info!(
-        "Should update the database: {}. Last updated: {:?}, Now: {:?}, Delta (seconds): {:?}, Minimum delta for update (seconds): {} ",
-        should_update,
-        dt_last_updated,
-        dt_now,
-        dt_delta,
-        auto_update.minimum_elasped_interval_second
-    );
     Ok(should_update)
 }
 
+/// Get all repositories from the database sorted by full name in ascending order.
+///
+/// If [`sqlx`] cannot execute the query, this function logs the error and returns an empty vector.
 #[tauri::command]
 pub async fn get_repositories(
     state: tauri::State<'_, crate::AppState>,
-) -> Result<Vec<crate::models::AppRepository>, String> {
-    let items: Vec<crate::models::AppRepository> =
-        sqlx::query_as::<_, crate::models::AppRepository>(
-            r#"
+) -> Result<Vec<crate::models::AppRepository>, &'static str> {
+    let r#query = sqlx::query_as::<_, crate::models::AppRepository>(
+        r#"
         SELECT * 
         FROM repositories
         ORDER BY full_name ASC
         "#,
-        )
-        .fetch(&state.db)
-        .try_collect()
-        .await
-        .unwrap();
-    Ok(items)
+    )
+    .fetch(&state.db)
+    .try_collect::<Vec<crate::models::AppRepository>>();
+
+    unwrap_query_vec!(r#query)
 }
 
+/// Get a single repository from the database with the given full name.
+///
+/// In case of an error, this function logs the error and returns `None`.
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_repository_with_full_name(
     state: tauri::State<'_, crate::AppState>,
     owner_name: String,
     repository_name: String,
-) -> Result<Option<crate::models::AppRepository>, String> {
-    let item: Option<crate::models::AppRepository> =
-        sqlx::query_as::<_, crate::models::AppRepository>(
-            r#"
+) -> Result<Option<crate::models::AppRepository>, &'static str> {
+    let r#query = sqlx::query_as::<_, crate::models::AppRepository>(
+        r#"
         SELECT *
         FROM repositories
-        WHERE full_name = ?
+        WHERE 
+            name        = ? AND 
+            owner_login = ?
         LIMIT 1
         "#,
-        )
-        .bind(format!("{}/{}", owner_name, repository_name))
-        .fetch_optional(&state.db)
-        .await
-        .unwrap();
+    )
+    .bind(repository_name)
+    .bind(owner_name)
+    .fetch_optional(&state.db);
 
-    Ok(item)
+    unwrap_query_option!(r#query)
 }
 
+/// Get all issues from the database.
+///
+/// If [`sqlx`] cannot execute the query, this function logs the error and returns an empty vector.
 #[tauri::command]
 pub async fn get_issues(
     state: tauri::State<'_, crate::AppState>,
-) -> Result<Vec<crate::models::AppIssue>, String> {
-    let items: Vec<crate::models::AppIssue> = sqlx::query_as::<_, crate::models::AppIssue>(
+) -> Result<Vec<crate::models::AppIssue>, &'static str> {
+    let r#query = sqlx::query_as::<_, crate::models::AppIssue>(
         r#"
         SELECT *
         FROM issues
         "#,
     )
     .fetch(&state.db)
-    .try_collect()
-    .await
-    .unwrap();
-    Ok(items)
+    .try_collect();
+
+    unwrap_query_vec!(r#query)
 }
 
+/// Get all issues from the database which belong to the given repository.
+///
+/// If [`sqlx`] cannot execute the query, this function logs the error and returns an empty vector.
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_issues_in_repository(
     _: tauri::AppHandle,
     state: tauri::State<'_, crate::AppState>,
     _: tauri::Window,
     repository_url: String,
-) -> Result<Vec<crate::models::AppIssue>, String> {
-    let items: Vec<crate::models::AppIssue> = sqlx::query_as::<_, crate::models::AppIssue>(
+) -> Result<Vec<crate::models::AppIssue>, &'static str> {
+    let r#query = sqlx::query_as::<_, crate::models::AppIssue>(
         r#"
         SELECT *
         FROM issues
@@ -137,20 +151,21 @@ pub async fn get_issues_in_repository(
     )
     .bind(repository_url)
     .fetch(&state.db)
-    .try_collect()
-    .await
-    .unwrap_or(Vec::new());
+    .try_collect();
 
-    Ok(items)
+    unwrap_query_vec!(r#query)
 }
 
+/// Get a single issue from the database with the given repository URL and issue number.
+///
+/// If [`sqlx`] cannot execute the query, this function logs the error and returns `None`.
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_issue_in_repository_with_number(
     state: tauri::State<'_, crate::AppState>,
     repository_url: String,
     number: String,
-) -> Result<Option<crate::models::AppIssue>, String> {
-    let items: Option<crate::models::AppIssue> = sqlx::query_as::<_, crate::models::AppIssue>(
+) -> Result<Option<crate::models::AppIssue>, &'static str> {
+    let r#query = sqlx::query_as::<_, crate::models::AppIssue>(
         r#"
         SELECT *
         FROM issues
@@ -162,31 +177,33 @@ pub async fn get_issue_in_repository_with_number(
     )
     .bind(repository_url)
     .bind(number)
-    .fetch_optional(&state.db)
-    .await
-    .unwrap();
+    .fetch_optional(&state.db);
 
-    Ok(items)
+    unwrap_query_option!(r#query)
 }
 
+/// Get all comments from the database.
+///
+/// If [`sqlx`] cannot execute the query, this function logs the error and returns an empty vector.
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_comments(
     state: tauri::State<'_, crate::AppState>,
-) -> Result<Vec<crate::models::AppComment>, String> {
-    let items: Vec<crate::models::AppComment> = sqlx::query_as::<_, crate::models::AppComment>(
+) -> Result<Vec<crate::models::AppComment>, &'static str> {
+    let r#query = sqlx::query_as::<_, crate::models::AppComment>(
         r#"
         SELECT *
         FROM comments
         "#,
     )
     .fetch(&state.db)
-    .try_collect()
-    .await
-    .unwrap();
+    .try_collect();
 
-    Ok(items)
+    unwrap_query_vec!(r#query)
 }
 
+/// Get all comments from the database which belong to the given issue.
+///
+/// If [`sqlx`] cannot execute the query, this function logs the error and returns an empty vector.
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_comments_in_issue(
     state: tauri::State<'_, crate::AppState>,
@@ -203,11 +220,5 @@ pub async fn get_comments_in_issue(
     .fetch(&state.db)
     .try_collect::<Vec<crate::models::AppComment>>();
 
-    match query.await {
-        Ok(items) => Ok(items),
-        Err(err) => {
-            log::error!("Cannot get comments in issue: \"{}\"", err);
-            Err("Cannot get comments in issue")
-        }
-    }
+    unwrap_query_vec!(query)
 }
