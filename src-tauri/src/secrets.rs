@@ -4,28 +4,29 @@ fn get_secret_file(handle: tauri::AppHandle, file_path: &str) -> Result<String, 
     let dir_path = crate::paths::get_secret_dir(handle)?;
     let file_path = dir_path.join(file_path);
 
-    log::trace!("Checking if file exists: {}", file_path.display());
-    match file_path.try_exists() {
-        Ok(true) => {
-            log::trace!("Reading content");
-            match std::fs::read_to_string(&file_path) {
-                Ok(content) => {
-                    log::trace!("Ok");
-                    Ok(content)
-                }
-                Err(err) => {
-                    log::error!("Cannot read content: {}", err);
-                    Err("Cannot read content")
-                }
+    match &file_path.try_exists() {
+        Ok(true) => match std::fs::read_to_string(&file_path) {
+            Ok(content) => Ok(content),
+            Err(err) => {
+                log::error!(
+                    "Cannot read content from \"{}\": \"{}\"",
+                    &file_path.display(),
+                    err
+                );
+                Err("Cannot read content from setting file")
             }
-        }
+        },
         Ok(false) => {
-            log::error!("File does not exist");
-            Err("File does not exist")
+            log::error!("File does not exist at \"{}\"", &file_path.display());
+            Err("Settings file does not exist")
         }
         Err(err) => {
-            log::error!("Cannot check if file exists: {}", err);
-            Err("Cannot check if file exists")
+            log::error!(
+                "Cannot check if file exists at \"{}\": \"{}\"",
+                &file_path.display(),
+                err,
+            );
+            Err("Cannot check if settings file exists")
         }
     }
 }

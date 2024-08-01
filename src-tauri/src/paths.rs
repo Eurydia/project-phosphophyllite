@@ -1,17 +1,24 @@
+/// Unwraps `Optional` into `Result<_, &'static str>` and also logs an error message to `LogLevel:Error`.
+///
+/// # Error
+///
+/// ErrorWhen Tauri cannot resolve the path.
+///
+/// # Example
+///
+/// ```
+/// let path = resolve_dir!(handle.path_resolver().app_log_dir())?;
+/// ```
 macro_rules! resolve_dir {
-    ($path:expr) => {{
-        log::trace!("Resolving dir: \"{}\"", stringify!($path));
+    ($path:expr) => {
         match $path {
-            Some(path) => {
-                log::trace!("Ok");
-                Ok(path)
-            }
+            Some(path) => Ok(path),
             None => {
-                log::error!("Cannot resolve dir");
-                Err("Cannot resolve dir")
+                log::error!("Tauri failed to resolve path: ", stringify!($path));
+                return Err("Cannot resolve dir");
             }
         }
-    }};
+    };
 }
 
 pub fn get_log_dir(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
