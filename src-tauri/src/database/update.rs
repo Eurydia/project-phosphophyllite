@@ -302,17 +302,18 @@ pub async fn update_db(
     let crab = state.octocrab.clone();
 
     let repos = crate::github::get::get_repositories(crab.clone()).await?;
+    dbg!(&repos);
     for repo in repos {
         update_repository_table_entry(db, crab.clone(), repo.clone()).await?;
 
         let issues = crate::github::get::get_issues(crab.clone(), repo.clone()).await?;
-        for issue in issues.into_iter() {
-            update_issue_table_entry(db, issue.clone()).await?;
+        for issue in issues {
+            update_issue_table_entry(db, issue).await?;
         }
 
         let comments = crate::github::get::get_comments(crab.clone(), repo.clone()).await?;
-        for comment in comments.into_iter() {
-            update_comment_table_entry(db, comment.clone()).await?
+        for comment in comments {
+            update_comment_table_entry(db, comment).await?
         }
     }
 
