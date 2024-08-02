@@ -57,10 +57,6 @@ pub async fn put_repository_readme(
         }
     };
 
-    crate::database::update::update_repository_table_entry(
-        &state.db,
-        state.octocrab.clone(),
-        repository,
-    )
-    .await
+    crate::database::update::update_repository_table_entry(&state.db, &state.octocrab, &repository)
+        .await
 }

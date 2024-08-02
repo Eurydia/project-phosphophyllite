@@ -16,7 +16,7 @@ pub async fn patch_repository_description(
 ) -> Result<(), &'static str> {
     let request_body = serde_json::json!({"description": description});
 
-    let updated_repository = match state
+    let repository = match state
         .octocrab
         .patch::<octocrab::models::Repository, _, serde_json::value::Value>(
             format!("/repos/{}/{}", owner_name, repository_name),
@@ -31,10 +31,6 @@ pub async fn patch_repository_description(
         }
     };
 
-    crate::database::update::update_repository_table_entry(
-        &state.db,
-        state.octocrab.clone(),
-        updated_repository,
-    )
-    .await
+    crate::database::update::update_repository_table_entry(&state.db, &state.octocrab, &repository)
+        .await
 }

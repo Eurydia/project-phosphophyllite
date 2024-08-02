@@ -2,18 +2,18 @@
 ///
 /// # Errors
 /// - [`octocrab`] repository is missing owner information
-fn get_repository_name_component(
-    repository: octocrab::models::Repository,
-) -> Result<(String, String), &'static str> {
-    let octocrab::models::Repository { owner, name, .. } = repository;
-    let octocrab::models::Author { login, .. } = match owner {
-        Some(owner) => owner,
-        None => {
-            log::error!("Repository is missing owner information");
-            return Err("Missing owner information");
-        }
-    };
-    Ok((login, name))
+macro_rules! get_repository_name_component {
+    ($repo:expr) => {{
+        let octocrab::models::Repository { owner, name, .. } = $repo;
+        let octocrab::models::Author { login, .. } = match owner {
+            Some(owner) => owner,
+            None => {
+                log::error!("Repository is missing owner information");
+                return Err("Missing owner information");
+            }
+        };
+        (login, name)
+    }};
 }
 
 /// Get all repositories accessible to the app installation.
@@ -24,7 +24,7 @@ fn get_repository_name_component(
 /// - [`octocrab`] cannot get repositories
 /// - Rust cannot convert [`Vec::len()`] into i64
 pub async fn get_repositories(
-    octocrab: octocrab::Octocrab,
+    octocrab: &octocrab::Octocrab,
 ) -> Result<Vec<octocrab::models::Repository>, &'static str> {
     let mut items: Vec<octocrab::models::Repository> = Vec::new();
     let mut page_number: i64 = 1;
@@ -74,13 +74,13 @@ pub async fn get_repositories(
 /// # Error
 /// - [`octocrab`] cannot get README
 pub async fn get_repository_readme(
-    octocrab: octocrab::Octocrab,
-    repository: octocrab::models::Repository,
+    octocrab: &octocrab::Octocrab,
+    repository: &octocrab::models::Repository,
 ) -> Result<String, &'static str> {
-    let (owner_name, repository_name) = get_repository_name_component(repository)?;
+    let (owner_name, repository_name) = get_repository_name_component!(repository);
 
     let octocrab::models::repos::Content { content, .. } = match octocrab
-        .repos(&owner_name, &repository_name)
+        .repos(owner_name, repository_name)
         .get_readme()
         .send()
         .await
@@ -91,7 +91,7 @@ pub async fn get_repository_readme(
                 return Ok(String::default());
             }
             _ => {
-                log::error!("Octocrab cannot get README: \"{}\"", err);
+                log::error!("Octoc`rab cannot get README: \"{}\"", err);
                 return Err("Cannot get README");
             }
         },
@@ -110,16 +110,16 @@ pub async fn get_repository_readme(
 /// # Errors
 /// - [`octocrab`] cannot get issues
 pub async fn get_issues(
-    octocrab: octocrab::Octocrab,
-    repository: octocrab::models::Repository,
+    octocrab: &octocrab::Octocrab,
+    repository: &octocrab::models::Repository,
 ) -> Result<Vec<octocrab::models::issues::Issue>, &'static str> {
-    let (owner_name, repository_name) = get_repository_name_component(repository)?;
+    let (owner_name, repository_name) = get_repository_name_component!(repository);
 
     let mut items: Vec<octocrab::models::issues::Issue> = Vec::new();
     let mut page_number = 1u32;
     loop {
         let respond = match octocrab
-            .issues(&owner_name, &repository_name)
+            .issues(owner_name, repository_name)
             .list()
             .state(octocrab::params::State::All)
             .page(page_number)
@@ -150,16 +150,16 @@ pub async fn get_issues(
 /// # Errors
 /// - [`octocrab`] cannot get comments
 pub async fn get_comments(
-    octocrab: octocrab::Octocrab,
-    repository: octocrab::models::Repository,
+    octocrab: &octocrab::Octocrab,
+    repository: &octocrab::models::Repository,
 ) -> Result<Vec<octocrab::models::issues::Comment>, &'static str> {
-    let (owner_name, repository_name) = get_repository_name_component(repository)?;
+    let (owner_name, repository_name) = get_repository_name_component!(repository);
 
     let mut items: Vec<octocrab::models::issues::Comment> = Vec::new();
     let mut page_number = 1u32;
     loop {
         let respond = match octocrab
-            .issues(&owner_name, &repository_name)
+            .issues(owner_name, repository_name)
             .list_issue_comments()
             .page(page_number)
             .send()

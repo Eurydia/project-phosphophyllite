@@ -10,15 +10,6 @@ macro_rules! unwrap_mandatory_field {
     };
 }
 
-macro_rules! unwrap_optional_field {
-    ($field:expr) => {
-        match $field {
-            Some(field) => field,
-            None => String::default(),
-        }
-    };
-}
-
 macro_rules! unwrap_optional_field_datetime {
     ($raw_datetime:expr) => {
         match $raw_datetime {
@@ -41,8 +32,8 @@ macro_rules! unwrap_optional_field_datetime {
 /// - [`sqlx`] cannot execute the query
 pub async fn update_repository_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
-    octocrab: octocrab::Octocrab,
-    repository: octocrab::models::Repository,
+    octocrab: &octocrab::Octocrab,
+    repository: &octocrab::models::Repository,
 ) -> Result<(), &'static str> {
     let octocrab::models::Repository {
         name,
@@ -58,25 +49,33 @@ pub async fn update_repository_table_entry(
         description,
         url,
         ..
-    } = repository.clone();
+    } = repository;
 
-    let url_field = &url.to_string();
-    let name_field = &name;
+    let url_field = url.to_string();
+    let name_field = name;
     let full_name_field = unwrap_mandatory_field!(full_name);
-    let owner_login_field = unwrap_mandatory_field!(owner).login;
+    let owner_login_field = match owner {
+        Some(author) => &(author.login),
+        None => {
+            log::error!("Missing field \"owner\"");
+            return Err("Missing field");
+        }
+    };
     let private_field = unwrap_mandatory_field!(private);
     let archived_field = unwrap_mandatory_field!(archived);
     let visibility_field = unwrap_mandatory_field!(visibility);
     let pushed_at_field = unwrap_optional_field_datetime!(pushed_at);
     let created_at_field = unwrap_optional_field_datetime!(created_at);
     let updated_at_field = unwrap_optional_field_datetime!(updated_at);
-    let description_field = unwrap_optional_field!(description);
+    let description_field = match description {
+        Some(description) => description.to_string(),
+        None => String::default(),
+    };
     let html_url_field = match html_url {
         Some(html_url) => html_url.to_string(),
         None => String::default(),
     };
-    let readme_field =
-        crate::github::get::get_repository_readme(octocrab, repository.clone()).await?;
+    let readme_field = crate::github::get::get_repository_readme(octocrab, repository).await?;
 
     let query = sqlx::query(
         r#"
@@ -98,19 +97,19 @@ pub async fn update_repository_table_entry(
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
         "#,
     )
-    .bind(&url_field)
-    .bind(&name_field)
-    .bind(&full_name_field)
-    .bind(&owner_login_field)
-    .bind(&pushed_at_field)
-    .bind(&created_at_field)
-    .bind(&updated_at_field)
-    .bind(&private_field)
-    .bind(&archived_field)
-    .bind(&visibility_field)
-    .bind(&html_url_field)
-    .bind(&description_field)
-    .bind(&readme_field)
+    .bind(url_field)
+    .bind(name_field)
+    .bind(full_name_field)
+    .bind(owner_login_field)
+    .bind(pushed_at_field)
+    .bind(created_at_field)
+    .bind(updated_at_field)
+    .bind(private_field)
+    .bind(archived_field)
+    .bind(visibility_field)
+    .bind(html_url_field)
+    .bind(description_field)
+    .bind(readme_field)
     .execute(db);
 
     match query.await {
@@ -133,7 +132,7 @@ pub async fn update_repository_table_entry(
 /// - [`sqlx`] cannot execute the query
 pub async fn update_issue_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
-    issue: octocrab::models::issues::Issue,
+    issue: &octocrab::models::issues::Issue,
 ) -> Result<(), &'static str> {
     let octocrab::models::issues::Issue {
         url,
@@ -152,14 +151,17 @@ pub async fn update_issue_table_entry(
     } = issue;
 
     let title_field = title;
-    let user_type_field = user.r#type;
+    let user_type_field = user.r#type.to_string();
     let url_field = url.to_string();
     let number_field = number.to_string();
     let html_url_field = html_url.to_string();
     let repository_url_field = repository_url.to_string();
     let created_at_field = created_at.to_rfc3339();
     let updated_at_field = updated_at.to_rfc3339();
-    let body_field = unwrap_optional_field!(body);
+    let body_field = match body {
+        Some(body) => body.to_string(),
+        None => String::default(),
+    };
     let closed_at_field = unwrap_optional_field_datetime!(closed_at);
     let state_field = match state {
         octocrab::models::IssueState::Open => "open",
@@ -167,7 +169,7 @@ pub async fn update_issue_table_entry(
     };
     let label_field = labels
         .into_iter()
-        .map(|label| label.name)
+        .map(|label| label.name.to_string())
         .collect::<Vec<String>>()
         .join(",");
 
@@ -190,18 +192,18 @@ pub async fn update_issue_table_entry(
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         "#,
     )
-    .bind(&url_field)
-    .bind(&repository_url_field)
-    .bind(&title_field)
-    .bind(&body_field)
-    .bind(&state_field)
-    .bind(&number_field)
-    .bind(&html_url_field)
-    .bind(&created_at_field)
-    .bind(&updated_at_field)
-    .bind(&closed_at_field)
-    .bind(&user_type_field)
-    .bind(&label_field)
+    .bind(url_field)
+    .bind(repository_url_field)
+    .bind(title_field)
+    .bind(body_field)
+    .bind(state_field)
+    .bind(number_field)
+    .bind(html_url_field)
+    .bind(created_at_field)
+    .bind(updated_at_field)
+    .bind(closed_at_field)
+    .bind(user_type_field)
+    .bind(label_field)
     .execute(db);
 
     match query.await {
@@ -224,7 +226,7 @@ pub async fn update_issue_table_entry(
 /// - [`sqlx`] cannot execute the query
 pub async fn update_comment_table_entry(
     db: &sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
-    comment: octocrab::models::issues::Comment,
+    comment: &octocrab::models::issues::Comment,
 ) -> Result<(), &'static str> {
     let octocrab::models::issues::Comment {
         url,
@@ -235,11 +237,14 @@ pub async fn update_comment_table_entry(
         created_at,
         updated_at,
         ..
-    } = comment.clone();
+    } = comment;
 
-    let issue_url_field = unwrap_mandatory_field!(issue_url).to_string();
-    let body_field = unwrap_optional_field!(body);
+    let issue_url_field = &unwrap_mandatory_field!(issue_url).to_string();
     let updated_at_field = unwrap_optional_field_datetime!(updated_at);
+    let body_field = match body {
+        Some(body) => body.to_string(),
+        None => String::default(),
+    };
     let id_field = id.to_string();
     let url_field = url.to_string();
     let html_url_field = html_url.to_string();
@@ -299,21 +304,21 @@ pub async fn update_db(
     _: tauri::Window,
 ) -> Result<(), &'static str> {
     let db = &state.db;
-    let crab = state.octocrab.clone();
+    let crab = &state.octocrab;
 
-    let repos = crate::github::get::get_repositories(crab.clone()).await?;
+    let repos = crate::github::get::get_repositories(crab).await?;
     dbg!(&repos);
     for repo in repos {
-        update_repository_table_entry(db, crab.clone(), repo.clone()).await?;
+        update_repository_table_entry(db, crab, &repo).await?;
 
-        let issues = crate::github::get::get_issues(crab.clone(), repo.clone()).await?;
+        let issues = crate::github::get::get_issues(crab, &repo).await?;
         for issue in issues {
-            update_issue_table_entry(db, issue).await?;
+            update_issue_table_entry(db, &issue).await?;
         }
 
-        let comments = crate::github::get::get_comments(crab.clone(), repo.clone()).await?;
+        let comments = crate::github::get::get_comments(crab, &repo).await?;
         for comment in comments {
-            update_comment_table_entry(db, comment).await?
+            update_comment_table_entry(db, &comment).await?
         }
     }
 
