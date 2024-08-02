@@ -42,7 +42,7 @@ pub async fn prepare_db(app: &tauri::App) -> Result<sqlx::pool::Pool<sqlx::Sqlit
     };
 
     match migrator.run(&db).await {
-        Ok(_) => Ok(()),
+        Ok(_) => Ok(db),
         Err(err) => {
             log::error!("sqlx cannot run migrator: \"{}\"", err);
             Err("Cannot run migrator")

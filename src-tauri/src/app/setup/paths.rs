@@ -61,13 +61,13 @@ fn create_secret_files(handle: tauri::AppHandle) -> Result<(), &'static str> {
     create_dir_if_needed!(&dir_path);
 
     let app_id_file_path = dir_path.join(crate::app::constants::APP_ID_FILE_NAME);
-    create_file_if_needed!(app_id_file_path);
+    let _ = create_file_if_needed!(app_id_file_path)?;
 
     let installation_id_file_path = dir_path.join(crate::app::constants::INSTALLATION_ID_FILE_NAME);
-    create_file_if_needed!(installation_id_file_path);
+    let _ = create_file_if_needed!(installation_id_file_path)?;
 
     let rsa_private_key_file_path = dir_path.join(crate::app::constants::RSA_PRIVATE_KEY_FILE_NAME);
-    create_file_if_needed!(rsa_private_key_file_path);
+    let _ = create_file_if_needed!(rsa_private_key_file_path)?;
 
     Ok(())
 }

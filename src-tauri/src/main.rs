@@ -31,7 +31,6 @@ async fn main() -> Result<(), &'static str> {
         )
         .setup(|app| {
             crate::app::setup::paths::prepare_paths(app.handle())?;
-
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -58,17 +57,15 @@ async fn main() -> Result<(), &'static str> {
     let app = match builder {
         Ok(app) => app,
         Err(err) => {
-            log::error!("Cannot build app: {}", err);
+            log::error!("tauri cannot build app: {}", err);
             return Err("Cannot build app");
         }
     };
 
-    log::trace!("Preparing state manager");
     let db = crate::app::setup::database::prepare_db(&app).await?;
     let octocrab = crate::app::setup::octocrab::prepare_octocrab(app.app_handle())?;
     app.manage(AppState { db, octocrab });
 
-    log::trace!("Running app");
     app.run(|_, _| {});
 
     Ok(())

@@ -56,7 +56,7 @@ pub fn should_update_db(
         Ok(dt_last_updated) => dt_last_updated,
         Err(err) => {
             log::error!("chrono cannor parse datetime string:\"{}\"", err);
-            return Error("Cannot parse datetime string");
+            return Err("Cannot parse datetime string");
         }
     };
     let dt_now = chrono::Utc::now();
