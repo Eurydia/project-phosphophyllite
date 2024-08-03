@@ -5,11 +5,14 @@ import {
 	AppIssue,
 	AppRepository,
 } from "~types/models";
+import { useAddIssue } from "./useAddIssue";
+import { useUpdateRepositoryDescription } from "./useUpdateRepositoryDescription";
+import { useUpdateRespositoryReadme } from "./useUpdateRepositoryReadme";
 
 const tokenizeAppIssue = (
 	issue: AppIssue,
 ): string[] => {
-	const tokens: string[] = [];
+	const tokens = ["issue"];
 	tokens.push(issue.title);
 	tokens.push(issue.user_type);
 	tokens.push(issue.state);
@@ -21,6 +24,12 @@ export const useRepositoryCommands = (
 	repository: AppRepository,
 	issues: AppIssue[],
 ) => {
+	const updateDescription =
+		useUpdateRepositoryDescription();
+	const updateReadme =
+		useUpdateRespositoryReadme();
+	const addIssue = useAddIssue();
+
 	const submit = useSubmit();
 
 	const goToIssue = (issue: AppIssue) =>
@@ -31,11 +40,48 @@ export const useRepositoryCommands = (
 			},
 		);
 
+	const disabled = repository.archived;
+	const description = disabled
+		? "Only available for active repositories"
+		: null;
+
 	const commands: CommandOption[] = [
 		{
 			label: "Reveal repository on GitHub",
 			system: true,
 			action: () => openLink(repository.html_url),
+			searchTokens: [],
+		},
+		{
+			label:
+				"PROJECT: Add repository to project ...",
+			description: "To be implemented",
+			system: true,
+			searchTokens: [],
+			action: () => {},
+		},
+		{
+			label: "Edit repository description",
+			system: true,
+			action: () => updateDescription(repository),
+			disabled,
+			description,
+			searchTokens: [],
+		},
+		{
+			label: "Edit repository README",
+			system: true,
+			action: () => updateReadme(repository),
+			disabled,
+			description,
+			searchTokens: [],
+		},
+		{
+			label: "Add issue",
+			system: true,
+			action: () => addIssue(repository),
+			disabled,
+			description,
 			searchTokens: [],
 		},
 	];

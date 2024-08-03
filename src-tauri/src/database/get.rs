@@ -104,8 +104,8 @@ pub async fn get_repository_with_full_name(
         LIMIT 1
         "#,
     )
-    .bind(repository_name)
-    .bind(owner_name)
+    .bind(&repository_name)
+    .bind(&owner_name)
     .fetch_optional(&state.db);
 
     unwrap_query_option!(r#query)
@@ -135,9 +135,7 @@ pub async fn get_issues(
 /// If [`sqlx`] cannot execute the query, this function logs the error and returns an empty vector.
 #[tauri::command(rename_all = "camelCase")]
 pub async fn get_issues_in_repository(
-    _: tauri::AppHandle,
     state: tauri::State<'_, crate::AppState>,
-    _: tauri::Window,
     repository_url: String,
 ) -> Result<Vec<crate::models::AppIssue>, &'static str> {
     let r#query = sqlx::query_as::<_, crate::models::AppIssue>(

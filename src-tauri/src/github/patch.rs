@@ -5,7 +5,7 @@
 /// # Error
 /// - [`octocrab`] cannot update description
 /// - [`crate::database::update::update_repository_table_entry`] cannot update repository table entry
-#[tauri::command]
+#[tauri::command(rename_all = "camelCase")]
 pub async fn patch_repository_description(
     _: tauri::AppHandle,
     state: tauri::State<'_, crate::AppState>,

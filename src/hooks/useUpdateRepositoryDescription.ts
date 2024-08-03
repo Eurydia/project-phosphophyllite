@@ -39,7 +39,7 @@ export const useUpdateRepositoryDescription =
 			}
 
 			const id = enqueueSnackbar(
-				"Updating repository description...",
+				"Updating description...",
 				{
 					variant: "info",
 					persist: true,

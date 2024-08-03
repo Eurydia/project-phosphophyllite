@@ -12,7 +12,7 @@
 pub fn prepare_octocrab(handle: tauri::AppHandle) -> Result<octocrab::Octocrab, &'static str> {
     let raw_app_id = crate::secrets::get_app_id(handle.clone())?;
     let app_id = match raw_app_id.parse::<u64>() {
-        Ok(app_id) => app_id,
+        Ok(app_id) => octocrab::models::AppId(app_id),
         Err(err) => {
             log::error!("Rust cannot parse String to u64: \"{}\"", err);
             return Err("Cannot parse String to u64");
@@ -21,15 +21,15 @@ pub fn prepare_octocrab(handle: tauri::AppHandle) -> Result<octocrab::Octocrab, 
 
     let raw_installation_id = crate::secrets::get_installation_id(handle.clone())?;
     let installation_id = match raw_installation_id.parse::<u64>() {
-        Ok(installation_id) => installation_id,
+        Ok(installation_id) => octocrab::models::InstallationId(installation_id),
         Err(err) => {
             log::error!("Rust cannot parse String to u64: \"{}\"", err);
             return Err("Cannot parse String to u64");
         }
     };
 
-    let rsa_private_key = crate::secrets::get_rsa_private_key(handle.clone())?;
-    let key = match jsonwebtoken::EncodingKey::from_rsa_pem(rsa_private_key.as_bytes()) {
+    let pem = crate::secrets::get_rsa_private_key(handle.clone())?;
+    let key = match jsonwebtoken::EncodingKey::from_rsa_pem(pem.as_bytes()) {
         Ok(key) => key,
         Err(err) => {
             log::error!("jsonwebtoken cannot decode rsa pem: \"{}\"", err);
@@ -37,19 +37,16 @@ pub fn prepare_octocrab(handle: tauri::AppHandle) -> Result<octocrab::Octocrab, 
         }
     };
 
-    let octocrab = match octocrab::Octocrab::builder()
-        .app(octocrab::models::AppId(app_id), key)
-        .build()
-    {
+    let octocrab = match octocrab::Octocrab::builder().app(app_id, key).build() {
         Ok(octocrab) => octocrab,
         Err(err) => {
-            log::error!("Octocrab cannot build instance: \"{}\"", err);
+            log::error!("Octocrab cannot build instance: \"{}\"", dbg!(err));
+
             return Err("Cannot build octocrab");
         }
     };
 
-    let octocrab_with_installation_id =
-        octocrab.installation(octocrab::models::InstallationId(installation_id));
+    let octocrab_with_installation_id = octocrab.installation(installation_id);
 
     Ok(octocrab_with_installation_id)
 }
