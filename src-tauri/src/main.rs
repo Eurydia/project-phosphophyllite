@@ -37,6 +37,7 @@ async fn main() -> Result<(), &'static str> {
             github::post::post_issue,
             github::put::put_repository_readme,
             github::patch::patch_repository_description,
+            github::patch::patch_issue_title,
             database::get::get_repositories,
             database::get::get_repository_with_full_name,
             database::get::get_issues,
