@@ -19,9 +19,7 @@
 /// - [`crate::database::update::update_repository_table_entry`] cannot update repository table entry
 #[tauri::command]
 pub async fn put_repository_readme(
-    _: tauri::AppHandle,
     state: tauri::State<'_, crate::AppState>,
-    _: tauri::Window,
     owner_name: String,
     repository_name: String,
     unencoded_content: String,
@@ -37,11 +35,11 @@ pub async fn put_repository_readme(
         }
     };
 
-    match crab
+    let request = crab
         .update_file(path, commit_message, unencoded_content, sha)
-        .send()
-        .await
-    {
+        .send();
+
+    match request.await {
         Ok(_) => (),
         Err(err) => {
             log::error!("Octocrab cannot update README: \"{}\"", err);

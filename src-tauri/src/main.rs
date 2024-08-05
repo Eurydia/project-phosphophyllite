@@ -35,6 +35,7 @@ async fn main() -> Result<(), &'static str> {
         })
         .invoke_handler(tauri::generate_handler![
             github::post::post_issue,
+            github::post::post_comment,
             github::put::put_repository_readme,
             github::patch::patch_repository_description,
             github::patch::patch_issue_title,

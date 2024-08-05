@@ -61,3 +61,30 @@ pub async fn patch_issue_title(
 
     crate::database::update::update_issue_table_entry(&state.db, &issue).await
 }
+
+// https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#update-an-issue
+pub async fn patch_issue_body(
+    state: tauri::State<'_, crate::AppState>,
+    owner_name: String,
+    repository_name: String,
+    issue_number: u64,
+    body: String,
+) -> Result<(), &'static str> {
+    let request = state
+        .octocrab
+        .issues(&owner_name, &repository_name)
+        .update(&issue_number)
+        .body(&body)
+        .send()
+        .await?;
+
+    let issue = match request.await {
+        Ok(issue) => issue,
+        Err(err) => {
+            log::error!("Octocrab cannot update body: \"{}\"", err);
+            return Err("Cannot update body");
+        }
+    };
+
+    crate::database::update::update_issue_table_entry(&state.db, &issue).await
+}
