@@ -3,7 +3,7 @@ import {
 	openLogDir,
 	openSecretDir,
 	openSettingFile,
-} from "~tauri/path";
+} from "~tauri/open";
 import { revertAppSettings } from "~tauri/settings";
 import { CommandOption } from "~types/generic";
 import { useUpdateDB } from "./useUpdateDB";

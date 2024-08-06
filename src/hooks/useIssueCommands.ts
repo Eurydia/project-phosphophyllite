@@ -1,4 +1,4 @@
-import { openLink } from "~tauri/path";
+import { openLink } from "~tauri/open";
 import { CommandOption } from "~types/generic";
 import { AppIssue } from "~types/models";
 

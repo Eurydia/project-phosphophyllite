@@ -11,3 +11,12 @@ export const openSettingFile = async () =>
 
 export const openLink = async (href: string) =>
 	invoke("open_href", { href });
+
+export const openInDefaultEditor = async (
+	fileName: string,
+	content: string,
+): Promise<string> =>
+	invoke("open_in_editor", {
+		fileName,
+		content,
+	});

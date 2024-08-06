@@ -1,5 +1,5 @@
 import { useSubmit } from "react-router-dom";
-import { openLink } from "~tauri/path";
+import { openLink } from "~tauri/open";
 import { CommandOption } from "~types/generic";
 import {
 	AppIssue,
