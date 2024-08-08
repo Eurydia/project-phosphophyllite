@@ -33,8 +33,7 @@ pub async fn patch_repository_description(
         .await
 }
 
-// https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#update-an-issue
-
+/// https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#update-an-issue
 #[tauri::command(rename_all = "camelCase")]
 pub async fn patch_issue_title(
     state: tauri::State<'_, crate::AppState>,

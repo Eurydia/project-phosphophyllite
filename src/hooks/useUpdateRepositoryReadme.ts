@@ -1,6 +1,6 @@
 import { useSnackbar } from "notistack";
-import { putRepositoryReadme } from "~tauri/db/put";
-import { openInDefaultEditor } from "~tauri/temp";
+import { putRepositoryReadme } from "~tauri/github/put";
+import { openInDefaultEditor } from "~tauri/open";
 import { AppRepository } from "~types/models";
 
 export const useUpdateRespositoryReadme = () => {
