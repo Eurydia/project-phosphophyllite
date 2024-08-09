@@ -15,7 +15,7 @@ export type IssuePageLoaderData = {
 	repository: AppRepository;
 	currentIssue: AppIssue;
 	comments: AppComment[];
-	issues: AppIssue[];
+	otherIssues: AppIssue[];
 };
 export const issuePageLoader: LoaderFunction =
 	async ({ params }) => {
@@ -56,15 +56,14 @@ export const issuePageLoader: LoaderFunction =
 				statusText: "Issue not found",
 			});
 		}
-		const issues = await getIssuesInRepository(
-			repository.url,
-		);
+		const otherIssues =
+			await getIssuesInRepository(repository.url);
 		const comments = await getCommentsInIssue(
 			currentIssue.url,
 		);
 		const data: IssuePageLoaderData = {
 			currentIssue,
-			issues,
+			otherIssues,
 			repository,
 			comments,
 		};

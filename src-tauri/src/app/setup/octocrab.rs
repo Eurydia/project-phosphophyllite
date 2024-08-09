@@ -37,16 +37,12 @@ pub fn prepare_octocrab(handle: tauri::AppHandle) -> Result<octocrab::Octocrab, 
         }
     };
 
-    let octocrab = match octocrab::Octocrab::builder().app(app_id, key).build() {
-        Ok(octocrab) => octocrab,
+    match octocrab::Octocrab::builder().app(app_id, key).build() {
+        Ok(octocrab) => Ok(octocrab.installation(installation_id)),
         Err(err) => {
-            log::error!("Octocrab cannot build instance: \"{}\"", dbg!(err));
+            log::error!("Octocrab cannot build instance: \"{}\"", err);
 
-            return Err("Cannot build octocrab");
+            Err("Cannot build octocrab")
         }
-    };
-
-    let octocrab_with_installation_id = octocrab.installation(installation_id);
-
-    Ok(octocrab_with_installation_id)
+    }
 }

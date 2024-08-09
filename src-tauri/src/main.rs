@@ -10,6 +10,7 @@ mod open;
 mod paths;
 mod secrets;
 mod settings;
+mod temp;
 
 struct AppState {
     db: sqlx::pool::Pool<sqlx::sqlite::Sqlite>,
@@ -37,8 +38,8 @@ async fn main() -> Result<(), &'static str> {
             github::post::post_issue,
             github::post::post_comment,
             github::put::put_repository_readme,
-            github::patch::patch_repository_description,
-            github::patch::patch_issue_title,
+            github::patch::patch_issue,
+            github::patch::patch_issue_body,
             database::get::get_repositories,
             database::get::get_repository_with_full_name,
             database::get::get_issues,
@@ -54,6 +55,8 @@ async fn main() -> Result<(), &'static str> {
             open::open_secret_dir,
             open::open_setting_file,
             open::open_href,
+            temp::create_temp_file,
+            temp::delete_temp_file,
         ])
         .build(tauri::generate_context!());
 

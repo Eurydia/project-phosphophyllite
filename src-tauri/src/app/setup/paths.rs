@@ -99,7 +99,7 @@ fn create_setting_files(handle: tauri::AppHandle) -> Result<(), &'static str> {
 pub fn prepare_paths(handle: tauri::AppHandle) -> Result<(), &'static str> {
     create_dir_if_needed!(crate::paths::get_migration_dir(handle.clone())?);
     create_dir_if_needed!(crate::paths::get_log_dir(handle.clone())?);
-    create_dir_if_needed!(crate::paths::get_temp_dir(handle.clone())?);
+    create_dir_if_needed!(crate::paths::get_temp_dir(&handle)?);
 
     create_database_file(handle.clone())?;
     create_secret_files(handle.clone())?;

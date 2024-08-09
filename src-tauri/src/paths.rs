@@ -36,7 +36,7 @@ pub fn get_database_dir(handle: tauri::AppHandle) -> Result<std::path::PathBuf, 
 ///
 /// This function is a wrapper around [`resolve_dir!`] that resolves the path to the temporary directory.
 /// The target path is `{app_local_data_dir}/temp/`.
-pub fn get_temp_dir(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
+pub fn get_temp_dir(handle: &tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
     let path = resolve_dir!(handle.path_resolver().app_local_data_dir())?;
     Ok(path.join("temp"))
 }

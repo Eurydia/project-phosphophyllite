@@ -307,7 +307,6 @@ pub async fn update_db(
     let crab = &state.octocrab;
 
     let repos = crate::github::get::get_repositories(crab).await?;
-    dbg!(&repos);
     for repo in repos {
         update_repository_table_entry(db, crab, &repo).await?;
 

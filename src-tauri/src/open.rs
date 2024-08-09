@@ -1,5 +1,3 @@
-use std::io::Write;
-
 /// Opens target path.
 ///
 /// This function captures code duplication in other functions of this crate.
@@ -71,28 +69,8 @@ pub async fn open_in_editor(
     file_name: String,
     content: String,
 ) -> Result<String, &'static str> {
-    let dir_path = crate::paths::get_temp_dir(handle)?;
-    let file_path = dir_path.join(file_name);
-
-    let mut file = match std::fs::File::create(&file_path) {
-        Ok(file) => file,
-        Err(err) => {
-            log::error!(
-                "System cannot create temp file at \"{}\": \"{}\"",
-                &file_path.display(),
-                err
-            );
-            return Err("Cannot create file");
-        }
-    };
-
-    match file.write_all(content.as_bytes()) {
-        Ok(()) => (),
-        Err(err) => {
-            log::error!("System cannot write content: \"{}\"", err);
-            return Err("Cannot write content");
-        }
-    };
+    let file_path =
+        crate::temp::create_temp_file(handle.clone(), file_name.clone(), content.clone())?;
 
     // Open file with vscode on windows
     // everything else is unimplemented
@@ -130,13 +108,7 @@ pub async fn open_in_editor(
         }
     };
 
-    match std::fs::remove_file(&file_path) {
-        Ok(_) => (),
-        Err(err) => {
-            log::error!("System cannot remove file: \"{}\"", err);
-            return Err("Cannot remove file");
-        }
-    };
+    crate::temp::delete_temp_file(handle.clone(), file_name.clone())?;
 
     Ok(updated_content)
 }

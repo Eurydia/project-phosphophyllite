@@ -11,17 +11,21 @@ export const patchRepositoryDescription = async (
 		description,
 	});
 
-export const patchIssueTitle = async (
+export const patchIssue = async (
 	ownerName: string,
 	repositoryName: string,
 	issueNumber: number,
 	title: string,
+	labels: string[],
+	issueState: string,
 ): Promise<void> =>
-	invoke("patch_issue_title", {
+	invoke("patch_issue", {
 		ownerName,
 		repositoryName,
 		issueNumber,
 		title,
+		labels,
+		issueState,
 	});
 
 export const patchIssueBody = async (

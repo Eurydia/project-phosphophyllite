@@ -1,9 +1,10 @@
-export const tryParse = <T>(
+export const tryParseJSON = <T, V>(
 	jsonString: string,
-): T | null => {
+	fallback: V,
+): T | V => {
 	try {
 		return JSON.parse(jsonString);
 	} catch (err) {
-		return null;
+		return fallback;
 	}
 };

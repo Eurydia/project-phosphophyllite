@@ -1,6 +1,6 @@
 import { useSnackbar } from "notistack";
 import { putRepositoryReadme } from "~tauri/github/put";
-import { openInDefaultEditor } from "~tauri/open";
+import { openInEditor } from "~tauri/open";
 import { AppRepository } from "~types/models";
 
 export const useUpdateRespositoryReadme = () => {
@@ -13,7 +13,7 @@ export const useUpdateRespositoryReadme = () => {
 		const initContent = window.atob(
 			repository.readme,
 		);
-		const content = await openInDefaultEditor(
+		const content = await openInEditor(
 			`temp_readme_${repository.owner_login}_${repository.name}.md`,
 			initContent,
 		).catch((err) => {

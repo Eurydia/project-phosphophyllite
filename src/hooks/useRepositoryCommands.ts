@@ -6,7 +6,6 @@ import {
 	AppRepository,
 } from "~types/models";
 import { useAddIssue } from "./useAddIssue";
-import { useUpdateRepositoryDescription } from "./useUpdateRepositoryDescription";
 import { useUpdateRespositoryReadme } from "./useUpdateRepositoryReadme";
 
 const tokenizeAppIssue = (
@@ -24,8 +23,6 @@ export const useRepositoryCommands = (
 	repository: AppRepository,
 	issues: AppIssue[],
 ) => {
-	const updateDescription =
-		useUpdateRepositoryDescription();
 	const updateReadme =
 		useUpdateRespositoryReadme();
 	const addIssue = useAddIssue();
@@ -59,14 +56,6 @@ export const useRepositoryCommands = (
 			system: true,
 			searchTokens: [],
 			action: () => {},
-		},
-		{
-			label: "Edit repository description",
-			system: true,
-			action: () => updateDescription(repository),
-			disabled,
-			description,
-			searchTokens: [],
 		},
 		{
 			label: "Edit repository README",

@@ -9,9 +9,7 @@ import { useLoaderData } from "react-router";
 import { CommandPalette } from "~components/CommandPalette";
 import { TerminalStyleList } from "~components/TerminalStyleList";
 import { formatTimestamp } from "~core/format";
-import { useIssueCommands } from "~hooks/useIssueCommands";
-import { useRepositoryCommands } from "~hooks/useRepositoryCommands";
-import { useSystemCommands } from "~hooks/useSystemCommands";
+import { useIssuePageCommands } from "~hooks/useIssueCommands";
 import { IssuePageLoaderData } from "./loader";
 
 export const IssuePage: FC = () => {
@@ -19,14 +17,14 @@ export const IssuePage: FC = () => {
 		currentIssue,
 		comments,
 		repository,
-		issues,
+		otherIssues,
 	} = useLoaderData() as IssuePageLoaderData;
 
-	const systemCommands = useSystemCommands();
-	const repositoryCommands =
-		useRepositoryCommands(repository, issues);
-	const issueCommands =
-		useIssueCommands(currentIssue);
+	const commands = useIssuePageCommands(
+		repository,
+		currentIssue,
+		otherIssues,
+	);
 
 	const {
 		body,
@@ -72,15 +70,11 @@ export const IssuePage: FC = () => {
 		},
 		{
 			label: "Labels",
-			value: currentIssue.issue_label,
+			value: currentIssue.issue_label || "None",
 		},
 	];
 
-	const commands = [
-		...repositoryCommands,
-		...issueCommands,
-		...systemCommands,
-	];
+	console.log(currentIssue);
 
 	return (
 		<Container maxWidth="sm">

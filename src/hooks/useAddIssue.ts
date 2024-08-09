@@ -1,6 +1,6 @@
 import { useSnackbar } from "notistack";
 import { postIssue } from "~tauri/github/post";
-import { openInDefaultEditor } from "~tauri/temp";
+import { openInEditor } from "~tauri/open";
 import { AppRepository } from "~types/models";
 
 export const useAddIssue = () => {
@@ -10,17 +10,16 @@ export const useAddIssue = () => {
 	const addIssue = async (
 		repository: AppRepository,
 	) => {
-		const updatedContent =
-			await openInDefaultEditor(
-				`temp_issue_${repository.owner_login}_${repository.name}.md`,
-				"",
-			).catch((err) => {
-				enqueueSnackbar(String(err), {
-					variant: "error",
-					persist: true,
-				});
-				return null;
+		const updatedContent = await openInEditor(
+			`temp_issue_${repository.owner_login}_${repository.name}.md`,
+			"",
+		).catch((err) => {
+			enqueueSnackbar(String(err), {
+				variant: "error",
+				persist: true,
 			});
+			return null;
+		});
 
 		if (updatedContent === null) {
 			return;

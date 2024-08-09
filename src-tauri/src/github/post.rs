@@ -6,15 +6,15 @@ pub async fn post_issue(
     repository_name: String,
     body: String,
 ) -> Result<(), &'static str> {
-    let request = state
+    let issue = match state
         .octocrab
         .issues(owner_name, repository_name)
         .create("New issue")
         .body(body)
-        .send();
-
-    let issue = match request.await {
-        Ok(issue) => issue,
+        .send()
+        .await
+    {
+        Ok(respond) => respond,
         Err(err) => {
             log::error!("Octocrab cannot post issue: \"{}\"", dbg!(err));
             return Err("Cannot post issue");
@@ -33,15 +33,13 @@ pub async fn post_comment(
     issue_number: u64,
     body: String,
 ) -> Result<(), &'static str> {
-    let request = state
+    let comment = match state
         .octocrab
         .issues(&owner_name, &repository_name)
-        .create_comment(&issue_number, &body)
-        .send()
-        .await?;
-
-    let comment = match request.await {
-        Ok(comment) => comment,
+        .create_comment(issue_number, body)
+        .await
+    {
+        Ok(result) => result,
         Err(err) => {
             log::error!("Octocrab cannot post comment: \"{}\"", err);
             return Err("Cannot post comment");

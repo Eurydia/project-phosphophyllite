@@ -1,67 +1,45 @@
-/// Updates the description of a repository.
-///
-/// [API documentation](https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#update-a-repository)
-///
-/// # Error
-/// - [`octocrab`] cannot update description
-/// - [`crate::database::update::update_repository_table_entry`] cannot update repository table entry
-#[tauri::command(rename_all = "camelCase")]
-pub async fn patch_repository_description(
-    state: tauri::State<'_, crate::AppState>,
-    owner_name: String,
-    repository_name: String,
-    description: String,
-) -> Result<(), &'static str> {
-    let request_body = serde_json::json!({"description": description});
-
-    let repository = match state
-        .octocrab
-        .patch::<octocrab::models::Repository, _, serde_json::value::Value>(
-            format!("/repos/{}/{}", owner_name, repository_name),
-            Some(&request_body),
-        )
-        .await
-    {
-        Ok(repo) => repo,
-        Err(err) => {
-            log::error!("Octocrab cannot update description: \"{}\"", err);
-            return Err("Cannot update description");
-        }
-    };
-
-    crate::database::update::update_repository_table_entry(&state.db, &state.octocrab, &repository)
-        .await
-}
-
 /// https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#update-an-issue
 #[tauri::command(rename_all = "camelCase")]
-pub async fn patch_issue_title(
+pub async fn patch_issue(
     state: tauri::State<'_, crate::AppState>,
     owner_name: String,
     repository_name: String,
     issue_number: u64,
     title: String,
+    labels: Vec<String>,
+    issue_state: String,
 ) -> Result<(), &'static str> {
+    let issue_state_req = {
+        match issue_state.as_str() {
+            "open" => octocrab::models::IssueState::Open,
+            "closed" => octocrab::models::IssueState::Closed,
+            _ => return Err("Unknown issue state"),
+        }
+    };
+
     let request = state
         .octocrab
-        .issues(&owner_name, &repository_name)
-        .update(&issue_number)
+        .issues(owner_name, repository_name)
+        .update(issue_number)
         .title(&title)
+        .labels(&labels)
+        .state(issue_state_req)
         .send()
-        .await?;
+        .await;
 
-    let issue = match request.await {
-        Ok(issue) => issue,
+    let issue = match request {
+        Ok(respond) => respond,
         Err(err) => {
-            log::error!("Octocrab cannot update title: \"{}\"", err);
-            return Err("Cannot update title");
+            log::error!("Octocrab cannot patch issue: \"{}\"", err);
+            return Err("Cannot patch issue");
         }
     };
 
     crate::database::update::update_issue_table_entry(&state.db, &issue).await
 }
 
-// https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#update-an-issue
+/// https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#update-an-issue
+#[tauri::command(rename_all = "camelCase")]
 pub async fn patch_issue_body(
     state: tauri::State<'_, crate::AppState>,
     owner_name: String,
@@ -72,16 +50,16 @@ pub async fn patch_issue_body(
     let request = state
         .octocrab
         .issues(&owner_name, &repository_name)
-        .update(&issue_number)
+        .update(issue_number)
         .body(&body)
         .send()
-        .await?;
+        .await;
 
-    let issue = match request.await {
-        Ok(issue) => issue,
+    let issue = match request {
+        Ok(respond) => respond,
         Err(err) => {
-            log::error!("Octocrab cannot update body: \"{}\"", err);
-            return Err("Cannot update body");
+            log::error!("Octocrab cannot patch issue body: \"{}\"", err);
+            return Err("Cannot patch issue body");
         }
     };
 
