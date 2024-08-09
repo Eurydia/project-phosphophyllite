@@ -333,9 +333,9 @@ pub async fn update_db(
         }
     };
 
-    let path = crate::paths::get_setting_dir(handle.clone())?;
+    let file_path = crate::settings::resolve_settings_file(handle)?;
 
-    match std::fs::write(path, json_string) {
+    match std::fs::write(file_path, json_string) {
         Ok(()) => Ok(()),
         Err(err) => {
             log::error!("System cannot write to file: \"{}\"", err);

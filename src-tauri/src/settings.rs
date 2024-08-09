@@ -1,7 +1,7 @@
 /// Resolves the path to the settings file.
 ///
 /// This function does not actually do much since it is suppose to reduce code duplication. It unwraps the path to setting directory and joins it with the settings file name.
-fn resolve_settings_file(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
+pub fn resolve_settings_file(handle: tauri::AppHandle) -> Result<std::path::PathBuf, &'static str> {
     let path = crate::paths::get_setting_dir(handle)?;
     Ok(path.join(crate::app::constants::SETTINGS_FILE_NAME))
 }
