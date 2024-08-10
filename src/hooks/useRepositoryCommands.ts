@@ -5,8 +5,8 @@ import {
 	AppIssue,
 	AppRepository,
 } from "~types/models";
-import { useAddIssue } from "./useAddIssue";
-import { useUpdateRespositoryReadme } from "./useUpdateRepositoryReadme";
+import { usePostIssue } from "./usePostIssue";
+import { usePutRespositoryReadme } from "./usePutRepositoryReadme";
 
 const tokenizeAppIssue = (
 	issue: AppIssue,
@@ -23,9 +23,8 @@ export const useRepositoryCommands = (
 	repository: AppRepository,
 	issues: AppIssue[],
 ) => {
-	const updateReadme =
-		useUpdateRespositoryReadme();
-	const addIssue = useAddIssue();
+	const updateReadme = usePutRespositoryReadme();
+	const addIssue = usePostIssue();
 
 	const submit = useSubmit();
 

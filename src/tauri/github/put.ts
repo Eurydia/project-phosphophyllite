@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 
-export const putRepositoryReadme = async (
+export const tauriPutRepositoryReadme = async (
 	ownerName: string,
 	repositoryName: string,
 	unencodedContent: string,

@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 
-export const postIssue = async (
+export const tauriPostIssue = async (
 	ownerName: String,
 	repositoryName: String,
 	body: String,
@@ -11,7 +11,7 @@ export const postIssue = async (
 		body,
 	});
 
-export const postComment = async (
+export const tauriPostComment = async (
 	ownerName: String,
 	repositoryName: String,
 	issueNumber: Number,
