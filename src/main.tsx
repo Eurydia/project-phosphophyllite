@@ -1,57 +1,57 @@
 import {
 	CssBaseline,
-	styled,
 	ThemeProvider,
 } from "@mui/material";
-import {
-	MaterialDesignContent,
-	SnackbarProvider,
-} from "notistack";
 import React from "react";
 import ReactDOM from "react-dom/client";
+import {
+	Bounce,
+	ToastContainer,
+} from "react-toastify";
+import { injectStyle } from "react-toastify/dist/inject-style";
 import { themeComposed } from "~theme/composed";
 import { App } from "./App";
 import "./main.css";
 
-const StyledSnackbarComponent = styled(
-	MaterialDesignContent,
-)(() => ({
-	"&.notistack-MuiContent-success": {
-		backgroundColor:
-			themeComposed.palette.success.main,
-	},
-	"&.notistack-MuiContent-error": {
-		backgroundColor:
-			themeComposed.palette.error.main,
-	},
-	"&.notistack-MuiContent-info": {
-		backgroundColor:
-			themeComposed.palette.info.main,
-	},
-}));
+injectStyle();
+
+// const StyledSnackbarComponent = styled(
+// 	MaterialDesignContent,
+// )(() => ({
+// 	"&.notistack-MuiContent-success": {
+// 		backgroundColor:
+// 			themeComposed.palette.success.main,
+// 	},
+// 	"&.notistack-MuiContent-error": {
+// 		backgroundColor:
+// 			themeComposed.palette.error.main,
+// 	},
+// 	"&.notistack-MuiContent-info": {
+// 		backgroundColor:
+// 			themeComposed.palette.info.main,
+// 	},
+// }));
 
 ReactDOM.createRoot(
 	document.getElementById("root")!,
 ).render(
 	<React.StrictMode>
-		<SnackbarProvider
-			Components={{
-				success: StyledSnackbarComponent,
-				error: StyledSnackbarComponent,
-				info: StyledSnackbarComponent,
-			}}
-			preventDuplicate
-			maxSnack={3}
-			autoHideDuration={3500}
-			anchorOrigin={{
-				vertical: "bottom",
-				horizontal: "left",
-			}}
-		>
-			<ThemeProvider theme={themeComposed}>
-				<CssBaseline />
-				<App />
-			</ThemeProvider>
-		</SnackbarProvider>
+		<ThemeProvider theme={themeComposed}>
+			<CssBaseline />
+			<App />
+			<ToastContainer
+				position="bottom-left"
+				autoClose={5000}
+				hideProgressBar={false}
+				newestOnTop={false}
+				closeOnClick
+				rtl={false}
+				pauseOnFocusLoss
+				draggable
+				pauseOnHover
+				theme="dark"
+				transition={Bounce}
+			/>
+		</ThemeProvider>
 	</React.StrictMode>,
 );

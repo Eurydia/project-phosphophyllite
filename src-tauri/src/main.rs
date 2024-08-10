@@ -27,6 +27,7 @@ async fn main() -> Result<(), &'static str> {
                     tauri_plugin_log::LogTarget::Stdout,
                     tauri_plugin_log::LogTarget::Webview,
                 ])
+                .level(log::LevelFilter::Info)
                 .log_name(chrono::Utc::now().format("%Y-%m-%d").to_string())
                 .build(),
         )

@@ -167,7 +167,7 @@ pub async fn update_issue_table_entry(
         octocrab::models::IssueState::Open => "open",
         octocrab::models::IssueState::Closed | _ => "closed",
     };
-    let label_field = labels
+    let labels_field = labels
         .into_iter()
         .map(|label| label.name.to_string())
         .collect::<Vec<String>>()
@@ -187,7 +187,7 @@ pub async fn update_issue_table_entry(
                 "updated_at",
                 "closed_at",
                 "user_type",
-                "issue_label"
+                "issue_labels"
             )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         "#,
@@ -203,7 +203,7 @@ pub async fn update_issue_table_entry(
     .bind(updated_at_field)
     .bind(closed_at_field)
     .bind(user_type_field)
-    .bind(label_field)
+    .bind(labels_field)
     .execute(db);
 
     match query.await {

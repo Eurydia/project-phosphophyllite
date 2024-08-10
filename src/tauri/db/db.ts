@@ -1,8 +1,8 @@
 import { invoke } from "@tauri-apps/api";
 
-export const forceUpdateDB = async () =>
-	invoke("update_db");
+export const tauriUpdateDB =
+	async (): Promise<void> => invoke("update_db");
 
-export const shouldUpdateDB =
+export const tauriShouldUpdateDB =
 	async (): Promise<boolean> =>
 		invoke("should_update_db");

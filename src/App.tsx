@@ -15,7 +15,7 @@ import {
 	loaderRepositoryPage,
 	RepositoryPage,
 } from "~pages/RepositoryPage";
-import { shouldUpdateDB } from "~tauri/db/db";
+import { tauriShouldUpdateDB } from "~tauri/db/db";
 import { HomeGroupView } from "~views/HomeGroupView";
 
 const router = createBrowserRouter([
@@ -57,7 +57,8 @@ export const App: FC = () => {
 		}
 		hasAutoUpdateTriggered.current = true;
 		(async () => {
-			const shouldUpdate = await shouldUpdateDB();
+			const shouldUpdate =
+				await tauriShouldUpdateDB();
 			if (!shouldUpdate) {
 				return;
 			}

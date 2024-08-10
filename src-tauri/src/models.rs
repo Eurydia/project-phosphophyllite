@@ -34,7 +34,7 @@ pub struct AppIssue {
     pub r#updated_at: String,
     pub r#closed_at: String,
     pub r#user_type: String,
-    pub r#issue_label: String,
+    pub r#issue_labels: String,
 }
 
 /// A struct for the `AppComment` table.

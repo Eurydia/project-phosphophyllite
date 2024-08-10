@@ -1,34 +1,30 @@
-import { useSnackbar } from "notistack";
 import { useRef } from "react";
+import { toast } from "react-toastify";
 import { tryParseJSON } from "~core/parsing";
 import { getIssues } from "~tauri/db/get";
-import { patchIssue } from "~tauri/github/patch";
+import { tauriPatchIssue } from "~tauri/github/patch";
 import { openInEditor } from "~tauri/open";
 import {
 	createTempFile,
 	deleteTempFile,
 } from "~tauri/temp";
 import { AppIssue } from "~types/models";
+import { useAnimateToast } from "./useAnimateToast";
 
 export const usePatchIssue = (
 	issue: AppIssue,
 ) => {
-	const { closeSnackbar, enqueueSnackbar } =
-		useSnackbar();
-
 	const isBusy = useRef(false);
 
-	const patchIssue_ = async (
+	const [startAnimation, stopAnimation] =
+		useAnimateToast();
+
+	const patchIssue = async (
 		ownerName: string,
 		repositoryName: string,
 	) => {
 		if (isBusy.current) {
-			enqueueSnackbar(
-				"Already patching issue...",
-				{
-					variant: "error",
-				},
-			);
+			toast.warn("Already patching issue");
 			return;
 		}
 
@@ -42,7 +38,7 @@ export const usePatchIssue = (
 		const unique_labels = new Set(
 			issues
 				.map((issue) =>
-					issue.issue_label.split(","),
+					issue.issue_labels.split(","),
 				)
 				.flat(),
 		);
@@ -73,7 +69,7 @@ export const usePatchIssue = (
 		const initContent = {
 			$schema: `./${schemaFileName}`,
 			title: issue.title,
-			labels: issue.issue_label.split(","),
+			labels: issue.issue_labels.split(","),
 			state: issue.state,
 		};
 
@@ -96,10 +92,7 @@ export const usePatchIssue = (
 					null
 				>(result, null),
 			(error: string) => {
-				enqueueSnackbar(error, {
-					variant: "error",
-					persist: true,
-				});
+				toast.error(error);
 				return null;
 			},
 		);
@@ -111,14 +104,9 @@ export const usePatchIssue = (
 			return;
 		}
 
-		const id = enqueueSnackbar(
-			"Patching issue...",
-			{
-				variant: "info",
-				persist: true,
-			},
-		);
-		await patchIssue(
+		startAnimation("Patching issue");
+
+		await tauriPatchIssue(
 			ownerName,
 			repositoryName,
 			issue.number,
@@ -126,19 +114,12 @@ export const usePatchIssue = (
 			content.labels,
 			content.state,
 		).then(
-			() =>
-				enqueueSnackbar("Patched issue", {
-					variant: "success",
-				}),
-			(error: string) =>
-				enqueueSnackbar(error, {
-					variant: "error",
-					persist: true,
-				}),
+			() => toast.success("Patched issue"),
+			(error: string) => toast.error(error),
 		);
-		closeSnackbar(id);
+		stopAnimation();
 		isBusy.current = false;
 	};
 
-	return patchIssue_;
+	return patchIssue;
 };

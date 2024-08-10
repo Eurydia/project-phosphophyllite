@@ -1,23 +1,56 @@
-import { useSnackbar } from "notistack";
+import { useEffect, useRef } from "react";
+import { Id, toast } from "react-toastify";
 import { postIssue } from "~tauri/github/post";
 import { openInEditor } from "~tauri/open";
 import { AppRepository } from "~types/models";
 
-export const useAddIssue = () => {
-	const { closeSnackbar, enqueueSnackbar } =
-		useSnackbar();
+const animateToast = (msg: string) => {
+	const intervalId = useRef<number | null>(null);
+	const toastId = useRef<Id | null>(null);
 
+	toastId.current = toast.info(msg, {
+		autoClose: false,
+	});
+
+	let dots = useRef(0);
+	useEffect(() => {
+		if (toastId.current === null) {
+			return;
+		}
+
+		const id = setInterval(() => {
+			dots.current = (dots.current + 1) % 4;
+			toast.update(toastId.current as Id, {
+				render: msg + ".".repeat(dots.current),
+			});
+		}, 500);
+
+		intervalId.current = id;
+
+		return () => clearInterval(id);
+	}, [msg]);
+
+	const stopAnimation = () => {
+		if (toastId.current !== null) {
+			toast.dismiss(toastId.current);
+		}
+		if (intervalId.current !== null) {
+			clearInterval(intervalId.current);
+		}
+	};
+
+	return stopAnimation;
+};
+
+export const useAddIssue = () => {
 	const addIssue = async (
 		repository: AppRepository,
 	) => {
 		const updatedContent = await openInEditor(
 			`temp_issue_${repository.owner_login}_${repository.name}.md`,
 			"",
-		).catch((err) => {
-			enqueueSnackbar(String(err), {
-				variant: "error",
-				persist: true,
-			});
+		).catch((err: string) => {
+			toast.error(err);
 			return null;
 		});
 
@@ -25,29 +58,20 @@ export const useAddIssue = () => {
 			return;
 		}
 
-		const id = enqueueSnackbar(
-			"Adding issue...",
-			{
-				variant: "info",
-				persist: true,
-			},
+		const stopAnimation = animateToast(
+			"Adding issue",
 		);
+
 		await postIssue(
 			repository.owner_login,
 			repository.name,
 			updatedContent,
 		).then(
-			() =>
-				enqueueSnackbar("Add complete", {
-					variant: "success",
-				}),
-			(err) =>
-				enqueueSnackbar(String(err), {
-					variant: "error",
-					persist: true,
-				}),
+			() => toast.info("Added issue"),
+			(err: string) => toast.error(err),
 		);
-		closeSnackbar(id);
+
+		stopAnimation();
 	};
 
 	return addIssue;

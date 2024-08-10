@@ -11,7 +11,7 @@ export const patchRepositoryDescription = async (
 		description,
 	});
 
-export const patchIssue = async (
+export const tauriPatchIssue = async (
 	ownerName: string,
 	repositoryName: string,
 	issueNumber: number,

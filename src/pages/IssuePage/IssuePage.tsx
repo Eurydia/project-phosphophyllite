@@ -70,7 +70,7 @@ export const IssuePage: FC = () => {
 		},
 		{
 			label: "Labels",
-			value: currentIssue.issue_label || "None",
+			value: currentIssue.issue_labels || "None",
 		},
 	];
 

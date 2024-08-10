@@ -1,0 +1,1 @@
+ALTER TABLE issues RENAME COLUMN issue_label TO issue_labels;

@@ -1,4 +1,3 @@
-import { useSnackbar } from "notistack";
 import {
 	openLogDir,
 	openSecretDir,
@@ -10,7 +9,6 @@ import { useUpdateDB } from "./useUpdateDB";
 
 export const useSystemCommands = () => {
 	const updateDB = useUpdateDB();
-	const { closeSnackbar } = useSnackbar();
 
 	const commands: CommandOption[] = [
 		{
@@ -42,12 +40,6 @@ export const useSystemCommands = () => {
 			system: true,
 			searchTokens: [],
 			action: updateDB,
-		},
-		{
-			label: "Clear all notifications",
-			system: true,
-			searchTokens: [],
-			action: closeSnackbar,
 		},
 	];
 
