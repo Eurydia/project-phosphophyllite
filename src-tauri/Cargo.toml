@@ -19,7 +19,7 @@ log = "^0.4"
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tauri = { version = "1.6.5", features = ["global-shortcut-all"] }
 tokio = { version = "1.33.0", features = ["time", "rt", "macros"] }
-sqlx = { version = "0.7.2", features = ["sqlite", "runtime-tokio", "migrate", "chrono", "macros"] }
+sqlx = { version = "0.8.1", features = ["sqlite", "runtime-tokio", "migrate", "chrono", "macros"] }
 serde_json = "1.0"
 futures = "0.3"
 octocrab = "0.38.0"
